@@ -36,13 +36,13 @@ import PostTransictionPage from "./Pages/Officers/PostTransictionPage";
 import TransictionListPage from "./Pages/Officers/TransictionListPage";
 import AllTransictionListPage from "./Pages/Transiction/AllTransictionListPage";
 import TransictionDetailsPage from "./Pages/Transiction/TransictionDetailsPage";
-
 import AddStockPage from "./Pages/Product/AddStockPage";
 import AddStockDetailsPage from "./Pages/Product/AddStockDetailsPage";
 import AddStockListPage from "./Pages/Product/AddStockListPage";
-import PasswordChange from "./Components/ChangePassword/PasswordChange";
 import ChangePassword from "./Pages/ChangePassword/ChangePassword";
 import MyAsmPage from "./Pages/MyAsm/MyAsmPage";
+import AsmDetailsPage from "./Pages/MyAsm/AsmDetailsPage";
+import MyMsoPage from "./Pages/MyMso/MyMsoPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -104,6 +104,10 @@ function App() {
             <Route path="/TransictionList" element={<TransictionListPage />} />
             <Route path="/changePassword" element={<ChangePassword/>}/>
             <Route path="/MyAsmPage" element={<MyAsmPage/>}/>
+            <Route path="/details/by/asm/:id" element={<AsmDetailsPage/>}/>
+            <Route path="/myMso/Page" element={<MyMsoPage/>}/>
+
+
             <Route
               path="/AllTransictionList"
               element={<AllTransictionListPage />}

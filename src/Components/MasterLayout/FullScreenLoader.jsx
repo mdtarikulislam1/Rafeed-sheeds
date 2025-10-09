@@ -14,25 +14,9 @@ const FullScreenLoader = () => {
       <div className="fixed top-0 left-0 w-full h-1 z-50">
         {/* Animated loading bar */}
         <div
-          className="h-[2px] bg-[#FF0000]" // change color to YouTube red or whatever you want
-          style={{
-            width: "70%",
-            animation: "slideLoading 1s linear infinite",
-          }}
+          className="h-[2px] bg-[#FF0000] fullScreen-loader" // change color to YouTube red or
         />
       </div>
-
-      {/* Animation keyframes */}
-      <style jsx>{`
-        @keyframes slideLoading {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(500%);
-          }
-        }
-      `}</style>
     </>
   );
 };

@@ -19,26 +19,24 @@ const Dashboard = () => {
   const [MSOdetails, setMSOdetails] = useState([]);
   const [summary, setSummary] = useState([]);
   const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 0)) 
+    new Date(new Date().setDate(new Date().getDate() - 0))
   );
   const [endDate, setEndDate] = useState(new Date());
 
+  const formatDate = (date, endOfDay = false) => {
+    const d = new Date(date);
+    if (endOfDay) {
+      d.setHours(23, 59, 59, 999);
+    } else {
+      d.setHours(0, 0, 0, 0);
+    }
 
-const formatDate = (date, endOfDay = false) => {
-  const d = new Date(date);
-  if (endOfDay) {
-    d.setHours(23, 59, 59, 999);
-  } else {
-    d.setHours(0, 0, 0, 0);
-  }
+    const bdOffset = 6 * 60; // minutes
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const bdTime = new Date(utc + bdOffset * 60000);
 
-  const bdOffset = 6 * 60; // minutes
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  const bdTime = new Date(utc + bdOffset * 60000);
-
-  return bdTime.toISOString();
-};
-
+    return bdTime.toISOString();
+  };
 
   const fetchData = async () => {
     const start = formatDate(startDate, false); // 00:00:00
@@ -316,18 +314,20 @@ const formatDate = (date, endOfDay = false) => {
 
       <div className="flex flex-col gap-2 mt-5">
         {/* RSM */}
-        <div className="global_sub_container">
+        <div className="global_sub_container overflow-auto">
           <h1 className="text-center font-[600] ">RSM</h1>{" "}
           {
             <table className="global_table">
               <thead className="global_thead">
-                <th className="global_th">Name</th>
-                <th className="global_th">Category</th>
-                <th className="global_th">Sale</th>
-                <th className="global_th">Discount</th>
-                <th className="global_th">Grand</th>
-                <th className="global_th">Collection</th>
-                <th className="global_th">Details</th>
+                <tr>
+                  <th className="global_th">Name</th>
+                  <th className="global_th">Category</th>
+                  <th className="global_th">Sale</th>
+                  <th className="global_th">Discount</th>
+                  <th className="global_th">Grand</th>
+                  <th className="global_th">Collection</th>
+                  <th className="global_th">Details</th>
+                </tr>
               </thead>
               <tbody className="global_tbody">
                 {RSMdetails.length > 0 ? (
@@ -358,18 +358,20 @@ const formatDate = (date, endOfDay = false) => {
         </div>
 
         {/* RSM */}
-        <div className="global_sub_container">
+        <div className="global_sub_container overflow-auto">
           <h1 className="text-center font-[600] ">ASM</h1>{" "}
           {
             <table className="global_table">
               <thead className="global_thead">
-                <th className="global_th">Name</th>
+               <tr>
+                 <th className="global_th">Name</th>
                 <th className="global_th">Category</th>
                 <th className="global_th">Sale</th>
                 <th className="global_th">Discount</th>
                 <th className="global_th">Grand</th>
                 <th className="global_th">Collection</th>
                 <th className="global_th">Details</th>
+               </tr>
               </thead>
               <tbody className="global_tbody">
                 {ASMdetails.length > 0 ? (
@@ -399,18 +401,20 @@ const formatDate = (date, endOfDay = false) => {
           }
         </div>
         {/* MSO */}
-        <div className="global_sub_container">
+        <div className="global_sub_container overflow-auto">
           <h1 className="text-center font-[600] ">MSO</h1>{" "}
           {
             <table className="global_table">
               <thead className="global_thead">
-                <th className="global_th">Name</th>
+               <tr>
+                 <th className="global_th">Name</th>
                 <th className="global_th">Category</th>
                 <th className="global_th">Sale</th>
                 <th className="global_th">Discount</th>
                 <th className="global_th">Grand</th>
                 <th className="global_th">Collection</th>
                 <th className="global_th">Details</th>
+               </tr>
               </thead>
               <tbody className="global_tbody">
                 {MSOdetails.length > 0 ? (

@@ -295,3 +295,19 @@ body {
     transform: translateX(100vw);
   }
 }
+
+/* Full screen loader */
+
+.fullScreen-loader {
+  width: "70%";
+  animation: "slideLoading 1s linear infinite";
+}
+
+@keyframes slideLoading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(500%);
+  }
+}

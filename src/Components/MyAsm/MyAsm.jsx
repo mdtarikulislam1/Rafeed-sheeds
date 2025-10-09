@@ -2,11 +2,17 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
+import { Link } from "react-router-dom";
+import loadingStore from "../../Zustand/LoadingStore";
 
 export default function MyAsm() {
   const [asmData, setMyAsmData] = useState([]);
+
+  const { setGlobalLoader } = loadingStore();
+
   useEffect(() => {
     const fetchAsmData = async () => {
+      setGlobalLoader(true);
       try {
         const { data } = await axios.get(`${BaseURL}/MyASM`, {
           headers: { token: getToken() },
@@ -14,6 +20,8 @@ export default function MyAsm() {
         setMyAsmData(data);
       } catch (error) {
         console.error("Error fetching ASM data:", error);
+      } finally {
+        setGlobalLoader(false);
       }
     };
 
@@ -30,28 +38,44 @@ export default function MyAsm() {
           </div>
         ) : (
           <div>
-            <div className=" overflow-auto">
+            <div className="overflow-auto">
               <table className="global_table w-full">
                 <thead>
-                  <th className="global_th">No</th>
-                  <th className="global_th">Mobile Number</th>
-                  <th className="global_th">Name</th>
-                  <th className="global_th">Active</th>
-                </thead>
-                {asmData?.data?.map((items, index) => (
-                  <tr className="global_tr" key={index}>
-                    <td className="global_td">{index + 1 || ""}</td>
-                    <td className="global_td">{items?.mobile || ""}</td>
-                    <td className="global_td">{items?.name || ""}</td>
-                    <td
-                      className={`global_td ${
-                        items?.active === 0 ? "text-gray-500" : "text-green-600"
-                      }`}
-                    >
-                      {items?.active === 0 ? "inActive" : "Active"}
-                    </td>
+                  <tr>
+                    <th className="global_th">No</th>
+                    <th className="global_th">Name</th>
+                    <th className="global_th">Mobile Number</th>
+                    <th className="global_th">Action</th>
                   </tr>
-                ))}
+                </thead>
+                <tbody>
+                  {asmData?.data?.map((items, index) => (
+                    <tr className="global_tr" key={index}>
+                      <td className="global_td">{index + 1 || "N/A"}</td>
+                      <td className="global_td">
+                        {items?.name ? items?.name : "N/A"}
+                      </td>
+                      <td className="global_td">
+                        {items?.mobile ? items?.mobile : "N/A"}
+                      </td>
+                      <td className="global_td flex">
+                        <Link
+                          to={`/details/by/asm/${items?._id}`}
+                          className="global_button"
+                        >
+                          Report
+                        </Link>
+
+                        <Link
+                          to='/mso/list'
+                          className="global_button_red mx-4"
+                        >
+                       Mso List
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
               </table>
             </div>
           </div>

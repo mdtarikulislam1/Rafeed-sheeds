@@ -72,6 +72,18 @@ const MasterLayout = ({ children }) => {
             icon: <MdOutlinePerson4 />,
             path: "/MyAsmPage",
           },
+         
+        ]
+      : []),
+    ...(["RSM","ASM"].includes(role)
+      ? [
+          {
+            id: "mymso",
+            title: "My Mso",
+            icon: <MdOutlinePerson4 />,
+            path: "/myMso/Page",
+          },
+         
         ]
       : []),
     
