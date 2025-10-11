@@ -1,18 +1,18 @@
 import React, { Fragment, lazy, Suspense } from "react";
 import MasterLayout from "../../Components/MasterLayout/MasterLayout";
 import LazyLoader from "../../Components/MasterLayout/LazyLoader";
-const MyAsm = lazy(() => import("../../Components/MyAsm/MyAsm"));
+const MyDealer = lazy(() => import("../../Components/MyAsm/MyDealer"));
 
-const MyAsmPage = () => {
+const MyDealerPages = () => {
   return (
     <Fragment>
       <MasterLayout>
         <Suspense fallback={<LazyLoader />}>
-          <MyAsm />
+       <MyDealer/>
         </Suspense>
       </MasterLayout>
     </Fragment>
   );
 };
 
-export default MyAsmPage;
+export default MyDealerPages;

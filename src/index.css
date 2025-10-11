@@ -64,6 +64,12 @@ body {
     shadow-sm
     hover:shadow-md transition-shadow;
   }
+  .global_no-data{
+    @apply text-lg text-red-600 text-center
+  }
+  .global_heading{
+   @apply text-xl text-center font-semibold py-3
+  }
 }
 
 /* Input er jonno */
@@ -311,3 +317,5 @@ body {
     transform: translateX(500%);
   }
 }
+
+

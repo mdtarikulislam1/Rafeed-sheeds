@@ -8,7 +8,7 @@ import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 
-const AsmDetails = () => {
+const AsmReport = () => {
   const { id } = useParams();
   const { setGlobalLoader } = loadingStore();
 
@@ -194,7 +194,7 @@ const AsmDetails = () => {
       {/* salesByCategory */}
 
       <div className="w-full overflow-x-auto text-nowrap my-3">
-        <h4 className="text-center font-[600] py-2">Sales By Category</h4>
+        <h4 className="global_heading">Sales By Category</h4>
 
         <table className="global_table min-w-[600px]">
           <thead className="global_thead">
@@ -230,7 +230,7 @@ const AsmDetails = () => {
 
       {/* Product Weight Summary */}
       <div className="w-full overflow-x-auto text-nowrap my-3">
-        <h4 className="text-center font-[600] py-2">Product Weight Summary</h4>
+        <h4 className="global_heading">Product Weight Summary</h4>
 
         <table className="global_table min-w-[600px]">
           <thead className="global_thead">
@@ -271,7 +271,7 @@ const AsmDetails = () => {
 
       {/* MSO Summary */}
       <div className="w-full overflow-x-auto text-nowrap my-3">
-        <h4 className="text-center font-[600] py-2">MSO Summary</h4>
+        <h4 className="global_heading">MSO Summary</h4>
 
         <table className="global_table min-w-[600px]">
           <thead className="global_thead">
@@ -306,4 +306,4 @@ const AsmDetails = () => {
   );
 };
 
-export default AsmDetails;
+export default AsmReport;

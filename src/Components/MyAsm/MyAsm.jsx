@@ -34,10 +34,11 @@ export default function MyAsm() {
       <div>
         {asmData?.length == 0 ? (
           <div>
-            <p className="text-lg text-red-600">No asm found</p>
+            <p className="global_no-data">No asm found</p>
           </div>
         ) : (
           <div>
+            <h1 className="global_heading">My asm</h1>
             <div className="overflow-auto">
               <table className="global_table w-full">
                 <thead>
@@ -71,6 +72,13 @@ export default function MyAsm() {
                           className="global_button_red mx-4"
                         >
                        Mso List
+                        </Link>
+
+                        <Link
+                          to='/my/dealer'
+                          className="global_button"
+                        >
+                       My Dealer
                         </Link>
                       </td>
                     </tr>

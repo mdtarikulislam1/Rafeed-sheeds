@@ -1,18 +1,20 @@
+
 import React, { Fragment, lazy, Suspense } from "react";
 import MasterLayout from "../../Components/MasterLayout/MasterLayout";
 import LazyLoader from "../../Components/MasterLayout/LazyLoader";
-const MyAsm = lazy(() => import("../../Components/MyAsm/MyAsm"));
 
-const MyAsmPage = () => {
+
+const MsoList = lazy(() => import("../../Components/MyAsm/MsoList"));
+const MsoListPage = () => {
   return (
     <Fragment>
       <MasterLayout>
         <Suspense fallback={<LazyLoader />}>
-          <MyAsm />
+      <MsoList/>
         </Suspense>
       </MasterLayout>
     </Fragment>
   );
 };
 
-export default MyAsmPage;
+export default MsoListPage;

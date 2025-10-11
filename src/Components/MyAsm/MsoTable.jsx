@@ -35,7 +35,7 @@ export default function MsoTable() {
         </p>
       ) : (
         <div className="overflow-auto">
-          <h4 className="font-bold text-2xl text-center pb-5">Mso List</h4>
+          <h4 className="global_heading">Mso List</h4>
           <table className="global_table w-full">
             <thead className="global_thead">
               <tr className="global_tr">

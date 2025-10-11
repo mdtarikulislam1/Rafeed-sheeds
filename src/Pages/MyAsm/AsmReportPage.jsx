@@ -3,8 +3,8 @@ import MasterLayout from "../../Components/MasterLayout/MasterLayout";
 import LazyLoader from "../../Components/MasterLayout/LazyLoader";
 // import AsmDetails from "../../Components/MyAsm/AsmDetails";
 
-const AsmDetails = lazy(() => import("../../Components/MyAsm/AsmDetails"));
-const AsmDetailsPage = () => {
+const AsmDetails = lazy(() => import("../../Components/MyAsm/AsmReport"));
+const AsmReportPage = () => {
   return (
     <Fragment>
       <MasterLayout>
@@ -16,4 +16,4 @@ const AsmDetailsPage = () => {
   );
 };
 
-export default AsmDetailsPage;
+export default AsmReportPage;
