@@ -65,10 +65,10 @@ body {
     hover:shadow-md transition-shadow;
   }
   .global_no-data{
-    @apply text-lg text-red-600 text-center
+    @apply text-xl font-bold text-red-600 text-center
   }
   .global_heading{
-   @apply text-xl text-center font-semibold py-3
+    @apply text-xl text-center font-semibold py-3
   }
 }
 

@@ -102,6 +102,21 @@ const SaleDetails = () => {
                     })()
                   : ""}
               </p>
+              <p>
+                Payment Date:
+                {details?.SaleSummary?.PaymentDate ? (
+                  (() => {
+                    const d = new Date(details.SaleSummary.PaymentDate);
+                    const day = String(d.getDate()).padStart(2, "0");
+                    const month = String(d.getMonth() + 1).padStart(2, "0");
+                    const year = d.getFullYear();
+                    return ` ${day}-${month}-${year}`; // DD-MM-YYYY
+                  })()
+                ) : (
+                  <span className="text-green-800"> Cash</span>
+                )}
+              </p>
+
               <p>{businessDetails.mobile}</p>
               <p>{businessDetails.email}</p>
               <p>{businessDetails.website}</p>

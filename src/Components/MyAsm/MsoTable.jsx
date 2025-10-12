@@ -30,7 +30,7 @@ export default function MsoTable() {
   return (
     <div className="global_container">
       {data.length == 0 ? (
-        <p className="text-red-600 text-xl font-bold text-center">
+        <p className="global_heading">
           Mso not Found
         </p>
       ) : (

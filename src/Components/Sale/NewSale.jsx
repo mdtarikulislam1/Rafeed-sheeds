@@ -246,7 +246,7 @@ const NewSale = () => {
         CurrentBalance: grandTotal - paidAmount,
         referenceNo: "",
         note: form.note,
-        ...(isCash ? {} : { paymentDate: paymentDate }),
+        ...(isCash ? {} : { PaymentDate: paymentDate }),
         ...(isCash ? { remark: "Cash" } : {}),
       },
       SaleProduct: selectedProducts.map((p) => ({

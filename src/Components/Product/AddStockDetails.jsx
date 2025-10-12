@@ -93,6 +93,7 @@ const AddStockDetails = () => {
                   })()
                 : ""}
             </p>
+           
             <p>Added By : {details?.userName}</p>
             <p>{businessDetails.mobile}</p>
             <p>{businessDetails.email}</p>

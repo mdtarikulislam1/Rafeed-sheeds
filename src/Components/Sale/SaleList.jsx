@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
-import { ErrorToast } from "../../Helper/FormHelper";
 import { printElement } from "../../Helper/Printer";
 import { Link } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import { MdDelete } from "react-icons/md";
+import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import Swal from "sweetalert2";
 
 const SaleList = () => {
   const [sales, setSales] = useState([]);
@@ -35,6 +37,52 @@ const SaleList = () => {
     } catch (err) {
       console.error(err);
       ErrorToast("Something went wrong while fetching sales");
+    } finally {
+      setGlobalLoader(false);
+    }
+  };
+  const handleDelete = async (id, referenceNo) => {
+    // 1️⃣ SweetAlert confirmation with input
+    const { value: userInput } = await Swal.fire({
+      title: "Confirm Delete",
+      html: `<span class="font-semibold text-lg text-gray-800">Type the Reference No <span class="text-green-700">"${referenceNo}"</span> to confirm deletion:</span>`,
+      input: "text",
+      inputPlaceholder: "Enter Reference No",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      inputValidator: (value) => {
+        if (!value) {
+          return "You need to type the reference number!";
+        }
+      },
+    });
+
+    if (!userInput) {
+      return;
+    }
+
+    if (userInput !== referenceNo) {
+      ErrorToast("Reference number did not match. Delete cancelled!");
+      return;
+    }
+    setGlobalLoader(true);
+    try {
+      const res = await axios.get(`${BaseURL}/DeleteSales/${id}`, {
+        headers: { token: getToken() },
+      });
+
+      if (res.data.status === "Success") {
+        SuccessToast(res.data?.message || "Deleted Sussesfully");
+        fetchSales(); // refresh list
+      } else {
+        ErrorToast(res?.data?.message || "Something went wrong");
+      }
+    } catch (error) {
+      console.error(error);
+      ErrorToast("Failed to delete! Please try again.");
     } finally {
       setGlobalLoader(false);
     }
@@ -96,16 +144,18 @@ const SaleList = () => {
           <div className=" overflow-auto">
             <table className="global_table w-full" ref={printRef}>
               <thead className="global_thead">
-                <th className="global_th">No</th>
-                <th className="global_th">Dealer</th>
-                <th className="global_th">User</th>
-                <th className="global_th">Total</th>
-                <th className="global_th">Discount</th>
-                <th className="global_th">Grand Total</th>
-                <th className="global_th">Date</th>
-                <th className="global_th" id="no-print">
-                  Details
-                </th>
+                <tr>
+                  <th className="global_th">No</th>
+                  <th className="global_th">Dealer</th>
+                  <th className="global_th">User</th>
+                  <th className="global_th">Total</th>
+                  <th className="global_th">Discount</th>
+                  <th className="global_th">Grand Total</th>
+                  <th className="global_th">Date</th>
+                  <th className="global_th" id="no-print">
+                    Action
+                  </th>
+                </tr>
               </thead>
               <tbody className="global_tbody">
                 {sales.map((sale) => (
@@ -135,13 +185,22 @@ const SaleList = () => {
                       </span>
                       <TimeAgo date={sale.CreatedDate} />
                     </td>
-                    <td className="global_td" id="no-print">
+                    <td
+                      className="global_td flex items-center gap-2"
+                      id="no-print"
+                    >
                       <Link
                         to={`/SaleDetails/${sale._id}`}
                         className="global_button"
                       >
                         view
                       </Link>
+                      <button
+                        className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                        onClick={() => handleDelete(sale._id, sale.referenceNo)}
+                      >
+                        <MdDelete size={20} />
+                      </button>
                     </td>
                   </tr>
                 ))}

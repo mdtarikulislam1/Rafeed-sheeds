@@ -40,9 +40,9 @@ export default function MyAsm() {
           <div>
             <h1 className="global_heading">My asm</h1>
             <div className="overflow-auto">
-              <table className="global_table w-full">
-                <thead>
-                  <tr>
+              <table className="global_table">
+                <thead className="global_thead">
+                  <tr className="global_tr">
                     <th className="global_th">No</th>
                     <th className="global_th">Name</th>
                     <th className="global_th">Mobile Number</th>

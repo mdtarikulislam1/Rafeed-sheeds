@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { setGlobalLoader } = loadingStore();
@@ -142,6 +143,7 @@ const Dashboard = () => {
   const pieColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
   // ---------- RENDER ----------
+
   return (
     <div className="p-1">
       {/* Date Filter */}
@@ -326,7 +328,7 @@ const Dashboard = () => {
                   <th className="global_th">Discount</th>
                   <th className="global_th">Grand</th>
                   <th className="global_th">Collection</th>
-                  <th className="global_th">Details</th>
+                  <th className="global_th">Action</th>
                 </tr>
               </thead>
               <tbody className="global_tbody">
@@ -341,7 +343,8 @@ const Dashboard = () => {
 
                       <td className="global_td">{rsm.totalDebit}</td>
                       <td className="global_td">
-                        <button className="global_button">details</button>
+                        {console.log(rsm.RSMID)}
+                      <Link to={`/rsm/report/${rsm?.RSMID}`} className="global_button">Report</Link>
                       </td>
                     </tr>
                   ))
