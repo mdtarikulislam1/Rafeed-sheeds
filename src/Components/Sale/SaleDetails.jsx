@@ -16,6 +16,7 @@ const SaleDetails = () => {
   const { setGlobalLoader } = loadingStore();
   const businessDetails = getBusinessDetails();
   const printRef = useRef(null);
+
   // এখানে state রাখবো
   const [copies, setCopies] = useState({
     officer: true,
@@ -56,6 +57,19 @@ const SaleDetails = () => {
   };
 
   if (!details) return <div className="p-4">Loading...</div>;
+
+  let totalWeight = details.Products.reduce(
+    (sum, p) => sum + (p.totalWeight || 0),
+    0
+  );
+
+  let formattedWeight =
+    totalWeight > 0
+      ? totalWeight >= 1000
+        ? totalWeight / 1000 + " KG"
+        : totalWeight + " Gram"
+      : "N/A";
+
 
   return (
     <div className="global_container">
@@ -103,14 +117,13 @@ const SaleDetails = () => {
                   : ""}
               </p>
               <p>
-                Payment Date:
                 {details?.SaleSummary?.PaymentDate ? (
                   (() => {
                     const d = new Date(details.SaleSummary.PaymentDate);
                     const day = String(d.getDate()).padStart(2, "0");
                     const month = String(d.getMonth() + 1).padStart(2, "0");
                     const year = d.getFullYear();
-                    return ` ${day}-${month}-${year}`; // DD-MM-YYYY
+                    return `Payment Date: ${day}-${month}-${year}`; // DD-MM-YYYY
                   })()
                 ) : (
                   <span className="text-green-800"> Cash</span>
@@ -134,9 +147,8 @@ const SaleDetails = () => {
                       Name Of Product
                     </th>
                     <th className="global_print_th w-20/100">Quantity</th>
-                    {details.Products.some((p) => p.weight) ? (
-                      <th className="global_print_th w-20/100">Weight</th>
-                    ) : null}
+                    <th className="global_print_th w-20/100">Weight</th>
+                   
                     <th className="global_print_th text-end w-10/100">Rate</th>
                     <th className="global_print_th text-end w-13/100">
                       Amount
@@ -170,7 +182,7 @@ const SaleDetails = () => {
                             {p.weight >= 1000
                               ? p.weight / 1000 + " KG"
                               : p.weight + " Gram"}
-                            )
+                            ) 
                           </span>
                         )}
                       </td>
@@ -180,7 +192,7 @@ const SaleDetails = () => {
                             ? p.totalWeight / 1000 + " KG"
                             : p.totalWeight + " Gram"}
                         </td>
-                      ) : null}
+                      ) :  <td className="global_td text-center">N/A</td>}
                       <td className="global_td text-end">৳ {p.price}</td>
                       <td className="global_td text-end">৳ {p.total}</td>
                     </tr>
@@ -220,9 +232,13 @@ const SaleDetails = () => {
                           0
                         )}
                       </td>
-
-                      <td className="global_td  bg-green-300 w-20/100"></td>
-                      <td className="global_td  bg-green-300 w-10/100"></td>
+                        
+                      <td className="global_td  text-center bg-green-300 w-20/100">
+                        {formattedWeight}
+                      </td>
+                      <td className="global_td text-center bg-green-300 w-10/100">
+                      
+                      </td>
                       <td className="global_td  bg-green-300 text-end w-13/100">
                         ৳{" "}
                         {details?.Products?.reduce(

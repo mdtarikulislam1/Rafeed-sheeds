@@ -196,7 +196,7 @@ const SaleList = () => {
                         view
                       </Link>
                       <button
-                        className="text-gray-500 hover:text-gray-700 cursor-pointer"
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
                         onClick={() => handleDelete(sale._id, sale.referenceNo)}
                       >
                         <MdDelete size={20} />

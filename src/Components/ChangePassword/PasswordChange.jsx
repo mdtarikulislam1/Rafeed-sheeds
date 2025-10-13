@@ -1,17 +1,20 @@
+import { useState } from "react";
 import axios from "axios";
-// import React from "react";
-// import Swal from "sweetalert2";
+import { BiShow,BiHide } from "react-icons/bi";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { getToken, removeSessions } from "../../Helper/SessionHelper";
 import { BaseURL } from "../../Helper/Config";
 import loadingStore from "../../Zustand/LoadingStore";
 
-
 export default function PasswordChange() {
+  const { setGlobalLoader } = loadingStore();
 
-    const {setGlobalLoader} = loadingStore()
+  // state for show/hide passwords
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+
   const handlePasswordChange = async (e) => {
-   setGlobalLoader(true);
+    setGlobalLoader(true);
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
@@ -26,7 +29,7 @@ export default function PasswordChange() {
         SuccessToast(
           response?.data?.message || "Password changed successfully!"
         );
-          removeSessions()
+        removeSessions();
       } else {
         ErrorToast(response?.data?.message || "Something went wrong!");
       }
@@ -35,7 +38,7 @@ export default function PasswordChange() {
       ErrorToast(error?.response?.data?.message || "Network or server error!");
     } finally {
       e.target.reset();
-  setGlobalLoader(false)
+      setGlobalLoader(false);
     }
   };
 
@@ -46,25 +49,40 @@ export default function PasswordChange() {
       </h4>
       <form onSubmit={handlePasswordChange}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div>
+          {/* Current Password */}
+          <div className="relative">
             <label>Current Password</label>
             <input
-              className="global_input"
+              className="global_input pr-10"
               required
-              type="password"
+              type={showCurrent ? "text" : "password"}
               name="currentPassword"
               placeholder="Enter current password"
             />
+            <span
+              className="absolute right-3 top-8 cursor-pointer text-xl  text-gray-600"
+              onClick={() => setShowCurrent(!showCurrent)}
+            >
+              {showCurrent ? <BiShow /> : <BiHide />}
+            </span>
           </div>
-          <div>
+
+          {/* New Password */}
+          <div className="relative">
             <label>New Password</label>
             <input
-              className="global_input"
+              className="global_input pr-10"
               required
-              type="password"
+              type={showNew ? "text" : "password"}
               name="newPassword"
               placeholder="Enter new password"
             />
+            <span
+              className="absolute right-3 top-8 cursor-pointer text-xl text-gray-600"
+              onClick={() => setShowNew(!showNew)}
+            >
+              {showNew ? <BiShow /> : <BiHide />}
+            </span>
           </div>
         </div>
 
