@@ -1,7 +1,7 @@
 import React, { Fragment, Suspense, lazy } from "react";
-import MasterLayout from "../../Components/MasterLayout/MasterLayout";
-import LazyLoader from "../../Components/MasterLayout/LazyLoader";
-const RsmReport = lazy(() => import("../../Components/Dashboard/RsmReport"));
+import MasterLayout from "../../../Components/MasterLayout/MasterLayout";
+import LazyLoader from "../../../Components/MasterLayout/LazyLoader";
+const RsmReport = lazy(() => import("../../../Components/Dashboard/Action/RsmReport"));
 
 const RsmReportPage = () => {
   return (

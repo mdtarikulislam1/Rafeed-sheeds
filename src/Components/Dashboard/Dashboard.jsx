@@ -342,9 +342,31 @@ const Dashboard = () => {
                       <td className="global_td">{rsm.totalGrand}</td>
 
                       <td className="global_td">{rsm.totalDebit}</td>
-                      <td className="global_td">
-                        {console.log(rsm.RSMID)}
-                      <Link to={`/rsm/report/${rsm?.RSMID}`} className="global_button">Report</Link>
+                      <td className="global_td space-x-2">
+                        <Link
+                          to={`/rsm/report/${rsm?.RSMID}`}
+                          className="global_button"
+                        >
+                          Report
+                        </Link>
+                        <Link
+                          to={`/GetASMbyRSM/${rsm?.RSMID}`}
+                          className="global_button"
+                        >
+                          Asm
+                        </Link>
+                        <Link
+                          to={`/dashBoard/MsoPage${rsm?.RSMID}`}
+                          className="global_button"
+                        >
+                          Mso
+                        </Link>
+                        <Link
+                          to={`/dashBoard/DealerPage${rsm?.RSMID}`}
+                          className="global_button"
+                        >
+                          Dealer
+                        </Link>
                       </td>
                     </tr>
                   ))
@@ -366,15 +388,15 @@ const Dashboard = () => {
           {
             <table className="global_table">
               <thead className="global_thead">
-               <tr>
-                 <th className="global_th">Name</th>
-                <th className="global_th">Category</th>
-                <th className="global_th">Sale</th>
-                <th className="global_th">Discount</th>
-                <th className="global_th">Grand</th>
-                <th className="global_th">Collection</th>
-                <th className="global_th">Details</th>
-               </tr>
+                <tr>
+                  <th className="global_th">Name</th>
+                  <th className="global_th">Category</th>
+                  <th className="global_th">Sale</th>
+                  <th className="global_th">Discount</th>
+                  <th className="global_th">Grand</th>
+                  <th className="global_th">Collection</th>
+                  <th className="global_th">Details</th>
+                </tr>
               </thead>
               <tbody className="global_tbody">
                 {ASMdetails.length > 0 ? (
@@ -409,15 +431,15 @@ const Dashboard = () => {
           {
             <table className="global_table">
               <thead className="global_thead">
-               <tr>
-                 <th className="global_th">Name</th>
-                <th className="global_th">Category</th>
-                <th className="global_th">Sale</th>
-                <th className="global_th">Discount</th>
-                <th className="global_th">Grand</th>
-                <th className="global_th">Collection</th>
-                <th className="global_th">Details</th>
-               </tr>
+                <tr>
+                  <th className="global_th">Name</th>
+                  <th className="global_th">Category</th>
+                  <th className="global_th">Sale</th>
+                  <th className="global_th">Discount</th>
+                  <th className="global_th">Grand</th>
+                  <th className="global_th">Collection</th>
+                  <th className="global_th">Details</th>
+                </tr>
               </thead>
               <tbody className="global_tbody">
                 {MSOdetails.length > 0 ? (
