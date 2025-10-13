@@ -4,7 +4,6 @@ import { getToken } from "./Helper/SessionHelper";
 import Login from "./Components/Login/Login";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
 import BusinessSettingPage from "./Pages/BusinessSetting/BusinessSettingPage";
-// import NewProductPage from "./Pages/Product/NewProductPage";
 import ProductListPage from "./Pages/Product/ProductListPage";
 import CreateCategoryPage from "./Pages/Product/CategoryPage";
 import AllUserPage from "./Pages/Team/AllUserPage";
@@ -59,7 +58,6 @@ function App() {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/BusinessSetting" element={<BusinessSettingPage />} />
-            {/* <Route path="/NewProduct" element={<NewProductPage />} /> */}
             <Route path="/ProductList" element={<ProductListPage />} />
             <Route path="/Category" element={<CreateCategoryPage />} />
             <Route path="/AddStock" element={<AddStockPage />} />

@@ -395,7 +395,7 @@ const Dashboard = () => {
                   <th className="global_th">Discount</th>
                   <th className="global_th">Grand</th>
                   <th className="global_th">Collection</th>
-                  <th className="global_th">Details</th>
+                  <th className="global_th">Action</th>
                 </tr>
               </thead>
               <tbody className="global_tbody">
@@ -410,7 +410,13 @@ const Dashboard = () => {
 
                       <td className="global_td">{asm.totalDebit}</td>
                       <td className="global_td">
-                        <button className="global_button">details</button>
+                        {/* akane ai report ta dynamic hobe */}
+                        <Link
+                          to={`/details/by/asm/${asm?.ASMID}`}
+                          className="global_button"
+                        >
+                          Report
+                        </Link>
                       </td>
                     </tr>
                   ))
