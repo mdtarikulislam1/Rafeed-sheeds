@@ -1,18 +1,18 @@
 import React, { Fragment, Suspense, lazy } from "react";
 import MasterLayout from "../../../Components/MasterLayout/MasterLayout";
 import LazyLoader from "../../../Components/MasterLayout/LazyLoader";
-const Mso = lazy(() => import("../../../Components/Dashboard/Action/Mso"));
+const MsoList = lazy(() => import("../../../Components/Dashboard/Action/MsoList"));
 
-const MsoPage = () => {
+const MsoListPage = () => {
   return (
     <Fragment>
       <MasterLayout>
         <Suspense fallback={<LazyLoader />}>
-         <Mso/>
+      <MsoList/>
         </Suspense>
       </MasterLayout>
     </Fragment>
   );
 };
 
-export default MsoPage;
+export default MsoListPage;
