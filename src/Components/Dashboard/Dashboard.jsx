@@ -362,7 +362,7 @@ const Dashboard = () => {
                           Mso
                         </Link>
                         <Link
-                          to={`/dashBoard/DealerPage${rsm?.RSMID}`}
+                          to={`/MyDealerList/${rsm?.RSMID}`}
                           className="global_button"
                         >
                           Dealer
@@ -455,17 +455,19 @@ const Dashboard = () => {
               </thead>
               <tbody className="global_tbody">
                 {MSOdetails.length > 0 ? (
-                  MSOdetails.map((rsm, index) => (
+                  MSOdetails.map((mso, index) => (
                     <tr key={index} className="global_tr">
-                      <td className="global_td">{rsm.msoName}</td>
-                      <td className="global_td">{rsm.categoryName}</td>
-                      <td className="global_td">{rsm.totalSales}</td>
-                      <td className="global_td">{rsm.totalDiscount}</td>
-                      <td className="global_td">{rsm.totalGrand}</td>
+                      <td className="global_td">{mso.msoName}</td>
+                      <td className="global_td">{mso.categoryName}</td>
+                      <td className="global_td">{mso.totalSales}</td>
+                      <td className="global_td">{mso.totalDiscount}</td>
+                      <td className="global_td">{mso.totalGrand}</td>
 
-                      <td className="global_td">{rsm.totalDebit}</td>
+                      <td className="global_td">{mso.totalDebit}</td>
                       <td className="global_td">
-                        <button className="global_button">details</button>
+                       <Link className="global_button" to={`/MSOReport/${mso?.MSOID}`}>
+                       Report
+                       </Link>
                       </td>
                     </tr>
                   ))

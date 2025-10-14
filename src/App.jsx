@@ -10,7 +10,7 @@ import AllUserPage from "./Pages/Team/AllUserPage";
 import RolePage from "./Pages/Team/RolePage";
 import PermissionPage from "./Pages/Team/PermissionPage";
 import AccountPage from "./Pages/Accounts/AccountPage";
-import DealerPage from "./Pages/Contact/DealerPage";
+// import DealerPage from "./Pages/Contact/DealerPage";
 import SupplierPage from "./Pages/Contact/SupplierPage";
 import NewSalePage from "./Pages/Sale/NewSalePage";
 import SaleListPage from "./Pages/Sale/SaleListPage";
@@ -42,9 +42,12 @@ import ChangePassword from "./Pages/ChangePassword/ChangePassword";
 import MyAsmPage from "./Pages/MyAsm/MyAsmPage";
 import AsmDetailsPage from "./Pages/MyAsm/AsmReportPage";
 import MyDealerPages from "./Pages/MyAsm/MyDealerPage";
-import AsmPage from "./Pages/Dashboard/ActionPage/AsmPage";
-import RsmReportPage from "./Pages/Dashboard/ActionPage/RsmReportPage";
-import MsoListPage from "./Pages/Dashboard/ActionPage/MsoListPage";
+import AsmPage from "./Pages/ActionPage/AsmPage";
+import RsmReportPage from "./Pages/ActionPage/RsmReportPage";
+import MsoListPage from "./Pages/ActionPage/MsoListPage";
+import DealerPage from "./Pages/ActionPage/DealerPage";
+import MsoReportPage from "./Pages/ActionPage/MsoReportPage";
+import MyMsoPage from "./Pages/MyMso/MyMsoPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -106,14 +109,17 @@ function App() {
             <Route path="/changePassword" element={<ChangePassword/>}/>
             <Route path="/MyAsmPage" element={<MyAsmPage/>}/>
             <Route path="/details/by/asm/:id" element={<AsmDetailsPage/>}/>
-     
             <Route path="/my/dealer" element={<MyDealerPages/>}/>
+
+
+            <Route path="/myMso/Page" element={<MyMsoPage/>}/>
 
             {/* Dashboard action */}
             <Route path="/rsm/report/:id" element={<RsmReportPage/>}/>
             <Route path="/GetASMbyRSM/:id" element={<AsmPage/>}/>
             <Route path="/MSOByASM/:id" element={<MsoListPage/>}/>
-            <Route path="/dashBoard/DealerPage:id" element={<DealerPage/>}/>
+            <Route path="/MyDealerList/:id" element={<DealerPage/>}/>
+            <Route path="/MSOReport/:id" element={<MsoReportPage/>}/>
           
 
 

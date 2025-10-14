@@ -14,7 +14,7 @@ export default function MyAsm() {
     const fetchAsmData = async () => {
       setGlobalLoader(true);
       try {
-        const { data } = await axios.get(`${BaseURL}/MyASM`, {
+        const { data } = await axios.get(`${BaseURL}/ASM/0`, {
           headers: { token: getToken() },
         });
         setMyAsmData(data);
@@ -68,17 +68,14 @@ export default function MyAsm() {
                         </Link>
 
                         <Link
-                          to='/mso/list'
+                          to={`/MSOByASM/${items?._id}`}
                           className="global_button_red mx-4"
                         >
-                       Mso List
+                          MSO
                         </Link>
 
-                        <Link
-                          to='/my/dealer'
-                          className="global_button"
-                        >
-                       My Dealer
+                        <Link to="/my/dealer" className="global_button">
+                          My Dealer
                         </Link>
                       </td>
                     </tr>

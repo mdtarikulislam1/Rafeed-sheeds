@@ -79,7 +79,7 @@ const MasterLayout = ({ children }) => {
       ? [
           {
             id: "mymso",
-            title: "My Mso",
+            title: "My MSO",
             icon: <MdOutlinePerson4 />,
             path: "/myMso/Page",
           },
