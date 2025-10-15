@@ -4,22 +4,20 @@ import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
-import loadingStore from "../../Zustand/LoadingStore";
-import { getToken } from "../../Helper/SessionHelper";
 import { BaseURL } from "../../Helper/Config";
+import { getToken } from "../../Helper/SessionHelper";
+import loadingStore from "../../Zustand/LoadingStore";
 
-
-
-const MsoReport = () => {
+const AsmReport = () => {
   const { id } = useParams();
   const { setGlobalLoader } = loadingStore();
-  const [asmSummary, setAsmSummary] = useState([]);
-  const [weight, setWeight] = useState([]);
-  const [msoSummary, setMsoSummary] = useState([]);
-  const [salesByCategory, setSalesByCategory] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+
+  // data state
+  const [salesByCategory, setSalesByCategory] = useState([]);
+  const [productWeightSummary, setProductWeightSummary] = useState([]);
 
   // Helper functions
   const startOfDay = (d) => {
@@ -96,22 +94,17 @@ const MsoReport = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.get(
+      const { data } = await axios.get(
         `${BaseURL}/MSOReport/${id}/${start}/${end}`,
         {
           headers: { token: getToken() },
         }
-      
       );
-      console.log(res)
 
-      if (res?.data?.status === "success") {
-        setAsmSummary(res.data.asmSummary || []);
-        setWeight(res.data.productWeightSummary || []);
-        setMsoSummary(res.data.msoSummary || []);
-        setSalesByCategory(res.data.salesByCategory || []);
+      if (data?.status === "success") {
+        setProductWeightSummary(data?.productWeightSummary);
+        setSalesByCategory(data?.salesByCategory);
       }
-      console.log(res)
     } catch (error) {
       console.error(error);
     } finally {
@@ -133,7 +126,6 @@ const MsoReport = () => {
       fetchData();
     }
   }, [startDate, endDate, dateInitialized]);
-
 
   return (
     <div className="my-5 px-2">
@@ -199,12 +191,123 @@ const MsoReport = () => {
         </div>
       </div>
 
- 
-      
+      {/* table by data */}
 
-   
+      {/* salesByCategory */}
+      <div className="w-full overflow-auto">
+        <h4 className="global_heading">Sales By Category</h4>
+        <table className="global_table">
+          <thead className="global_thead">
+            <tr className="global_tr">
+              <th className="global_th">No</th>
+              <th className="global_th">CategoryName</th>
+              <th className="global_th">totalSale</th>
+              <th className="global_th">totalDiscount</th>
+            </tr>
+          </thead>
+          <tbody className="global_tbody">
+            {salesByCategory && salesByCategory.length > 0 ? (
+              salesByCategory.map((items, index) => (
+                <tr key={index} className="global_tr">
+                  <td className="global_td">{index + 1}</td>
+                  <td className="global_td">{items?.CategoryName || "N/A"}</td>
+                  <td className="global_td">{items?.totalSale || 0}</td>
+                  <td className="global_td">{items?.totalDiscount || 0}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center py-3 text-gray-500">
+                  No Data Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+          {salesByCategory && salesByCategory.length > 0 && (
+            <tfoot className="bg-gray-100 font-semibold">
+              <tr className="global_tr">
+                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center"></td>
+                <td className="global_td">
+                  {salesByCategory.reduce(
+                    (sum, item) => sum + (item.totalSale || 0),
+                    0
+                  )}
+                </td>
+                <td className="global_td">
+                  {salesByCategory.reduce(
+                    (sum, item) => sum + (item.totalDiscount || 0),
+                    0
+                  )}
+                </td>
+              </tr>
+            </tfoot>
+          )}
+        </table>
+      </div>
+
+      {/* productWeightSummary */}
+      <div className="w-full overflow-auto">
+        <h4 className="global_heading">Product Weight Summary</h4>
+        <table className="global_table">
+          <thead className="global_thead">
+            <tr className="global_tr">
+              <th className="global_th">No</th>
+              <th className="global_th">productName</th>
+              <th className="global_th">totalWeight</th>
+              <th className="global_th">totalDiscount</th>
+              <th className="global_th">totalQtySold</th>
+            </tr>
+          </thead>
+          <tbody className="global_tbody">
+            {productWeightSummary && productWeightSummary.length > 0 ? (
+              productWeightSummary.map((items, index) => (
+                <tr key={index} className="global_tr">
+                  <td className="global_td">{index + 1}</td>
+                  <td className="global_td">{items?.productName || "N/A"}</td>
+                  <td className="global_td">{items?.totalAmount || 0}</td>
+                  <td className="global_td">{items?.totalWeight || 0}</td>
+                  <td className="global_td">{items?.totalQtySold || 0}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center py-3 text-gray-500">
+                  No Data Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+          {productWeightSummary && productWeightSummary.length > 0 && (
+            <tfoot className="bg-gray-100 font-semibold">
+              <tr className="global_tr">
+                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center"></td>
+                <td className="global_td">
+                  {productWeightSummary.reduce(
+                    (sum, item) => sum + (item.totalAmount || 0),
+                    0
+                  )}
+                </td>
+                <td className="global_td">
+                  {productWeightSummary.reduce(
+                    (sum, item) => sum + (item.totalWeight || 0),
+                    0
+                  )}
+                </td>
+                <td className="global_td">
+                  {productWeightSummary.reduce(
+                    (sum, item) => sum + (item.totalQtySold || 0),
+                    0
+                  )}
+                </td>
+              </tr>
+            </tfoot>
+          )}
+        </table>
+      </div>
     </div>
   );
 };
 
-export default MsoReport;
+export default AsmReport;

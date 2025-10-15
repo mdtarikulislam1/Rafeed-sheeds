@@ -51,7 +51,8 @@ export default function MsoList() {
                   <td className="global_td">{items?.mobile}</td>
                   <td className="global_td">{items?.role}</td>
                   <td className="global_td space-x-2">
-                    <Link className="global_button" to={''}>Report</Link>
+                    <Link className="global_button" to={`/MSOReport/${items?._id}`}>Report</Link>
+                    <Link className="global_button" to={`/DealerList/${items?._id}`}>Dealer</Link>
                   </td>
                 </tr>
               ))}

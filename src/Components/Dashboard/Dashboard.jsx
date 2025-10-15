@@ -350,19 +350,19 @@ const Dashboard = () => {
                           Report
                         </Link>
                         <Link
-                          to={`/GetASMbyRSM/${rsm?.RSMID}`}
+                          to={`/ASM/${rsm?.RSMID}`}
                           className="global_button"
                         >
                           Asm
                         </Link>
                         <Link
-                          to={`/dashBoard/MsoPage${rsm?.RSMID}`}
+                          to={`/MSO/${rsm?.RSMID}`}
                           className="global_button"
                         >
                           Mso
                         </Link>
                         <Link
-                          to={`/MyDealerList/${rsm?.RSMID}`}
+                          to={`/DealerList/${rsm?.RSMID}`}
                           className="global_button"
                         >
                           Dealer
@@ -412,16 +412,22 @@ const Dashboard = () => {
                       <td className="global_td space-x-2">
                         {/* akane ai report ta dynamic hobe */}
                         <Link
-                          to={`/details/by/asm/${asm?.ASMID}`}
+                          to={`/ASMReport/${asm?.ASMID}`}
                           className="global_button"
                         >
                           Report
                         </Link>
                         <Link
-                          to={`/MSOByASM/${asm?.ASMID}`}
+                          to={`/MSO/${asm?.ASMID}`}
                           className="global_button"
                         >
                           Mso
+                        </Link>
+                          <Link
+                          to={`/DealerList/${asm?.ASMID}`}
+                          className="global_button"
+                        >
+                          Dealer
                         </Link>
                       </td>
                     </tr>
@@ -464,10 +470,16 @@ const Dashboard = () => {
                       <td className="global_td">{mso.totalGrand}</td>
 
                       <td className="global_td">{mso.totalDebit}</td>
-                      <td className="global_td">
+                      <td className="global_td space-x-2">
                        <Link className="global_button" to={`/MSOReport/${mso?.MSOID}`}>
                        Report
                        </Link>
+                         <Link
+                          to={`/DealerList/${mso?.MSOID}`}
+                          className="global_button"
+                        >
+                          Dealer
+                        </Link>
                       </td>
                     </tr>
                   ))

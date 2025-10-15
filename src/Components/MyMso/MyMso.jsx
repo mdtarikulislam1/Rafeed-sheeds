@@ -3,6 +3,7 @@ import loadingStore from "../../Zustand/LoadingStore";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
+import { Link } from "react-router-dom";
 
 export default function MyMso() {
   const { setGlobalLoader } = loadingStore();
@@ -28,7 +29,6 @@ export default function MyMso() {
     fetchData();
   }, []);
 
-
   return (
     <div>
       <table className="global_table">
@@ -38,6 +38,7 @@ export default function MyMso() {
             <th className="global_th">name</th>
             <th className="global_th">mobile</th>
             <th className="global_th">role</th>
+            <th className="global_th">action</th>
           </tr>
         </thead>
         <tbody className="global_tbody">
@@ -48,6 +49,20 @@ export default function MyMso() {
                 <td className="global_td">{items?.name || "N/A"}</td>
                 <td className="global_td">{items?.mobile || 0}</td>
                 <td className="global_td">{items?.role || 0}</td>
+                <td className="global_td space-x-2">
+                  <Link
+                    to={`/MSOReport/${items?._id}`}
+                    className="global_button"
+                  >
+                    Report
+                  </Link>
+                  <Link
+                    to={`/DealerList/${items?._id}`}
+                    className="global_button_red"
+                  >
+                    My Dealer
+                  </Link>
+                </td>
               </tr>
             ))
           ) : (

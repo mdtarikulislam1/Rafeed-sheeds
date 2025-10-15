@@ -11,7 +11,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { Link } from "react-router-dom";
 
 const RsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
