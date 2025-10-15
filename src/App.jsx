@@ -10,7 +10,7 @@ import AllUserPage from "./Pages/Team/AllUserPage";
 import RolePage from "./Pages/Team/RolePage";
 import PermissionPage from "./Pages/Team/PermissionPage";
 import AccountPage from "./Pages/Accounts/AccountPage";
-// import DealerPage from "./Pages/Contact/DealerPage";
+import DealerPage from "./Pages/Contact/DealerPage";
 import SupplierPage from "./Pages/Contact/SupplierPage";
 import NewSalePage from "./Pages/Sale/NewSalePage";
 import SaleListPage from "./Pages/Sale/SaleListPage";
@@ -45,9 +45,9 @@ import MyDealerPages from "./Pages/MyAsm/MyDealerPage";
 import AsmPage from "./Pages/ActionPage/AsmPage";
 import RsmReportPage from "./Pages/ActionPage/RsmReportPage";
 import MsoListPage from "./Pages/ActionPage/MsoListPage";
-import DealerPage from "./Pages/ActionPage/DealerPage";
 import MsoReportPage from "./Pages/ActionPage/MsoReportPage";
 import MyMsoPage from "./Pages/MyMso/MyMsoPage";
+import AsmReportPage from "./Pages/MyAsm/AsmReportPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -113,12 +113,13 @@ function App() {
 
 
             <Route path="/myMso/Page" element={<MyMsoPage/>}/>
+            <Route path="/ASMReport/:id" element={<AsmReportPage/>}/>
+
 
             {/* Dashboard action */}
             <Route path="/rsm/report/:id" element={<RsmReportPage/>}/>
             <Route path="/GetASMbyRSM/:id" element={<AsmPage/>}/>
-            <Route path="/MSOByASM/:id" element={<MsoListPage/>}/>
-            <Route path="/MyDealerList/:id" element={<DealerPage/>}/>
+            <Route path="/MSO/:id" element={<MsoListPage/>}/>
             <Route path="/MSOReport/:id" element={<MsoReportPage/>}/>
           
 

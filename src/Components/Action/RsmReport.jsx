@@ -130,7 +130,6 @@ const RsmReport = () => {
     }
   }, [startDate, endDate, dateInitialized]);
 
-  console.log(msoSummary);
 
   return (
     <div className="my-5 px-2">

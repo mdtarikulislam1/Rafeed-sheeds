@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
@@ -40,15 +40,19 @@ export default function MsoList() {
                 <th className="global_th">name</th>
                 <th className="global_th">mobile</th>
                 <th className="global_th">role</th>
+                <th className="global_th">Action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
               {data?.data?.map((items, index) => (
                 <tr key={index} className="global_tr">
-                  <td className="global_td">{index+1}</td>
+                  <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.name}</td>
                   <td className="global_td">{items?.mobile}</td>
                   <td className="global_td">{items?.role}</td>
+                  <td className="global_td space-x-2">
+                    <Link className="global_button" to={''}>Report</Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

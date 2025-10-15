@@ -61,20 +61,20 @@ export default function MyAsm() {
                       </td>
                       <td className="global_td flex">
                         <Link
-                          to={`/details/by/asm/${items?._id}`}
+                          to={`/ASMReport/${items?._id}`}
                           className="global_button"
                         >
                           Report
                         </Link>
 
                         <Link
-                          to={`/MSOByASM/${items?._id}`}
+                          to={`/MSO/${items?._id}`}
                           className="global_button_red mx-4"
                         >
                           MSO
                         </Link>
 
-                        <Link to="/my/dealer" className="global_button">
+                        <Link to={`/DealerList/${items?._id}`} className="global_button">
                           My Dealer
                         </Link>
                       </td>

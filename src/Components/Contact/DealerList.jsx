@@ -85,10 +85,12 @@ const DealerList = () => {
       <div className="overflow-x-auto rounded-2xl">
         <table className="w-full divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
-            <th className="global_th">Name</th>
-            <th className="global_th">Mobile</th>
-            <th className="global_th">Address</th>
-            <th className="global_th">Total Balance</th>
+            <tr>
+              <th className="global_th">Name</th>
+              <th className="global_th">Mobile</th>
+              <th className="global_th">Address</th>
+              <th className="global_th">Total Balance</th>
+            </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {dealers.length > 0 ? (
