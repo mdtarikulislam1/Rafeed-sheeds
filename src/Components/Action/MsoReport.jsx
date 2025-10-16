@@ -200,9 +200,10 @@ const AsmReport = () => {
           <thead className="global_thead">
             <tr className="global_tr">
               <th className="global_th">No</th>
-              <th className="global_th">CategoryName</th>
-              <th className="global_th">totalSale</th>
-              <th className="global_th">totalDiscount</th>
+              <th className="global_th">Category Name</th>
+              <th className="global_th">total Sale</th>
+              <th className="global_th">total Discount</th>
+              <th className="global_th">total Grand</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
@@ -213,6 +214,7 @@ const AsmReport = () => {
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
                   <td className="global_td">{items?.totalSale || 0}</td>
                   <td className="global_td">{items?.totalDiscount || 0}</td>
+                  <td className="global_td">{items?.totalGrand || 0}</td>
                 </tr>
               ))
             ) : (
@@ -240,6 +242,12 @@ const AsmReport = () => {
                     0
                   )}
                 </td>
+                <td className="global_td">
+                  {salesByCategory.reduce(
+                    (sum, item) => sum + (item.totalGrand || 0),
+                    0
+                  )}
+                </td>
               </tr>
             </tfoot>
           )}
@@ -253,10 +261,10 @@ const AsmReport = () => {
           <thead className="global_thead">
             <tr className="global_tr">
               <th className="global_th">No</th>
-              <th className="global_th">productName</th>
-              <th className="global_th">totalWeight</th>
-              <th className="global_th">totalDiscount</th>
-              <th className="global_th">totalQtySold</th>
+              <th className="global_th">product Name</th>
+              <th className="global_th">total amount</th>
+              <th className="global_th">total Weight</th>
+              <th className="global_th">total Qty Sold</th>
             </tr>
           </thead>
           <tbody className="global_tbody">

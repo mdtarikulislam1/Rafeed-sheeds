@@ -96,18 +96,20 @@ const SellList = () => {
           <div className=" overflow-auto">
             <table className="global_table w-full" ref={printRef}>
               <thead className="global_thead">
-                <th className="global_th">No</th>
-                <th className="global_th">Dealer</th>
-                <th className="global_th">Address</th>
+                <tr>
+                  <th className="global_th">No</th>
+                  <th className="global_th">Dealer</th>
+                  <th className="global_th">Address</th>
 
-                <th className="global_th">Total</th>
-                <th className="global_th">Discount</th>
-                <th className="global_th">Grand Total</th>
+                  <th className="global_th">Total</th>
+                  <th className="global_th">Discount</th>
+                  <th className="global_th">Grand Total</th>
 
-                <th className="global_th">Date</th>
-                <th className="global_th" id="no-print">
-                  Details
-                </th>
+                  <th className="global_th">Date</th>
+                  <th className="global_th" id="no-print">
+                    Details
+                  </th>
+                </tr>
               </thead>
               <tbody className="global_tbody">
                 {sales.map((sale, idx) => (

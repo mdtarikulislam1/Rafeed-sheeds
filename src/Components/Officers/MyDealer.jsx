@@ -105,6 +105,7 @@ const MyDealer = () => {
           <table className="global_table">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr className="global_tr">
+                <th className="global_th">No</th>
                 <th className="global_th">Name</th>
                 <th className="global_th">Mobile</th>
                 <th className="global_th">Address</th>
@@ -116,8 +117,9 @@ const MyDealer = () => {
             </thead>
             <tbody className="global_tbody">
               {Mydealers.length > 0 ? (
-                Mydealers.map((c) => (
+                Mydealers.map((c,index) => (
                   <tr key={c._id} className="global_tr">
+                    <td className="global_td">{index+1}</td>
                     <td className="global_td">{c.name}</td>
                     <td className="global_td">{c.mobile}</td>
                     <td className="global_td max-w-[150px] truncate">
@@ -154,7 +156,7 @@ const MyDealer = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan="8"
                     className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
                     No MyDealers found

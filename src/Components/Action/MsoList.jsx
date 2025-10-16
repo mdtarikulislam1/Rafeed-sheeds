@@ -29,9 +29,7 @@ export default function MsoList() {
   return (
     <div>
       <h4 className="global_heading">Mso List</h4>
-      {data?.length === 0 ? (
-        <p className="global_no-data">No Data found</p>
-      ) : (
+     
         <div>
           <table className="global_table">
             <thead className="global_thead">
@@ -44,22 +42,39 @@ export default function MsoList() {
               </tr>
             </thead>
             <tbody className="global_tbody">
-              {data?.data?.map((items, index) => (
-                <tr key={index} className="global_tr">
-                  <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{items?.name}</td>
-                  <td className="global_td">{items?.mobile}</td>
-                  <td className="global_td">{items?.role}</td>
-                  <td className="global_td space-x-2">
-                    <Link className="global_button" to={`/MSOReport/${items?._id}`}>Report</Link>
-                    <Link className="global_button" to={`/DealerList/${items?._id}`}>Dealer</Link>
+              {data?.data && data?.data.length > 0 ? (
+                data?.data.map((items, index) => (
+                  <tr key={index} className="global_tr">
+                    <td className="global_td">{index + 1}</td>
+                    <td className="global_td">{items?.name || "N/A"}</td>
+                    <td className="global_td">{items?.mobile || 0}</td>
+                    <td className="global_td">{items?.role || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link
+                        to={`/ASMReport/${items?._id}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        to={`/DealerList/${items?._id}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center py-3 text-gray-500">
+                    No Data Found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-      )}
     </div>
   );
 }

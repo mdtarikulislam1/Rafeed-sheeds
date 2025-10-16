@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { Link } from "react-router-dom";
 
 const AsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -51,7 +52,6 @@ const AsmDashBoardPage = () => {
           headers: { token: getToken() },
         }
       );
-      console.log(data)
       setSalesByCategory(data?.salesByCategory);
       setProductWeightSummary(data?.productWeightSummary);
       setAsmSummary(data?.asmSummary);
@@ -311,12 +311,14 @@ const AsmDashBoardPage = () => {
             <thead className="global_thead">
               <tr className="global_tr">
                 <th className="global_th">No</th>
-                <th className="global_th">MSOName</th>
-                <th className="global_th">MSOMobile</th>
-                <th className="global_th">totalSale</th>
-                <th className="global_th">totalDiscount</th>
-                <th className="global_th">totalDebit</th>
-                <th className="global_th">totalCredit</th>
+                <th className="global_th">MSO Name</th>
+                <th className="global_th">MSO Mobile</th>
+                <th className="global_th">total Sale</th>
+                <th className="global_th">total Discount</th>
+                <th className="global_th">total Debit</th>
+                <th className="global_th">total Credit</th>
+                <th className="global_th">total Grand</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
 
@@ -331,11 +333,16 @@ const AsmDashBoardPage = () => {
                     <td className="global_td">{items?.totalDiscount || 0}</td>
                     <td className="global_td">{items?.totalDebit || 0}</td>
                     <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td">{items?.totalGrand || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link className="global_button" to={`/MSOReport/${items?.MSOID}`}>Report</Link>
+                      <Link className="global_button_red" to={`/DealerList/${items?.MSOID}`}>Dealer</Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-3 text-gray-500">
+                  <td colSpan="8" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -379,6 +386,15 @@ const AsmDashBoardPage = () => {
                       0
                     )}
                   </td>
+                  <td className="global_td">
+                    {msoSummary.reduce(
+                      (sum, item) => sum + (item.totalGrand || 0),
+                      0
+                    )}
+                  </td>
+                   <td className="global_td text-center">
+                   
+                  </td>
                 </tr>
               </tfoot>
             )}
@@ -392,13 +408,12 @@ const AsmDashBoardPage = () => {
             <thead className="global_thead">
               <tr className="global_tr">
                 <th className="global_th">No</th>
-                <th className="global_th">productName</th>
-                <th className="global_th">totalWeight</th>
-                <th className="global_th">totalQtySold</th>
-                <th className="global_th">totalAmount</th>
+                <th className="global_th">product Name</th>
+                <th className="global_th">total Weight</th>
+                <th className="global_th">total Qty Sold</th>
+                <th className="global_th">total Amount</th>
               </tr>
             </thead>
-
             <tbody className="global_tbody">
               {productWeightSummary && productWeightSummary.length > 0 ? (
                 productWeightSummary.map((items, index) => (

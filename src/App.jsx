@@ -10,7 +10,6 @@ import AllUserPage from "./Pages/Team/AllUserPage";
 import RolePage from "./Pages/Team/RolePage";
 import PermissionPage from "./Pages/Team/PermissionPage";
 import AccountPage from "./Pages/Accounts/AccountPage";
-// import DealerPage from "./Pages/Contact/DealerPage";
 import SupplierPage from "./Pages/Contact/SupplierPage";
 import NewSalePage from "./Pages/Sale/NewSalePage";
 import SaleListPage from "./Pages/Sale/SaleListPage";
@@ -40,15 +39,14 @@ import AddStockDetailsPage from "./Pages/Product/AddStockDetailsPage";
 import AddStockListPage from "./Pages/Product/AddStockListPage";
 import ChangePassword from "./Pages/ChangePassword/ChangePassword";
 import MyAsmPage from "./Pages/MyAsm/MyAsmPage";
-// import AsmDetailsPage from "./Pages/MyAsm/AsmReportPage";
 import MyDealerPages from "./Pages/MyAsm/MyDealerPage";
 import AsmPage from "./Pages/ActionPage/AsmPage";
 import RsmReportPage from "./Pages/ActionPage/RsmReportPage";
 import MsoListPage from "./Pages/ActionPage/MsoListPage";
-import DealerPage from "./Pages/ActionPage/DealerPage";
 import MsoReportPage from "./Pages/ActionPage/MsoReportPage";
 import MyMsoPage from "./Pages/MyMso/MyMsoPage";
 import AsmReportPage from "./Pages/MyAsm/AsmReportPage"
+import DealerPage from "./Pages/ActionPage/DealerPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -72,7 +70,6 @@ function App() {
             <Route path="/Role" element={<RolePage />} />
             <Route path="/Permission/:id" element={<PermissionPage />} />
             <Route path="/BankAccount" element={<AccountPage />} />
-            <Route path="/Dealer" element={<DealerPage />} />
             <Route path="/Supplier" element={<SupplierPage />} />
             <Route
               path="/ViewDealerLaser/:id"
@@ -110,16 +107,19 @@ function App() {
             <Route path="/changePassword" element={<ChangePassword/>}/>
             <Route path="/MyAsmPage" element={<MyAsmPage/>}/>
             <Route path="/ASMReport/:id" element={<AsmReportPage/>}/>
-            <Route path="/my/dealer" element={<MyDealerPages/>}/>
 
 
             <Route path="/myMso/Page" element={<MyMsoPage/>}/>
 
+            {/* dealer */}
+            <Route path="/my/dealer" element={<MyDealerPages/>}/>
+            <Route path="/Dealer" element={<DealerPage />} />
+
+
             {/* Dashboard action */}
-            <Route path="/rsm/report/:id" element={<RsmReportPage/>}/>
+            <Route path="/RSMReport/:id" element={<RsmReportPage/>}/>
             <Route path="/ASM/:id" element={<AsmPage/>}/>
             <Route path="/MSO/:id" element={<MsoListPage/>}/>
-            <Route path="/MyDealerList/:id" element={<DealerPage/>}/>
             <Route path="/MSOReport/:id" element={<MsoReportPage/>}/>
           
 

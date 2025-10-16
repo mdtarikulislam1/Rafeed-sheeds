@@ -60,7 +60,7 @@ export default function MyMso() {
                     to={`/DealerList/${items?._id}`}
                     className="global_button_red"
                   >
-                    My Dealer
+                    Dealer
                   </Link>
                 </td>
               </tr>

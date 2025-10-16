@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { Link } from "react-router-dom";
 
 const RsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -316,6 +317,7 @@ const RsmDashBoardPage = () => {
                 <th className="global_th">totalDiscount</th>
                 <th className="global_th">totalDebit</th>
                 <th className="global_th">totalCredit</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
 
@@ -330,11 +332,25 @@ const RsmDashBoardPage = () => {
                     <td className="global_td">{items?.totalDiscount || 0}</td>
                     <td className="global_td">{items?.totalDebit || 0}</td>
                     <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link
+                        to={`/MSOReport/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        to={`/MSOReport/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-3 text-gray-500">
+                  <td colSpan="8" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -348,12 +364,8 @@ const RsmDashBoardPage = () => {
                   <td className="global_td text-center text-green-700">
                     Total
                   </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
                   <td className="global_td">
                     {msoSummary.reduce(
                       (sum, item) => sum + (item.totalSale || 0),
@@ -378,6 +390,7 @@ const RsmDashBoardPage = () => {
                       0
                     )}
                   </td>
+                  <td className="global_td text-center"></td>
                 </tr>
               </tfoot>
             )}
@@ -397,6 +410,7 @@ const RsmDashBoardPage = () => {
                 <th className="global_th">totalDiscount</th>
                 <th className="global_th">totalDebit</th>
                 <th className="global_th">totalCredit</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
 
@@ -411,11 +425,33 @@ const RsmDashBoardPage = () => {
                     <td className="global_td">{items?.totalDiscount || 0}</td>
                     <td className="global_td">{items?.totalDebit || 0}</td>
                     <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td">
+                      <Link
+                        to={`/ASMReport/${items?.ASMID}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+
+                      <Link
+                        to={`/MSO/${items?.ASMID}`}
+                        className="global_button_red mx-4"
+                      >
+                        MSO
+                      </Link>
+
+                      <Link
+                        to={`/DealerList/${items?.ASMID}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-3 text-gray-500">
+                  <td colSpan="8" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -429,12 +465,8 @@ const RsmDashBoardPage = () => {
                   <td className="global_td text-center text-green-700">
                     Total
                   </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
                   <td className="global_td">
                     {asmSummary.reduce(
                       (sum, item) => sum + (item.totalSale || 0),
@@ -459,6 +491,7 @@ const RsmDashBoardPage = () => {
                       0
                     )}
                   </td>
+                  <td className="global_td text-center"></td>
                 </tr>
               </tfoot>
             )}
@@ -491,7 +524,7 @@ const RsmDashBoardPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-3 text-gray-500">
+                  <td colSpan="8" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -505,9 +538,7 @@ const RsmDashBoardPage = () => {
                   <td className="global_td text-center text-green-700">
                     Total
                   </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center"></td>
                   <td className="global_td">
                     {productWeightSummary.reduce(
                       (sum, item) => sum + (item.totalWeight || 0),
@@ -526,7 +557,6 @@ const RsmDashBoardPage = () => {
                       0
                     )}
                   </td>
-                 
                 </tr>
               </tfoot>
             )}

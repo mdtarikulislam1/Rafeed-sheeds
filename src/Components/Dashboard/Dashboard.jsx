@@ -322,12 +322,13 @@ const Dashboard = () => {
             <table className="global_table">
               <thead className="global_thead">
                 <tr>
+                  <th className="global_th">no</th>
                   <th className="global_th">Name</th>
                   <th className="global_th">Category</th>
                   <th className="global_th">Sale</th>
                   <th className="global_th">Discount</th>
+                  <th className="global_th">debit</th>
                   <th className="global_th">Grand</th>
-                  <th className="global_th">Collection</th>
                   <th className="global_th">Action</th>
                 </tr>
               </thead>
@@ -335,16 +336,17 @@ const Dashboard = () => {
                 {RSMdetails.length > 0 ? (
                   RSMdetails.map((rsm, index) => (
                     <tr key={index} className="global_tr">
+                      <td className="global_td">{index+1}</td>
                       <td className="global_td">{rsm.rsmName}</td>
                       <td className="global_td">{rsm.categoryName}</td>
                       <td className="global_td">{rsm.totalSales}</td>
                       <td className="global_td">{rsm.totalDiscount}</td>
+                      <td className="global_td">{rsm.totalDebit}</td>
                       <td className="global_td">{rsm.totalGrand}</td>
 
-                      <td className="global_td">{rsm.totalDebit}</td>
                       <td className="global_td space-x-2">
                         <Link
-                          to={`/rsm/report/${rsm?.RSMID}`}
+                          to={`/RSMReport/${rsm?.RSMID}`}
                           className="global_button"
                         >
                           Report
@@ -372,12 +374,47 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <tr>
-                    <td className="global_td text-center " colSpan={4}>
+                    <td colSpan="8" className="text-center py-3 text-gray-500">
                       No Data
                     </td>
                   </tr>
                 )}
               </tbody>
+              {RSMdetails && RSMdetails.length > 0 && (
+                <tfoot className="bg-gray-100 font-semibold">
+                  <tr className="global_tr">
+                    <td className="global_td text-center text-green-700">
+                      Total
+                    </td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td">
+                      {RSMdetails.reduce(
+                        (sum, item) => sum + (item.totalSales || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {RSMdetails.reduce(
+                        (sum, item) => sum + (item.totalDiscount || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {RSMdetails.reduce(
+                        (sum, item) => sum + (item.totalDebit || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {RSMdetails.reduce(
+                        (sum, item) => sum + (item.totalGrand || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           }
         </div>
@@ -389,12 +426,13 @@ const Dashboard = () => {
             <table className="global_table">
               <thead className="global_thead">
                 <tr>
+                  <th className="global_th">no</th>
                   <th className="global_th">Name</th>
                   <th className="global_th">Category</th>
                   <th className="global_th">Sale</th>
                   <th className="global_th">Discount</th>
+                  <th className="global_th">debit</th>
                   <th className="global_th">Grand</th>
-                  <th className="global_th">Collection</th>
                   <th className="global_th">Action</th>
                 </tr>
               </thead>
@@ -402,14 +440,15 @@ const Dashboard = () => {
                 {ASMdetails.length > 0 ? (
                   ASMdetails.map((asm, index) => (
                     <tr key={index} className="global_tr">
+                      <td className="global_td">{index + 1}</td>
                       <td className="global_td">{asm.asmName}</td>
                       <td className="global_td">{asm.categoryName}</td>
                       <td className="global_td">{asm.totalSales}</td>
                       <td className="global_td">{asm.totalDiscount}</td>
-                      <td className="global_td">{asm.totalGrand}</td>
-
                       <td className="global_td">{asm.totalDebit}</td>
+                      <td className="global_td">{asm.totalGrand}</td>
                       <td className="global_td space-x-2">
+                        {console.log(ASMdetails)}
                         {/* akane ai report ta dynamic hobe */}
                         <Link
                           to={`/ASMReport/${asm?.ASMID}`}
@@ -423,7 +462,7 @@ const Dashboard = () => {
                         >
                           Mso
                         </Link>
-                          <Link
+                        <Link
                           to={`/DealerList/${asm?.ASMID}`}
                           className="global_button"
                         >
@@ -434,15 +473,52 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <tr>
-                    <td className="global_td text-center " colSpan={4}>
+                    <td colSpan="8" className="text-center py-3 text-gray-500">
                       No Data
                     </td>
                   </tr>
                 )}
               </tbody>
+              {/* ✅ Table Footer Totals */}
+              {ASMdetails && ASMdetails.length > 0 && (
+                <tfoot className="bg-gray-100 font-semibold">
+                  <tr className="global_tr">
+                    <td className="global_td text-center text-green-700">
+                      Total
+                    </td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td">
+                      {ASMdetails.reduce(
+                        (sum, item) => sum + (item.totalSales || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {ASMdetails.reduce(
+                        (sum, item) => sum + (item.totalDiscount || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {ASMdetails.reduce(
+                        (sum, item) => sum + (item.totalDebit || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {ASMdetails.reduce(
+                        (sum, item) => sum + (item.totalGrand || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           }
         </div>
+
         {/* MSO */}
         <div className="global_sub_container overflow-auto">
           <h1 className="text-center font-[600] ">MSO</h1>{" "}
@@ -450,31 +526,35 @@ const Dashboard = () => {
             <table className="global_table">
               <thead className="global_thead">
                 <tr>
+                  <th className="global_th">No</th>
                   <th className="global_th">Name</th>
                   <th className="global_th">Category</th>
                   <th className="global_th">Sale</th>
                   <th className="global_th">Discount</th>
+                  <th className="global_th">total Debit</th>
                   <th className="global_th">Grand</th>
-                  <th className="global_th">Collection</th>
-                  <th className="global_th">Details</th>
+                  <th className="global_th">action</th>
                 </tr>
               </thead>
               <tbody className="global_tbody">
                 {MSOdetails.length > 0 ? (
                   MSOdetails.map((mso, index) => (
                     <tr key={index} className="global_tr">
+                      <td className="global_td">{index + 1}</td>
                       <td className="global_td">{mso.msoName}</td>
                       <td className="global_td">{mso.categoryName}</td>
                       <td className="global_td">{mso.totalSales}</td>
                       <td className="global_td">{mso.totalDiscount}</td>
-                      <td className="global_td">{mso.totalGrand}</td>
-
                       <td className="global_td">{mso.totalDebit}</td>
+                      <td className="global_td">{mso.totalGrand}</td>
                       <td className="global_td space-x-2">
-                       <Link className="global_button" to={`/MSOReport/${mso?.MSOID}`}>
-                       Report
-                       </Link>
-                         <Link
+                        <Link
+                          className="global_button"
+                          to={`/MSOReport/${mso?.MSOID}`}
+                        >
+                          Report
+                        </Link>
+                        <Link
                           to={`/DealerList/${mso?.MSOID}`}
                           className="global_button"
                         >
@@ -485,12 +565,48 @@ const Dashboard = () => {
                   ))
                 ) : (
                   <tr>
-                    <td className="global_td text-center " colSpan={4}>
+                    <td colSpan="8" className="text-center py-3 text-gray-500">
                       No Data
                     </td>
                   </tr>
                 )}
               </tbody>
+              {/* ✅ Table Footer Totals */}
+              {MSOdetails && MSOdetails.length > 0 && (
+                <tfoot className="bg-gray-100 font-semibold">
+                  <tr className="global_tr">
+                    <td className="global_td text-center text-green-700">
+                      Total
+                    </td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td">
+                      {MSOdetails.reduce(
+                        (sum, item) => sum + (item.totalSales || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {MSOdetails.reduce(
+                        (sum, item) => sum + (item.totalDiscount || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {MSOdetails.reduce(
+                        (sum, item) => sum + (item.totalDebit || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {MSOdetails.reduce(
+                        (sum, item) => sum + (item.totalGrand || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
             </table>
           }
         </div>

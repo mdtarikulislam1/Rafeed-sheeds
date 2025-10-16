@@ -30,7 +30,6 @@ export default function Asm() {
 
   return (
     <div>
-      {" "}
       <h4 className="global_heading">Asm List</h4>
       {data?.ASMList?.length === 0 ? (
         <p className="global_no-data">No Data Found</p>
