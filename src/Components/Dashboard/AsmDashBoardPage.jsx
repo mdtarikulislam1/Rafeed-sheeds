@@ -342,7 +342,7 @@ const AsmDashBoardPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-center py-3 text-gray-500">
+                  <td colSpan="10" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -351,9 +351,9 @@ const AsmDashBoardPage = () => {
 
             {/* ✅ Table Footer Totals */}
             {msoSummary && msoSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
+                  <td className="global_td text-center">
                     Total
                   </td>
                   <td className="global_td text-center">
@@ -436,9 +436,9 @@ const AsmDashBoardPage = () => {
 
             {/* ✅ Table Footer Totals */}
             {productWeightSummary && productWeightSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
+                  <td className="global_td text-center">
                     Total
                   </td>
                   <td className="global_td text-center">

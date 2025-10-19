@@ -3,26 +3,24 @@ import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
+import { Link, useParams } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
+import { getToken } from "../../Helper/SessionHelper";
+import { BaseURL } from "../../Helper/Config";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
 
-const AsmReport = () => {
+const DealerReport = () => {
   const { id } = useParams();
   const { setGlobalLoader } = loadingStore();
+  const [reportData, setReportData] = useState([]);
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
 
-  // data state
-  const [salesByCategory, setSalesByCategory] = useState([]);
-  const [productWeightSummary, setProductWeightSummary] = useState([]);
-
   // download
+  const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
-  const containerRef = useRef(null);
 
   // Helper functions
   const startOfDay = (d) => {
@@ -100,15 +98,15 @@ const AsmReport = () => {
     try {
       setGlobalLoader(true);
       const { data } = await axios.get(
-        `${BaseURL}/MSOReport/${id}/${start}/${end}`,
+        `${BaseURL}/DealerReport/${id}/${start}/${end}`,
         {
           headers: { token: getToken() },
         }
       );
+      console.log(data?.data);
 
-      if (data?.status === "success") {
-        setProductWeightSummary(data?.productWeightSummary);
-        setSalesByCategory(data?.salesByCategory);
+      if (data?.status === "Success") {
+        setReportData(data?.data);
       }
     } catch (error) {
       console.error(error);
@@ -131,8 +129,8 @@ const AsmReport = () => {
   }, [startDate, endDate, dateInitialized]);
 
   return (
-    <div className="my-5 px-2" ref={containerRef}>
-      <div className="flex flex-col lg:flex-row items-start justify-between no-print ">
+    <div className="my-5 px-2 " ref={containerRef}>
+      <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
             defaultValue="This Month"
@@ -194,89 +192,67 @@ const AsmReport = () => {
         </div>
       </div>
 
-      {/* table by data */}
+      {/* dealer summary */}
 
-      {/* salesByCategory */}
       <div className="w-full overflow-auto">
-        <h4 className="global_heading ">Sales By Category</h4>
+        <h4 className="global_heading">Dealer Summary</h4>
         <table className="global_table">
           <thead className="global_thead">
             <tr className="global_tr">
-              <th className="global_th">No</th>
-              <th className="global_th">Category Name</th>
-              <th className="global_th">total Sale</th>
-              <th className="global_th">total Discount</th>
-              <th className="global_th">total Grand</th>
+              <th className="global_th">no</th>
+              <th className="global_th">dealer Name</th>
+              <th className="global_th">dealer Mobile</th>
+              <th className="global_th">dealer Address</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {salesByCategory && salesByCategory.length > 0 ? (
-              salesByCategory.map((items, index) => (
-                <tr key={index} className="global_tr">
-                  <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{items?.CategoryName || "N/A"}</td>
-                  <td className="global_td">{items?.totalSale || 0}</td>
-                  <td className="global_td">{items?.totalDiscount || 0}</td>
-                  <td className="global_td">{items?.totalGrand || 0}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center py-3 text-gray-500">
-                  No Data Found
-                </td>
-              </tr>
-            )}
+            <tr className="global_tr">
+              <td className="global_td">1</td>
+              <td className="global_td">{reportData?.dealerName}</td>
+              <td className="global_td">{reportData?.dealerMobile}</td>
+              <td className="global_td">{reportData?.dealerAddress}</td>
+            </tr>
           </tbody>
-          {salesByCategory && salesByCategory.length > 0 && (
-            <tfoot className="text-green-700 no-download">
-              <tr className="global_tr">
-                <td className="global_td text-center">Total</td>
-                <td className="global_td text-center"></td>
-                <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalSale || 0),
-                    0
-                  )}
-                </td>
-                <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalDiscount || 0),
-                    0
-                  )}
-                </td>
-                <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalGrand || 0),
-                    0
-                  )}
-                </td>
-              </tr>
-            </tfoot>
-          )}
         </table>
       </div>
 
-      {/* productWeightSummary */}
+      {/* summary */}
       <div className="w-full overflow-auto">
-        <h4 className="global_heading">Product Weight Summary</h4>
+        <h4 className="global_heading">Product summary</h4>
         <table className="global_table">
           <thead className="global_thead">
             <tr className="global_tr">
-              <th className="global_th">No</th>
-              <th className="global_th">product Name</th>
-              <th className="global_th">total amount</th>
+              <th className="global_th">no</th>
+              <th className="global_th">category Name</th>
+              <th className="global_th">product name</th>
+              <th className="global_th">price</th>
+              <th className="global_th">qtySold</th>
+              <th className="global_th">per weight</th>
               <th className="global_th">total Weight</th>
-              <th className="global_th">total Qty Sold</th>
+              <th className="global_th">total amount</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {productWeightSummary && productWeightSummary.length > 0 ? (
-              productWeightSummary.map((items, index) => (
+            {reportData?.products && reportData?.products?.length > 0 ? (
+              reportData?.products?.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{items?.productName || "N/A"}</td>
-                  <td className="global_td">{items?.totalAmount || 0}</td>
+                  <td className="global_td">{items?.categoryName || "N/A"}</td>
+                  <td className="global_td">{items?.name || "N/A"}</td>
+                  <td className="global_td">{items?.price || "N/A"}</td>
+                  <td className="global_td">{items?.qtySold || 0}</td>
+                  <td className="global_td">
+                    {(() => {
+                      const weight = items?.weight || 0;
+                      const kg = Math.floor(weight / 1000);
+                      const gram = weight % 1000;
+
+                      if (weight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}
+                  </td>
                   <td className="global_td">
                     {(() => {
                       const weight = items?.totalWeight || 0;
@@ -289,7 +265,7 @@ const AsmReport = () => {
                       return `${gram} g`;
                     })()}
                   </td>
-                  <td className="global_td">{items?.totalQtySold || 0}</td>
+                  <td className="global_td">{items?.total || 0}</td>
                 </tr>
               ))
             ) : (
@@ -300,20 +276,45 @@ const AsmReport = () => {
               </tr>
             )}
           </tbody>
-          {productWeightSummary && productWeightSummary.length > 0 && (
+
+          {/* ✅ Table Footer Totals */}
+          {reportData?.products && reportData?.products?.length > 0 && (
             <tfoot className="text-green-700">
               <tr className="global_tr">
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
+                <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {productWeightSummary.reduce(
-                    (sum, item) => sum + (item.totalAmount || 0),
+                  {reportData?.products?.reduce(
+                    (sum, item) => sum + (item.price || 0),
+                    0
+                  )}
+                </td>
+                <td className="global_td">
+                  {reportData?.products?.reduce(
+                    (sum, item) => sum + (item.qtySold || 0),
                     0
                   )}
                 </td>
                 <td className="global_td">
                   {(() => {
-                    const totalWeight = productWeightSummary.reduce(
+                    const totalWeight = reportData?.products?.reduce(
+                      (sum, item) => sum + (item.weight || 0),
+                      0
+                    );
+
+                    const kg = Math.floor(totalWeight / 1000);
+                    const gram = totalWeight % 1000;
+
+                    if (totalWeight === 0) return "0 g";
+                    if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                    if (kg > 0) return `${kg} kg`;
+                    return `${gram} g`;
+                  })()}
+                </td>
+                <td className="global_td">
+                  {(() => {
+                    const totalWeight = reportData?.products?.reduce(
                       (sum, item) => sum + (item.totalWeight || 0),
                       0
                     );
@@ -328,8 +329,8 @@ const AsmReport = () => {
                   })()}
                 </td>
                 <td className="global_td">
-                  {productWeightSummary.reduce(
-                    (sum, item) => sum + (item.totalQtySold || 0),
+                  {reportData?.products?.reduce(
+                    (sum, item) => sum + (item.total || 0),
                     0
                   )}
                 </td>
@@ -354,4 +355,4 @@ const AsmReport = () => {
   );
 };
 
-export default AsmReport;
+export default DealerReport;

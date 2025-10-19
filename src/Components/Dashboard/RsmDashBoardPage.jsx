@@ -304,99 +304,6 @@ const RsmDashBoardPage = () => {
       {/* Summary Data Rendering */}
 
       <div className="flex flex-col gap-2 mt-5">
-        {/* Mso Summary */}
-        <div className="w-full overflow-auto">
-          <h4 className="global_heading">Mso Summary</h4>
-          <table className="global_table">
-            <thead className="global_thead">
-              <tr className="global_tr">
-                <th className="global_th">No</th>
-                <th className="global_th">MSOName</th>
-                <th className="global_th">MSOMobile</th>
-                <th className="global_th">totalSale</th>
-                <th className="global_th">totalDiscount</th>
-                <th className="global_th">totalDebit</th>
-                <th className="global_th">totalCredit</th>
-                <th className="global_th">action</th>
-              </tr>
-            </thead>
-
-            <tbody className="global_tbody">
-              {msoSummary && msoSummary.length > 0 ? (
-                msoSummary.map((items, index) => (
-                  <tr key={index} className="global_tr">
-                    <td className="global_td">{index + 1}</td>
-                    <td className="global_td">{items?.MSOName || "N/A"}</td>
-                    <td className="global_td">{items?.MSOMobile || "N/A"}</td>
-                    <td className="global_td">{items?.totalSale || 0}</td>
-                    <td className="global_td">{items?.totalDiscount || 0}</td>
-                    <td className="global_td">{items?.totalDebit || 0}</td>
-                    <td className="global_td">{items?.totalCredit || 0}</td>
-                    <td className="global_td space-x-2">
-                      <Link
-                        to={`/MSOReport/${items?.MSOID}`}
-                        className="global_button"
-                      >
-                        Report
-                      </Link>
-                      <Link
-                        to={`/MSOReport/${items?.MSOID}`}
-                        className="global_button"
-                      >
-                        Dealer
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="8" className="text-center py-3 text-gray-500">
-                    No Data Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-
-            {/* ✅ Table Footer Totals */}
-            {msoSummary && msoSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
-                <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
-                  <td className="global_td text-center"></td>
-                  <td className="global_td text-center"></td>
-                  <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalSale || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDiscount || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDebit || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalCredit || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td text-center"></td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-
         {/* asm summary */}
         <div className="w-full overflow-auto">
           <h4 className="global_heading">ASM Summary</h4>
@@ -460,11 +367,9 @@ const RsmDashBoardPage = () => {
 
             {/* ✅ Table Footer Totals */}
             {asmSummary && asmSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
+                  <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
@@ -497,6 +402,7 @@ const RsmDashBoardPage = () => {
             )}
           </table>
         </div>
+
         {/* product Weight summary */}
         <div className="w-full overflow-auto">
           <h4 className="global_heading">Product weight Summary</h4>
@@ -517,7 +423,18 @@ const RsmDashBoardPage = () => {
                   <tr key={index} className="global_tr">
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.productName || "N/A"}</td>
-                    <td className="global_td">{items?.totalWeight || 0}</td>
+                    <td className="global_td">
+                      {(() => {
+                        const weight = items?.totalWeight || 0;
+                        const kg = Math.floor(weight / 1000);
+                        const gram = weight % 1000;
+
+                        if (weight === 0) return "0 g";
+                        if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                        if (kg > 0) return `${kg} kg`;
+                        return `${gram} g`;
+                      })()}
+                    </td>
                     <td className="global_td">{items?.totalQtySold || 0}</td>
                     <td className="global_td">{items?.totalAmount || 0}</td>
                   </tr>
@@ -533,17 +450,25 @@ const RsmDashBoardPage = () => {
 
             {/* ✅ Table Footer Totals */}
             {productWeightSummary && productWeightSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
+                  <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {productWeightSummary.reduce(
-                      (sum, item) => sum + (item.totalWeight || 0),
-                      0
-                    )}
+                    {(() => {
+                      const totalWeight = productWeightSummary.reduce(
+                        (sum, item) => sum + (item.totalWeight || 0),
+                        0
+                      );
+
+                      const kg = Math.floor(totalWeight / 1000);
+                      const gram = totalWeight % 1000;
+
+                      if (totalWeight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}
                   </td>
                   <td className="global_td">
                     {productWeightSummary.reduce(
@@ -557,6 +482,97 @@ const RsmDashBoardPage = () => {
                       0
                     )}
                   </td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+
+        {/* Mso Summary */}
+        <div className="w-full overflow-auto">
+          <h4 className="global_heading">Mso Summary</h4>
+          <table className="global_table">
+            <thead className="global_thead">
+              <tr className="global_tr">
+                <th className="global_th">No</th>
+                <th className="global_th">MSOName</th>
+                <th className="global_th">MSOMobile</th>
+                <th className="global_th">totalSale</th>
+                <th className="global_th">totalDiscount</th>
+                <th className="global_th">totalDebit</th>
+                <th className="global_th">totalCredit</th>
+                <th className="global_th">action</th>
+              </tr>
+            </thead>
+
+            <tbody className="global_tbody">
+              {msoSummary && msoSummary.length > 0 ? (
+                msoSummary.map((items, index) => (
+                  <tr key={index} className="global_tr">
+                    <td className="global_td">{index + 1}</td>
+                    <td className="global_td">{items?.MSOName || "N/A"}</td>
+                    <td className="global_td">{items?.MSOMobile || "N/A"}</td>
+                    <td className="global_td">{items?.totalSale || 0}</td>
+                    <td className="global_td">{items?.totalDiscount || 0}</td>
+                    <td className="global_td">{items?.totalDebit || 0}</td>
+                    <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link
+                        to={`/MSOReport/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        to={`/DealerList/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" className="text-center py-3 text-gray-500">
+                    No Data Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+
+            {/* ✅ Table Footer Totals */}
+            {msoSummary && msoSummary.length > 0 && (
+              <tfoot className="text-green-700">
+                <tr className="global_tr">
+                  <td className="global_td text-center">Total</td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td">
+                    {msoSummary.reduce(
+                      (sum, item) => sum + (item.totalSale || 0),
+                      0
+                    )}
+                  </td>
+                  <td className="global_td">
+                    {msoSummary.reduce(
+                      (sum, item) => sum + (item.totalDiscount || 0),
+                      0
+                    )}
+                  </td>
+                  <td className="global_td">
+                    {msoSummary.reduce(
+                      (sum, item) => sum + (item.totalDebit || 0),
+                      0
+                    )}
+                  </td>
+                  <td className="global_td">
+                    {msoSummary.reduce(
+                      (sum, item) => sum + (item.totalCredit || 0),
+                      0
+                    )}
+                  </td>
+                  <td className="global_td text-center"></td>
                 </tr>
               </tfoot>
             )}

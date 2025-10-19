@@ -22,22 +22,21 @@ const ViewDealerLaser = () => {
   ); // last 30 days default
   const [endDate, setEndDate] = useState(new Date());
   const printRef = useRef(null);
-  
 
- const formatDate = (date, endOfDay = false) => {
-  const d = new Date(date);
-  if (endOfDay) {
-    d.setHours(23, 59, 59, 999);
-  } else {
-    d.setHours(0, 0, 0, 0);
-  }
+  const formatDate = (date, endOfDay = false) => {
+    const d = new Date(date);
+    if (endOfDay) {
+      d.setHours(23, 59, 59, 999);
+    } else {
+      d.setHours(0, 0, 0, 0);
+    }
 
-  const bdOffset = 6 * 60; // minutes
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  const bdTime = new Date(utc + bdOffset * 60000);
+    const bdOffset = 6 * 60; // minutes
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const bdTime = new Date(utc + bdOffset * 60000);
 
-  return bdTime.toISOString();
-};
+    return bdTime.toISOString();
+  };
 
   const fetchDealerLaser = async () => {
     const start = formatDate(startDate, false); // 00:00:00
@@ -155,13 +154,16 @@ const ViewDealerLaser = () => {
           <p>{laser.contactDetails.mobile}</p>
           <p>{laser.contactDetails.address}</p>
           <p
-            className={`font-medium ${ laser?.contactDetails?.ClosingBalance < 0 ? "text-red-600" : "text-green-400"
-              } `}
+            className={`font-medium ${
+              laser?.contactDetails?.ClosingBalance < 0
+                ? "text-red-600"
+                : "text-green-400"
+            } `}
           >
             {laser?.contactDetails?.ClosingBalance < 0
               ? `Receivable Closing Balance: ${Math.abs(
-                laser?.contactDetails?.ClosingBalance
-              ).toLocaleString()}`
+                  laser?.contactDetails?.ClosingBalance
+                ).toLocaleString()}`
               : `Payable Closing Balance: ${laser?.contactDetails?.ClosingBalance.toLocaleString()}`}
           </p>
         </div>
@@ -243,19 +245,21 @@ const ViewDealerLaser = () => {
       <div className="overflow-x-auto">
         <table className="global_table">
           <thead className="global_thead">
-            <th className="global_th">#</th>
-            <th className="global_th">Date</th>
-            <th className="global_th">Type</th>
-            <th className="global_th text-right">Invoice</th>
-            <th className="global_th">Discount</th>
-            <th className="global_th text-right">Net Amount</th>
-            <th className="global_th text-right">Received</th>
-            <th className="global_th text-right">Closing Balance</th>
-            {/* <th className="global_th">Note</th> */}
-            <th id="no-print" className="global_th">
-              Details
-            </th>
+            <tr>
+              <th className="global_th">#</th>
+              <th className="global_th">Date</th>
+              <th className="global_th">Type</th>
+              <th className="global_th text-right">Invoice</th>
+              <th className="global_th">Discount</th>
+              <th className="global_th text-right">Net Amount</th>
+              <th className="global_th text-right">Received</th>
+              <th className="global_th text-right">Closing Balance</th>
+              <th id="no-print" className="global_th">
+                Details
+              </th>
+            </tr>
           </thead>
+
           <tbody className="global_tbody">
             {laser?.data?.length > 0 ? (
               laser.data.map((t, i) => (
@@ -275,11 +279,12 @@ const ViewDealerLaser = () => {
                     {"saleID" in (t || {}) && t?.saleID != null
                       ? "Sale"
                       : "Payment"}
-                  </td>{" "}
-                  <td className="global_td">{(Number(t?.Credit) || 0) + (Number(t?.discount) || 0)}</td>
+                  </td>
+                  <td className="global_td">
+                    {(Number(t?.Credit) || 0) + (Number(t?.discount) || 0)}
+                  </td>
                   <td className="global_td">{t.discount}</td>
                   <td className="global_td">{t.Credit.toFixed(2)}</td>
-
                   <td className="global_td">{t.Debit.toFixed(2)}</td>
                   <td
                     className={
@@ -287,15 +292,17 @@ const ViewDealerLaser = () => {
                       (t.TotalDebit - t.TotalCredit > 0
                         ? "text-red-400"
                         : t.TotalDebit - t.TotalCredit < 0
-                          ? "text-green-500"
-                          : "")
+                        ? "text-green-500"
+                        : "")
                     }
                   >
                     {t.TotalDebit - t.TotalCredit > 0
                       ? `Payable: ${(t.TotalDebit - t.TotalCredit).toFixed(2)}`
                       : t.TotalDebit - t.TotalCredit < 0
-                        ? `Receivable: ${Math.abs(t.TotalDebit - t.TotalCredit).toFixed(2)}`
-                        : "0.00"}
+                      ? `Receivable: ${Math.abs(
+                          t.TotalDebit - t.TotalCredit
+                        ).toFixed(2)}`
+                      : "0.00"}
                   </td>
                   <td id="no-print" className="global_td">
                     {t.saleID && (
@@ -311,24 +318,25 @@ const ViewDealerLaser = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-500">
+                <td colSpan="9" className="text-center py-4 text-gray-500">
                   No records found
                 </td>
               </tr>
             )}
           </tbody>
 
-          {/* Totals */}
           {laser?.data?.length > 0 && (
             <tfoot>
               <tr className="global_tr">
                 <td className="global_td" colSpan="3">
                   Total Amount:
-                </td>{" "}
+                </td>
                 <td className="global_td">{totalInvoice.toFixed(2)}</td>
                 <td className="global_td">{totalDiscount}</td>
-                <td className="global_td ">{(Number(totalInvoice) || 0) - (Number(totalDiscount) || 0)}</td>
-                <td className="global_td ">{totalReceived.toFixed(2)}</td>
+                <td className="global_td">
+                  {(Number(totalInvoice) || 0) - (Number(totalDiscount) || 0)}
+                </td>
+                <td className="global_td">{totalReceived.toFixed(2)}</td>
                 <td className="global_td">
                   {closingBalance < 0 ? (
                     <span className="text-green-500">Ending Receivable</span>
@@ -353,7 +361,6 @@ const ViewDealerLaser = () => {
           Print
         </button>
       </div>
-
     </div>
   );
 };

@@ -333,9 +333,9 @@ const MsoDashBoardPage = () => {
 
           {/* ✅ Table Footer Totals */}
           {productWeightSummary && productWeightSummary.length > 0 && (
-            <tfoot className="bg-gray-100 font-semibold">
+            <tfoot className="text-green-700">
               <tr className="global_tr">
-                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
                   {productWeightSummary.reduce(

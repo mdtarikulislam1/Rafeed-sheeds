@@ -32,59 +32,58 @@ export default function MyAsm() {
     <div className="global_container">
       {/* Table by asm list */}
       <div>
-        {asmData?.length == 0 ? (
-          <div>
-            <p className="global_no-data">No asm found</p>
-          </div>
-        ) : (
-          <div>
-            <h1 className="global_heading">My asm</h1>
-            <div className="overflow-auto">
-              <table className="global_table">
-                <thead className="global_thead">
-                  <tr className="global_tr">
-                    <th className="global_th">No</th>
-                    <th className="global_th">Name</th>
-                    <th className="global_th">Mobile Number</th>
-                    <th className="global_th">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {asmData?.data?.map((items, index) => (
-                    <tr className="global_tr" key={index}>
-                      <td className="global_td">{index + 1 || "N/A"}</td>
-                      <td className="global_td">
-                        {items?.name ? items?.name : "N/A"}
-                      </td>
-                      <td className="global_td">
-                        {items?.mobile ? items?.mobile : "N/A"}
-                      </td>
-                      <td className="global_td flex">
+        <div>
+          <h1 className="global_heading">My asm</h1>
+          <div className="overflow-auto">
+            <table className="global_table">
+              <thead className="global_thead">
+                <tr className="global_tr">
+                  <th className="global_th">No</th>
+                  <th className="global_th">Name</th>
+                  <th className="global_th">Mobile Number</th>
+                  <th className="global_th">Action</th>
+                </tr>
+              </thead>
+              <tbody className="global_tbody">
+                {asmData?.data && asmData?.data?.length > 0 ? (
+                  asmData?.data?.map((items, index) => (
+                    <tr key={index} className="global_tr">
+                      <td className="global_td">{index + 1}</td>
+                      <td className="global_td">{items?.name || "N/A"}</td>
+                      <td className="global_td">{items?.mobile || "N/A"}</td>
+                      <td className="global_td space-x-2">
                         <Link
                           to={`/ASMReport/${items?._id}`}
                           className="global_button"
                         >
                           Report
                         </Link>
-
                         <Link
                           to={`/MSO/${items?._id}`}
-                          className="global_button_red mx-4"
+                          className="global_button_red"
                         >
                           MSO
                         </Link>
-
-                        <Link to={`/DealerList/${items?._id}`} className="global_button">
-                          My Dealer
+                        <Link
+                          to={`/DealerList/${items?._id}`}
+                          className="global_button"
+                        >
+                          Dealer
                         </Link>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="text-center py-3 text-gray-500">
+                      No Data Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

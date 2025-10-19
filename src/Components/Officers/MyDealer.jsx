@@ -112,7 +112,7 @@ const MyDealer = () => {
 
                 <th className="global_th">Total Balance</th>
                 <th className="global_th">Last Updated</th>
-                <th className="global_th">Laser</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -136,11 +136,10 @@ const MyDealer = () => {
                       {c.totalBalance}
                     </td>
                     <td className="global_td">
-                      {" "}
                       <TimeAgo date={c.updatedAt} />
                     </td>
 
-                    <td className="global_td">
+                    <td className="global_td space-x-2">
                       <Link
                         to={`/ViewDealerLaser/${c._id}`}
                         // onClick={() => {
@@ -149,6 +148,12 @@ const MyDealer = () => {
                         className="global_edit"
                       >
                         View Laser
+                      </Link>
+                      <Link
+                        to={`/DealerReport/${c._id}`}
+                        className="global_edit"
+                      >
+                       Report
                       </Link>
                     </td>
                   </tr>

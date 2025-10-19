@@ -427,7 +427,6 @@ const ASM = () => {
               <th className="global_th">RSM</th>
               <th className="global_th">Status</th>
               <th className="global_th">Actions</th>
-              <th className="global_th">MSO List</th>
             </tr>
           </thead>
           <tbody>
@@ -442,20 +441,27 @@ const ASM = () => {
                     <td className="global_td">
                       {asm.active === 1 ? "Active" : "Inactive"}
                     </td>
-                    <td className="global_td">
+                    <td className="global_td space-x-2">
                       <button
                         onClick={() => handleEdit(asm)}
-                        className="global_edit mr-2"
+                        className="global_edit cursor-pointer"
                       >
                         Edit
                       </button>
-                    </td>
-                    <td className="global_td">
                       <Link
-                        to={`/ViewMSO/${asm._id}`}
+                        to={`/ASMReport/${asm?.ASMID}`}
                         className="global_button"
                       >
-                        View MSO
+                        Report
+                      </Link>
+                      <Link to={`/MSO/${asm?.ASMID}`} className="global_button">
+                        Mso
+                      </Link>
+                      <Link
+                        to={`/DealerList/${asm?.ASMID}`}
+                        className="global_button"
+                      >
+                        Dealer
                       </Link>
                     </td>
                   </tr>

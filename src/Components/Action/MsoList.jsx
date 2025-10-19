@@ -51,7 +51,7 @@ export default function MsoList() {
                     <td className="global_td">{items?.role || 0}</td>
                     <td className="global_td space-x-2">
                       <Link
-                        to={`/ASMReport/${items?._id}`}
+                        to={`/MSOReport/${items?._id}`}
                         className="global_button"
                       >
                         Report

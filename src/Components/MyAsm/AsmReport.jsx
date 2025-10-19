@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
+import { useDownloadStore } from "../../Helper/Download-xlsx";
 
 const AsmReport = () => {
   const { id } = useParams();
@@ -18,6 +19,10 @@ const AsmReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+
+  // download
+  const containerRef = useRef();
+  const { downloadSelected } = useDownloadStore();
 
   // Helper functions
   const startOfDay = (d) => {
@@ -129,8 +134,8 @@ const AsmReport = () => {
   }, [startDate, endDate, dateInitialized]);
 
   return (
-    <div className="my-5 px-2">
-      <div className="flex flex-col lg:flex-row items-start justify-between">
+    <div className="my-5 px-2" ref={containerRef}>
+      <div className="flex flex-col lg:flex-row items-start justify-between no-print ">
         <div className="flex items-end mb-4">
           <select
             defaultValue="This Month"
@@ -226,9 +231,9 @@ const AsmReport = () => {
             )}
           </tbody>
           {summary && summary.length > 0 && (
-            <tfoot className="bg-gray-100 font-semibold">
+            <tfoot className="text-green-700">
               <tr className="global_tr">
-                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
                   {summary.reduce(
@@ -274,14 +279,25 @@ const AsmReport = () => {
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.productName || "N/A"}</td>
-                  <td className="global_td">{items?.totalWeight || 0}</td>
+                  <td className="global_td">
+                    {(() => {
+                      const weight = items?.totalWeight || 0;
+                      const kg = Math.floor(weight / 1000);
+                      const gram = weight % 1000;
+
+                      if (weight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}
+                  </td>
                   <td className="global_td">{items?.totalQtySold || 0}</td>
                   <td className="global_td">{items?.totalAmount || 0}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center py-3 text-gray-500">
+                <td colSpan="9" className="text-center py-3 text-gray-500">
                   No Data Found
                 </td>
               </tr>
@@ -289,15 +305,25 @@ const AsmReport = () => {
           </tbody>
 
           {weight && weight.length > 0 && (
-            <tfoot className="bg-gray-100 font-semibold">
+            <tfoot className="text-green-700">
               <tr className="global_tr">
-                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {weight.reduce(
-                    (sum, item) => sum + (item.TotalWeight || 0),
-                    0
-                  )}
+                  {(() => {
+                    const totalWeight = weight.reduce(
+                      (sum, item) => sum + (item.totalWeight || 0),
+                      0
+                    );
+
+                    const kg = Math.floor(totalWeight / 1000);
+                    const gram = totalWeight % 1000;
+
+                    if (totalWeight === 0) return "0 g";
+                    if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                    if (kg > 0) return `${kg} kg`;
+                    return `${gram} g`;
+                  })()}
                 </td>
                 <td className="global_td">
                   {weight.reduce(
@@ -318,7 +344,7 @@ const AsmReport = () => {
       </div>
 
       {/* MSO Summary */}
-      <div className="w-full overflow-x-auto text-nowrap my-3">
+      <div className="w-full overflow-x-auto text-nowrap my-3 no-print no-download">
         <h4 className="global_heading">MSO Summary</h4>
 
         <table className="global_table min-w-[600px]">
@@ -332,9 +358,10 @@ const AsmReport = () => {
               <th className="global_th">totalDebit</th>
               <th className="global_th">totalCredit</th>
               <th className="global_th">totalGrand</th>
+              <th className="global_th">action</th>
             </tr>
           </thead>
-           <tbody className="global_tbody">
+          <tbody className="global_tbody">
             {msoSummary && msoSummary.length > 0 ? (
               msoSummary.map((items, index) => (
                 <tr key={index} className="global_tr">
@@ -346,11 +373,26 @@ const AsmReport = () => {
                   <td className="global_td">{items?.totalDebit || 0}</td>
                   <td className="global_td">{items?.totalCredit || 0}</td>
                   <td className="global_td">{items?.totalGrand || 0}</td>
+                  <td className="global_td space-x-2">
+                    <Link
+                      to={`/MSOReport/${items?.MSOID}`}
+                      className="global_button"
+                    >
+                      Report
+                    </Link>
+
+                    <Link
+                      to={`/DealerList/${items?.MSOID}`}
+                      className="global_button"
+                    >
+                      Dealer
+                    </Link>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="8" className="text-center py-3 text-gray-500">
+                <td colSpan="10" className="text-center py-3 text-gray-500">
                   No Data Found
                 </td>
               </tr>
@@ -358,9 +400,9 @@ const AsmReport = () => {
           </tbody>
 
           {msoSummary && msoSummary.length > 0 && (
-            <tfoot className="bg-gray-100 font-semibold">
+            <tfoot className="text-green-700">
               <tr className="global_tr">
-                <td className="global_td text-center text-green-700">Total</td>
+                <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
@@ -393,11 +435,24 @@ const AsmReport = () => {
                     0
                   )}
                 </td>
+                <td className="global_td text-center"></td>
               </tr>
             </tfoot>
           )}
         </table>
       </div>
+      <button
+        className="global_button cursor-pointer no-print mt-6"
+        onClick={() => window.print()}
+      >
+        Print
+      </button>
+      <button
+        className="global_button cursor-pointer no-print mx-3"
+        onClick={() => downloadSelected(containerRef, "report")}
+      >
+        Download Excel
+      </button>
     </div>
   );
 };

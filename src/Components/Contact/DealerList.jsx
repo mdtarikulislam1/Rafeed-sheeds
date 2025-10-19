@@ -4,7 +4,7 @@ import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 const DealerList = () => {
   const [dealers, setDealers] = useState([]);
@@ -90,6 +90,7 @@ const DealerList = () => {
               <th className="global_th">Mobile</th>
               <th className="global_th">Address</th>
               <th className="global_th">Total Balance</th>
+              <th className="global_th">Action</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -108,12 +109,20 @@ const DealerList = () => {
                   >
                     {c.totalBalance}
                   </td>
+                  <td className="global_td">
+                    <Link
+                      to={`/DealerReport/${c._id}`}
+                      className="global_button_red"
+                    >
+                      Report
+                    </Link>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
                 >
                   No Dealers found

@@ -52,7 +52,6 @@ const SaleDetails = () => {
   }, [id]);
 
   const handlePrint = () => {
-    console.log("Selected copies:", copies);
     printSaleInvoice(printRef, "Sale Invoice", copies);
   };
 

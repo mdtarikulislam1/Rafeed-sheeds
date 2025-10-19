@@ -47,6 +47,7 @@ import MsoReportPage from "./Pages/ActionPage/MsoReportPage";
 import MyMsoPage from "./Pages/MyMso/MyMsoPage";
 import AsmReportPage from "./Pages/MyAsm/AsmReportPage"
 import DealerPage from "./Pages/ActionPage/DealerPage";
+import DealerReportPage from "./Pages/Contact/DealerReportPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -114,6 +115,7 @@ function App() {
             {/* dealer */}
             <Route path="/my/dealer" element={<MyDealerPages/>}/>
             <Route path="/Dealer" element={<DealerPage />} />
+            <Route path="/DealerReport/:id" element={<DealerReportPage/>} />
 
 
             {/* Dashboard action */}

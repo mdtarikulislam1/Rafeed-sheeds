@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
+import { useDownloadStore } from "../../Helper/Download-xlsx";
 
 const RsmReport = () => {
   const { id } = useParams();
@@ -18,6 +19,10 @@ const RsmReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+
+  // download
+   const containerRef = useRef();
+  const { downloadSelected } = useDownloadStore();
 
   // Helper functions
   const startOfDay = (d) => {
@@ -130,8 +135,8 @@ const RsmReport = () => {
   }, [startDate, endDate, dateInitialized]);
 
   return (
-    <div className="my-5 px-2">
-      <div className="flex flex-col lg:flex-row items-start justify-between">
+    <div className="my-5 px-2 "  ref={containerRef}>
+      <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
             defaultValue="This Month"
@@ -195,78 +200,169 @@ const RsmReport = () => {
 
       {/* table */}
 
-      {/* salesByCategory   */}
-      <div className="my-4">
-        <h4 className="global_heading">Sales By Category</h4>
-        <div className="w-full overflow-auto">
-          <table className="global_table">
-            <thead className="global_thead">
-              <tr className="global_tr">
-                <th className="global_th">no</th>
-                <th className="global_th">CategoryName</th>
-                <th className="global_th">totalSale</th>
-                <th className="global_th">totalDiscount</th>
-                <th className="global_th">totalGrand</th>
-              </tr>
-            </thead>
-            <tbody className="global_tbody">
-              {salesByCategory && salesByCategory.length > 0 ? (
-                salesByCategory.map((items, index) => (
-                  <tr key={index} className="global_tr">
-                    <td className="global_td">{index + 1}</td>
+      <div>
+        {/* salesByCategory   */}
+        <div className="my-4" >
+          <h4 className="global_heading">Sales By Category</h4>
+          <div className="w-full overflow-auto">
+            <table className="global_table ">
+              <thead className="global_thead">
+                <tr className="global_tr">
+                  <th className="global_th">no</th>
+                  <th className="global_th">CategoryName</th>
+                  <th className="global_th">totalSale</th>
+                  <th className="global_th">totalDiscount</th>
+                  <th className="global_th">totalGrand</th>
+                </tr>
+              </thead>
+              <tbody className="global_tbody">
+                {salesByCategory && salesByCategory.length > 0 ? (
+                  salesByCategory.map((items, index) => (
+                    <tr key={index} className="global_tr">
+                      <td className="global_td">{index + 1}</td>
+
+                      <td className="global_td">
+                        {items?.CategoryName || "N/A"}
+                      </td>
+                      <td className="global_td">{items?.totalSale || 0}</td>
+                      <td className="global_td">{items?.totalDiscount || 0}</td>
+                      <td className="global_td">{items?.totalGrand || 0}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="text-center py-3 text-gray-500">
+                      No Data Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+
+              {/* ✅ Table Footer Totals */}
+              {salesByCategory && salesByCategory.length > 0 && (
+                <tfoot className="text-green-700">
+                  <tr className="global_tr">
+                    <td className="global_td text-center">Total</td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td">
+                      {salesByCategory.reduce(
+                        (sum, item) => sum + (item.totalSale || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {salesByCategory.reduce(
+                        (sum, item) => sum + (item.totalDiscount || 0),
+                        0
+                      )}
+                    </td>
+                    <td className="global_td">
+                      {salesByCategory.reduce(
+                        (sum, item) => sum + (item.totalGrand || 0),
+                        0
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
+              )}
+            </table>
+          </div>
+        </div>
+
+        {/* productWeightSummary */}
+        <div className="my-4">
+          <h4 className="global_heading">Product Weight Summary</h4>
+          <div className="w-full overflow-auto">
+            <table className="global_table">
+              <thead className="global_thead">
+                <tr className="global_tr">
+                  <th className="global_th">no</th>
+                  <th className="global_th">product Name</th>
+                  <th className="global_th">total Weight</th>
+                  <th className="global_th">total Qty Sold</th>
+                  <th className="global_th">total Amount</th>
+                </tr>
+              </thead>
+              <tbody className="global_tbody">
+                {weight && weight.length > 0 ? (
+                  weight.map((items, index) => (
+                    <tr key={index} className="global_tr">
+                      <td className="global_td">{index + 1}</td>
+
+                      <td className="global_td">
+                        {items?.productName || "N/A"}
+                      </td>
+                      <td className="global_td">
+                        {(() => {
+                          const weight = items?.totalWeight || 0;
+                          const kg = Math.floor(weight / 1000);
+                          const gram = weight % 1000;
+
+                          if (weight === 0) return "0 g";
+                          if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                          if (kg > 0) return `${kg} kg`;
+                          return `${gram} g`;
+                        })()}
+                      </td>
+
+                      <td className="global_td">{items?.totalQtySold || 0}</td>
+                      <td className="global_td">{items?.totalAmount || 0}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="text-center py-3 text-gray-500">
+                      No Data Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+
+              {/* ✅ Table Footer Totals */}
+              {weight && weight.length > 0 && (
+                <tfoot className="text-green-700">
+                  <tr className="global_tr">
+                    <td className="global_td text-center">Total</td>
+                    <td className="global_td text-center"></td>
+                    <td className="global_td">
+                      {(() => {
+                        const totalWeight = weight.reduce(
+                          (sum, item) => sum + (item.totalWeight || 0),
+                          0
+                        );
+
+                        const kg = Math.floor(totalWeight / 1000);
+                        const gram = totalWeight % 1000;
+
+                        if (totalWeight === 0) return "0 g";
+                        if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                        if (kg > 0) return `${kg} kg`;
+                        return `${gram} g`;
+                      })()}
+                    </td>
 
                     <td className="global_td">
-                      {items?.CategoryName || "N/A"}
+                      {weight.reduce(
+                        (sum, item) => sum + (item.totalQtySold || 0),
+                        0
+                      )}
                     </td>
-                    <td className="global_td">{items?.totalSale || 0}</td>
-                    <td className="global_td">{items?.totalDiscount || 0}</td>
-                    <td className="global_td">{items?.totalGrand || 0}</td>
+                    <td className="global_td">
+                      {weight.reduce(
+                        (sum, item) => sum + (item.totalAmount || 0),
+                        0
+                      )}
+                    </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="8" className="text-center py-3 text-gray-500">
-                    No Data Found
-                  </td>
-                </tr>
+                </tfoot>
               )}
-            </tbody>
-
-            {/* ✅ Table Footer Totals */}
-            {asmSummary && asmSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
-                <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
-                  <td className="global_td text-center"></td>
-                  <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalSale || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalDiscount || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalGrand || 0),
-                      0
-                    )}
-                  </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Asm Summary  */}
-      <div className="my-4">
+      <div className="my-4 no-print no-download">
         <h4 className="global_heading">Asm Summary</h4>
         <div className="w-full overflow-auto">
           <table className="global_table">
@@ -280,6 +376,7 @@ const RsmReport = () => {
                 <th className="global_th">total Debit</th>
                 <th className="global_th">total Credit</th>
                 <th className="global_th">total Grand</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -295,6 +392,28 @@ const RsmReport = () => {
                     <td className="global_td">{items?.totalDebit || 0}</td>
                     <td className="global_td">{items?.totalCredit || 0}</td>
                     <td className="global_td">{items?.totalGrand || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link
+                        to={`/ASMReport/${items?.ASMID}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+
+                      <Link
+                        to={`/MSO/${items?.ASMID}`}
+                        className="global_button_red"
+                      >
+                        MSO
+                      </Link>
+
+                      <Link
+                        to={`/DealerList/${items?.ASMID}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -308,11 +427,9 @@ const RsmReport = () => {
 
             {/* ✅ Table Footer Totals */}
             {asmSummary && asmSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
+                  <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
@@ -345,6 +462,7 @@ const RsmReport = () => {
                       0
                     )}
                   </td>
+                  <td className="global_td text-center"></td>
                 </tr>
               </tfoot>
             )}
@@ -354,7 +472,7 @@ const RsmReport = () => {
 
       {/*Mso Summary  */}
 
-      <div className="my-4">
+      <div className="my-4 no-print no-download">
         <h4 className="global_heading">Mso Summary</h4>
         <div className="w-full overflow-auto">
           <table className="global_table">
@@ -368,6 +486,7 @@ const RsmReport = () => {
                 <th className="global_th">total Debit</th>
                 <th className="global_th">total Credit</th>
                 <th className="global_th">total Grand</th>
+                <th className="global_th">action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
@@ -383,11 +502,25 @@ const RsmReport = () => {
                     <td className="global_td">{items?.totalDebit || 0}</td>
                     <td className="global_td">{items?.totalCredit || 0}</td>
                     <td className="global_td">{items?.totalGrand || 0}</td>
+                    <td className="global_td space-x-2">
+                      <Link
+                        to={`/MSOReport/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        to={`/DealerList/${items?.MSOID}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="8" className="text-center py-3 text-gray-500">
+                  <td colSpan="10" className="text-center py-3 text-gray-500">
                     No Data Found
                   </td>
                 </tr>
@@ -396,11 +529,9 @@ const RsmReport = () => {
 
             {/* ✅ Table Footer Totals */}
             {msoSummary && msoSummary.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
+              <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
+                  <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
@@ -433,103 +564,25 @@ const RsmReport = () => {
                       0
                     )}
                   </td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-      </div>
-
-      {/* productWeightSummary */}
-      <div className="my-4">
-        <h4 className="global_heading">Product Weight Summary</h4>
-        <div className="w-full overflow-auto">
-          <table className="global_table">
-            <thead className="global_thead">
-              <tr className="global_tr">
-                <th className="global_th">no</th>
-                <th className="global_th">product Name</th>
-                <th className="global_th">total Weight</th>
-                <th className="global_th">total Qty Sold</th>
-                <th className="global_th">total Amount</th>
-              </tr>
-            </thead>
-            <tbody className="global_tbody">
-              {weight && weight.length > 0 ? (
-                weight.map((items, index) => (
-                  <tr key={index} className="global_tr">
-                    <td className="global_td">{index + 1}</td>
-
-                    <td className="global_td">{items?.productName || "N/A"}</td>
-                    <td className="global_td">
-                      {(() => {
-                        const weight = items?.totalWeight || 0;
-                        const kg = Math.floor(weight / 1000);
-                        const gram = weight % 1000;
-
-                        if (weight === 0) return "0 g";
-                        if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
-                        if (kg > 0) return `${kg} kg`;
-                        return `${gram} g`;
-                      })()}
-                    </td>
-
-                    <td className="global_td">{items?.totalQtySold || 0}</td>
-                    <td className="global_td">{items?.totalAmount || 0}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="8" className="text-center py-3 text-gray-500">
-                    No Data Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-
-            {/* ✅ Table Footer Totals */}
-            {weight && weight.length > 0 && (
-              <tfoot className="bg-gray-100 font-semibold">
-                <tr className="global_tr">
-                  <td className="global_td text-center text-green-700">
-                    Total
-                  </td>
                   <td className="global_td text-center"></td>
-                  <td className="global_td">
-                    {(() => {
-                      const totalWeight = weight.reduce(
-                        (sum, item) => sum + (item.totalWeight || 0),
-                        0
-                      );
-
-                      const kg = Math.floor(totalWeight / 1000);
-                      const gram = totalWeight % 1000;
-
-                      if (totalWeight === 0) return "0 g";
-                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
-                      if (kg > 0) return `${kg} kg`;
-                      return `${gram} g`;
-                    })()}
-                  </td>
-
-                  <td className="global_td">
-                    {weight.reduce(
-                      (sum, item) => sum + (item.totalQtySold || 0),
-                      0
-                    )}
-                  </td>
-                  <td className="global_td">
-                    {weight.reduce(
-                      (sum, item) => sum + (item.totalAmount || 0),
-                      0
-                    )}
-                  </td>
                 </tr>
               </tfoot>
             )}
           </table>
         </div>
       </div>
+      <button
+        className="global_button cursor-pointer no-print mt-6"
+        onClick={() => window.print()}
+      >
+        Print
+      </button>
+      <button
+        className="global_button cursor-pointer no-print mx-3"
+       onClick={() => downloadSelected(containerRef, "report")}
+      >
+        Download Excel
+      </button>
     </div>
   );
 };

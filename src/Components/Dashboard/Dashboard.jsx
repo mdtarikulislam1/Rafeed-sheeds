@@ -336,7 +336,7 @@ const Dashboard = () => {
                 {RSMdetails.length > 0 ? (
                   RSMdetails.map((rsm, index) => (
                     <tr key={index} className="global_tr">
-                      <td className="global_td">{index+1}</td>
+                      <td className="global_td">{index + 1}</td>
                       <td className="global_td">{rsm.rsmName}</td>
                       <td className="global_td">{rsm.categoryName}</td>
                       <td className="global_td">{rsm.totalSales}</td>
@@ -381,11 +381,9 @@ const Dashboard = () => {
                 )}
               </tbody>
               {RSMdetails && RSMdetails.length > 0 && (
-                <tfoot className="bg-gray-100 font-semibold">
+                <tfoot className="text-green-700">
                   <tr className="global_tr">
-                    <td className="global_td text-center text-green-700">
-                      Total
-                    </td>
+                    <td className="global_td text-center">Total</td>
                     <td className="global_td text-center"></td>
                     <td className="global_td text-center"></td>
                     <td className="global_td">
@@ -419,7 +417,7 @@ const Dashboard = () => {
           }
         </div>
 
-        {/* RSM */}
+        {/* asm */}
         <div className="global_sub_container overflow-auto">
           <h1 className="text-center font-[600] ">ASM</h1>{" "}
           {
@@ -448,7 +446,6 @@ const Dashboard = () => {
                       <td className="global_td">{asm.totalDebit}</td>
                       <td className="global_td">{asm.totalGrand}</td>
                       <td className="global_td space-x-2">
-                        {console.log(ASMdetails)}
                         {/* akane ai report ta dynamic hobe */}
                         <Link
                           to={`/ASMReport/${asm?.ASMID}`}
@@ -481,11 +478,9 @@ const Dashboard = () => {
               </tbody>
               {/* ✅ Table Footer Totals */}
               {ASMdetails && ASMdetails.length > 0 && (
-                <tfoot className="bg-gray-100 font-semibold">
+                <tfoot className="text-green-700">
                   <tr className="global_tr">
-                    <td className="global_td text-center text-green-700">
-                      Total
-                    </td>
+                    <td className="global_td text-center">Total</td>
                     <td className="global_td text-center"></td>
                     <td className="global_td text-center"></td>
                     <td className="global_td">
@@ -573,11 +568,9 @@ const Dashboard = () => {
               </tbody>
               {/* ✅ Table Footer Totals */}
               {MSOdetails && MSOdetails.length > 0 && (
-                <tfoot className="bg-gray-100 font-semibold">
+                <tfoot className="text-green-700">
                   <tr className="global_tr">
-                    <td className="global_td text-center text-green-700">
-                      Total
-                    </td>
+                    <td className="global_td text-center">Total</td>
                     <td className="global_td text-center"></td>
                     <td className="global_td text-center"></td>
                     <td className="global_td">

@@ -21,7 +21,6 @@ export default function MyMso() {
       } catch (error) {
         console.error("Error fetching MSO data:", error);
       } finally {
-        console.log("MSO data fetch attempt completed");
         setGlobalLoader(false);
       }
     };

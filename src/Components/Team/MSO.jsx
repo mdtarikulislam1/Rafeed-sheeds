@@ -4,6 +4,7 @@ import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import { Link } from "react-router-dom";
 
 const MSO = () => {
   const formRef = useRef(null);
@@ -349,13 +350,25 @@ const MSO = () => {
                     <td className="global_td">
                       {mso.active === 1 ? "Active" : "Inactive"}
                     </td>
-                    <td className="global_td">
+                    <td className="global_td space-x-2">
                       <button
                         onClick={() => handleEdit(mso)}
-                        className="global_edit mr-2"
+                        className="global_edit cursor-pointer"
                       >
                         Edit
                       </button>
+                      <Link
+                        className="global_button"
+                        to={`/MSOReport/${mso._id}`}
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        to={`/DealerList/${mso._id}`}
+                        className="global_button"
+                      >
+                        Dealer
+                      </Link>
                     </td>
                   </tr>
                 ))
