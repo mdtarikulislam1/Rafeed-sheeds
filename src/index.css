@@ -306,10 +306,10 @@ body {
 
 .fullScreen-loader {
   width: "70%";
-  animation: "slideLoading 1s linear infinite";
+  animation: "slideLoading2 1s linear infinite";
 }
 
-@keyframes slideLoading {
+@keyframes slideLoading2 {
   0% {
     transform: translateX(-100%);
   }

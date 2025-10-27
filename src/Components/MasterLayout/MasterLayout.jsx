@@ -72,10 +72,9 @@ const MasterLayout = ({ children }) => {
             icon: <MdOutlinePerson4 />,
             path: "/MyAsmPage",
           },
-         
         ]
       : []),
-    ...(["RSM","ASM"].includes(role)
+    ...(["RSM", "ASM"].includes(role)
       ? [
           {
             id: "mymso",
@@ -83,10 +82,9 @@ const MasterLayout = ({ children }) => {
             icon: <MdOutlinePerson4 />,
             path: "/myMso/Page",
           },
-         
         ]
       : []),
-    
+
     ...(["MSO", "ASM"].includes(role)
       ? [
           {
@@ -302,21 +300,21 @@ const MasterLayout = ({ children }) => {
                     },
                   ]
                 : []),
-            
+
               { id: "profile", title: "profile", path: "/profile" },
-                {
-                id: "changePassword",
-                title: "Change Password",
-                icon: <VscGitPullRequestGoToChanges />,
-                path: "/changePassword",
-              },
             ].filter(Boolean),
-            
+
             // This removes any falsy values
           },
-          
         ]
       : []),
+          {
+            id: "changePassword",
+            title: "Change Password",
+            icon: <VscGitPullRequestGoToChanges />,
+            path: "/changePassword",
+          },
+      
   ];
 
   const [expandedItems, setExpandedItems] = useState({});
