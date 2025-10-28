@@ -101,11 +101,10 @@ const DealerList = () => {
                   <td className="global_td">{c.mobile}</td>
                   <td className="global_td">{c.address}</td>
                   <td
-                    className={`global_td text-sm font-medium ${
-                      c.totalBalance >= 0
+                    className={`global_td text-sm font-medium ${c.totalBalance >= 0
                         ? "text-green-600 dark:text-green-400"
                         : "text-red-600 dark:text-red-400"
-                    }`}
+                      }`}
                   >
                     {c.totalBalance}
                   </td>
@@ -113,10 +112,18 @@ const DealerList = () => {
                     <Link
                       to={`/DealerReport/${c._id}`}
                       className="global_button_red"
+                      style={{ marginRight: "8px" }} // 👈 adds horizontal gap
                     >
                       Report
                     </Link>
+                    <Link
+                      to={`/ViewDealerLaser/${c._id}`}
+                      className="global_button"
+                    >
+                      Laser
+                    </Link>
                   </td>
+
                 </tr>
               ))
             ) : (
@@ -139,11 +146,10 @@ const DealerList = () => {
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-r-md rounded-l-full ${
-              page === 1
+            className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
                 ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 : "global_button"
-            }`}
+              }`}
           >
             Previous
           </button>
@@ -153,11 +159,10 @@ const DealerList = () => {
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(total / limit)}
-            className={`px-4 py-2 rounded-l-md rounded-r-full ${
-              page >= Math.ceil(total / limit)
+            className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
                 ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 : "global_button"
-            }`}
+              }`}
           >
             Next
           </button>

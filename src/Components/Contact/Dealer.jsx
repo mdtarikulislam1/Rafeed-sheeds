@@ -116,13 +116,13 @@ const Dealer = () => {
     };
 
     fetchAllData();
-   
+
   }, []);
 
   useEffect(() => {
     fetchDealers();
-   
-  
+
+
   }, [page, limit, search]);
 
   const handleChange = (e) => {
@@ -162,10 +162,10 @@ const Dealer = () => {
             : {}),
           ...(selectedMSO
             ? {
-                ASMID: selectedMSO.ASMID,
-                MSOID: selectedMSO._id,
-                RSMID: selectedMSO.RSMID,
-              }
+              ASMID: selectedMSO.ASMID,
+              MSOID: selectedMSO._id,
+              RSMID: selectedMSO.RSMID,
+            }
             : {}),
         };
 
@@ -440,11 +440,10 @@ const Dealer = () => {
                     </td>
 
                     <td
-                      className={`global_td ${
-                        c.totalBalance >= 0
+                      className={`global_td ${c.totalBalance >= 0
                           ? "text-green-600 dark:text-green-400"
                           : "text-red-600 dark:text-red-400"
-                      }`}
+                        }`}
                     >
                       {c.totalBalance}
                     </td>
@@ -459,9 +458,16 @@ const Dealer = () => {
                         // onClick={() => {
                         //   handleEdit(c);
                         // }}
-                        className="global_edit"
+                        className="global_button"
                       >
                         View Laser
+                      </Link>
+                      <Link
+                        to={`/DealerReport/${c._id}`}
+                        className="global_button_red"
+                        style={{ marginLeft: "8px" }} 
+                      >
+                        Report
                       </Link>
                     </td>
                   </tr>
@@ -486,11 +492,10 @@ const Dealer = () => {
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
               disabled={page === 1}
-              className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                page === 1
+              className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
                   ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                   : "global_button"
-              }`}
+                }`}
             >
               Previous
             </button>
@@ -500,11 +505,10 @@ const Dealer = () => {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page >= Math.ceil(total / limit)}
-              className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                page >= Math.ceil(total / limit)
+              className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
                   ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                   : "global_button"
-              }`}
+                }`}
             >
               Next
             </button>

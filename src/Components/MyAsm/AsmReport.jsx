@@ -333,7 +333,7 @@ const AsmReport = () => {
                 </td>
                 <td className="global_td">
                   {weight.reduce(
-                    (sum, item) => sum + (item.TotalAmount || 0),
+                    (sum, item) => sum + (item.totalAmount || 0),
                     0
                   )}
                 </td>

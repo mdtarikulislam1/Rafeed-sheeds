@@ -449,7 +449,7 @@ const ASM = () => {
                         Edit
                       </button>
                       <Link
-                        to={`/ASMReport/${asm?.ASMID}`}
+                        to={`/ASMReport/${asm?._id}`}
                         className="global_button"
                       >
                         Report
