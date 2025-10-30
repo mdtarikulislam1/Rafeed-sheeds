@@ -193,16 +193,16 @@ const CreatePurchase = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(`${BaseURL}/CreatePurchases`, payload, {
+      const { data } = await axios.post(`${BaseURL}/CreatePurchases`, payload, {
         headers: { token: getToken() },
       });
-      if (res.data.status === "Success") {
+      if (data.status === "Success") {
         SuccessToast("Purchase created successfully");
         setSelectedProducts([]);
         setSelectedSupplier(null);
-        navigate(`/PurchaseDetails/${res.data.purchaseID}`);
+        navigate(`/PurchaseDetails/${data.purchaseID}`);
       } else {
-        ErrorToast("Failed to create purchase");
+        ErrorToast(data?.message);
       }
     } catch (error) {
       ErrorToast("Something went wrong");
@@ -285,229 +285,238 @@ const CreatePurchase = () => {
         </div>
       </div>
 
-      {/* Selected products table */}
-      <div className="global_sub_container mt-4 overflow-auto">
-        {selectedProducts.length > 0 ? (
-          <table className="global_table">
-            <thead className="global_thead">
-              <tr className="global_tr">
-                <th className="global_th">No</th>
-                <th className="global_th">Product Name</th>
-                <th className="global_th">Qty</th>
-                <th className="global_th">Unit Cost</th>
-                <th className="global_th">Sell Price</th>
-                <th className="global_th">Special Price</th>
-                <th className="global_th">Total</th>
-                <th className="global_th">Action</th>
-              </tr>
-            </thead>
-            <tbody className="global_tbody">
-              {selectedProducts.map((p, idx) => (
-                <tr className="global_tr" key={p._id}>
-                  <td className="global_td">{idx + 1}</td>
-                  <td className="global_td">{p.name}</td>
-                  <td className="global_td w-24">
-                    <input
-                      type="number"
-                      value={p.purchasesQty === 0 ? "" : p.purchasesQty}
-                      onChange={(e) =>
-                        handleProductChange(
-                          idx,
-                          "purchasesQty",
-                          e.target.value === "" ? "" : Number(e.target.value)
-                        )
-                      }
-                      className="global_input w-24"
-                    />
-                  </td>
-                  <td className="global_td w-24">
-                    <input
-                      type="number"
-                      value={p.unitCost === 0 ? "" : p.unitCost}
-                      onChange={(e) =>
-                        handleProductChange(
-                          idx,
-                          "unitCost",
-                          e.target.value === "" ? "" : Number(e.target.value)
-                        )
-                      }
-                      className="global_input w-24"
-                    />
-                  </td>
-                  <td className="global_td w-24">
-                    <input
-                      type="number"
-                      value={p.price === 0 ? "" : p.price}
-                      onChange={(e) =>
-                        handleProductChange(
-                          idx,
-                          "price",
-                          e.target.value === "" ? "" : Number(e.target.value)
-                        )
-                      }
-                      className="global_input w-24"
-                    />
-                  </td>
-                  <td className="global_td w-24">
-                    <input
-                      type="number"
-                      value={p.sp === 0 ? "" : p.sp}
-                      onChange={(e) =>
-                        handleProductChange(
-                          idx,
-                          "sp",
-                          e.target.value === "" ? "" : Number(e.target.value)
-                        )
-                      }
-                      className="global_input w-24"
-                    />
-                  </td>
-                  <td className="global_td">{p.total.toFixed(2)}</td>
-                  <td className="global_td">
-                    <button
-                      onClick={() =>
-                        setSelectedProducts(
-                          selectedProducts.filter((_, i) => i !== idx)
-                        )
-                      }
-                      className="text-red-500"
-                    >
-                      Remove
-                    </button>
-                  </td>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        {/* Selected products table */}
+        <div className="global_sub_container mt-4 overflow-auto">
+          {selectedProducts.length > 0 ? (
+            <table className="global_table">
+              <thead className="global_thead">
+                <tr className="global_tr">
+                  <th className="global_th">No</th>
+                  <th className="global_th">Product Name</th>
+                  <th className="global_th">Qty</th>
+                  <th className="global_th">Unit Cost</th>
+                  <th className="global_th">Sell Price</th>
+                  <th className="global_th">Special Price</th>
+                  <th className="global_th">Total</th>
+                  <th className="global_th">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="text-center py-4 text-gray-500">
-            No products selected
-          </div>
-        )}
-      </div>
-
-      {/* Purchase Summary */}
-      {selectedProducts.length > 0 && (
-        <div className="global_sub_container">
-          <div className="flex flex-col lg:flex-row rounded-lg  gap-6">
-            {/* Note */}
-            <div className="flex-1">
-              <label
-                htmlFor="note"
-                className="block mb-2 font-medium text-gray-700 dark:text-gray-300"
-              >
-                Note
-              </label>
-              <textarea
-                name="note"
-                id="note"
-                value={note}
-                onChange={(e) => {
-                  setNote(e.target.value);
-                }}
-                className="global_input min-h-[150px] w-full"
-              />
+              </thead>
+              <tbody className="global_tbody">
+                {selectedProducts.map((p, idx) => (
+                  <tr className="global_tr" key={p._id}>
+                    <td className="global_td">{idx + 1}</td>
+                    <td className="global_td">{p.name}</td>
+                    <td className="global_td w-24">
+                      <input
+                        type="number"
+                        value={p.purchasesQty === 0 ? "" : p.purchasesQty}
+                        onChange={(e) =>
+                          handleProductChange(
+                            idx,
+                            "purchasesQty",
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                        className="global_input w-24"
+                      />
+                    </td>
+                    <td className="global_td w-24">
+                      <input
+                        required
+                        type="number"
+                        value={p.unitCost === 0 ? "" : p.unitCost}
+                        onChange={(e) =>
+                          handleProductChange(
+                            idx,
+                            "unitCost",
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                        className="global_input w-24"
+                      />
+                    </td>
+                    <td className="global_td w-24">
+                      <input
+                        type="number"
+                        value={p.price === 0 ? "" : p.price}
+                        onChange={(e) =>
+                          handleProductChange(
+                            idx,
+                            "price",
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                        className="global_input w-24"
+                      />
+                    </td>
+                    <td className="global_td w-24">
+                      <input
+                        type="number"
+                        value={p.sp === 0 ? "" : p.sp}
+                        onChange={(e) =>
+                          handleProductChange(
+                            idx,
+                            "sp",
+                            e.target.value === "" ? "" : Number(e.target.value)
+                          )
+                        }
+                        className="global_input w-24"
+                      />
+                    </td>
+                    <td className="global_td">{p.total.toFixed(2)}</td>
+                    <td className="global_td">
+                      <button
+                        onClick={() =>
+                          setSelectedProducts(
+                            selectedProducts.filter((_, i) => i !== idx)
+                          )
+                        }
+                        className="text-red-500"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-4 text-gray-500">
+              No products selected
             </div>
+          )}
+        </div>
 
-            {/* Purchase Summary */}
-            <div className="flex-1 global_sub_container">
-              <div className="space-y-3">
-                {/* Total */}
-                <div className="flex justify-between items-center">
-                  <label>Total:</label>
-                  <input
-                    type="number"
-                    value={totalAmount.toFixed(2)}
-                    disabled
-                    className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
-                  />
-                </div>
+        {/* Purchase Summary */}
+        {selectedProducts.length > 0 && (
+          <div className="global_sub_container">
+            <div className="flex flex-col lg:flex-row rounded-lg  gap-6">
+              {/* Note */}
+              <div className="flex-1">
+                <label
+                  htmlFor="note"
+                  className="block mb-2 font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Note
+                </label>
+                <textarea
+                  name="note"
+                  id="note"
+                  value={note}
+                  onChange={(e) => {
+                    setNote(e.target.value);
+                  }}
+                  className="global_input min-h-[150px] w-full"
+                />
+              </div>
 
-                {/* Discount % */}
-                <div className="flex justify-between items-center">
-                  <label>Discount % :</label>
-                  <input
-                    type="number"
-                    value={discountPercent === 0 ? "" : discountPercent}
-                    onChange={(e) => {
-                      setDiscountPercent(
-                        e.target.value === "" ? 0 : Number(e.target.value)
-                      );
-                      setLastEdited("percent");
-                    }}
-                    className="global_input rounded-sm w-40 text-right"
-                    min="0"
-                    max="100"
-                  />
-                </div>
-                {/* Discount */}
-                <div className="flex justify-between items-center">
-                  <label>Discount Amount:</label>
-                  <input
-                    type="number"
-                    value={discount === 0 ? "" : discount}
-                    onChange={(e) => {
-                      setDiscount(
-                        e.target.value === "" ? 0 : Number(e.target.value)
-                      );
-                      setLastEdited("discount");
-                    }}
-                    className="global_input rounded-sm w-40 text-right"
-                    min="0"
-                    max={totalAmount}
-                  />
-                </div>
+              {/* Purchase Summary */}
+              <div className="flex-1 global_sub_container">
+                <div className="space-y-3">
+                  {/* Total */}
+                  <div className="flex justify-between items-center">
+                    <label>Total:</label>
+                    <input
+                      type="number"
+                      value={totalAmount.toFixed(2)}
+                      disabled
+                      className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                    />
+                  </div>
 
-                {/* Grand Total */}
-                <div className="flex justify-between items-center">
-                  <label>Grand Total:</label>
-                  <input
-                    type="number"
-                    value={grandTotal.toFixed(2)}
-                    disabled
-                    className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
-                  />
-                </div>
+                  {/* Discount % */}
+                  <div className="flex justify-between items-center">
+                    <label>Discount % :</label>
+                    <input
+                      type="number"
+                      value={discountPercent === 0 ? "" : discountPercent}
+                      onChange={(e) => {
+                        setDiscountPercent(
+                          e.target.value === "" ? 0 : Number(e.target.value)
+                        );
+                        setLastEdited("percent");
+                      }}
+                      className="global_input rounded-sm w-40 text-right"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                  {/* Discount */}
+                  <div className="flex justify-between items-center">
+                    <label>Discount Amount:</label>
+                    <input
+                      type="number"
+                      value={discount === 0 ? "" : discount}
+                      onChange={(e) => {
+                        setDiscount(
+                          e.target.value === "" ? 0 : Number(e.target.value)
+                        );
+                        setLastEdited("discount");
+                      }}
+                      className="global_input rounded-sm w-40 text-right"
+                      min="0"
+                      max={totalAmount}
+                    />
+                  </div>
 
-                {/* Paid Amount */}
-                <div className="flex justify-between items-center">
-                  <label>Paid Amount:</label>
-                  <input
-                    type="number"
-                    value={paidAmount === 0 ? "" : paidAmount}
-                    onChange={(e) => {
-                      let val =
-                        e.target.value === "" ? 0 : Number(e.target.value);
-                      if (val > grandTotal) val = grandTotal; // cap at grand total
-                      setPaidAmount(val);
-                    }}
-                    className="global_input w-40 rounded-sm text-right"
-                  />
-                </div>
+                  {/* Grand Total */}
+                  <div className="flex justify-between items-center">
+                    <label>Grand Total:</label>
+                    <input
+                      type="number"
+                      value={grandTotal.toFixed(2)}
+                      disabled
+                      className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                    />
+                  </div>
 
-                {/* Due Amount */}
-                <div className="flex justify-between items-center">
-                  <label>Due Amount:</label>
-                  <input
-                    type="number"
-                    value={dueAmount.toFixed(2)}
-                    disabled
-                    className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
-                  />
+                  {/* Paid Amount */}
+                  <div className="flex justify-between items-center">
+                    <label>Paid Amount:</label>
+                    <input
+                      type="number"
+                      value={paidAmount === 0 ? "" : paidAmount}
+                      onChange={(e) => {
+                        let val =
+                          e.target.value === "" ? 0 : Number(e.target.value);
+                        if (val > grandTotal) val = grandTotal; // cap at grand total
+                        setPaidAmount(val);
+                      }}
+                      className="global_input w-40 rounded-sm text-right"
+                    />
+                  </div>
+
+                  {/* Due Amount */}
+                  <div className="flex justify-between items-center">
+                    <label>Due Amount:</label>
+                    <input
+                      type="number"
+                      value={dueAmount.toFixed(2)}
+                      disabled
+                      className="global_input w-40 rounded-sm text-right bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+            <div className="mt-4 w-full flex justify-center lg:justify-end">
+              <button
+                type="submit"
+                // onClick={handleSubmit}
+                className="global_button w-full lg:w-fit"
+              >
+                Create Purchase
+              </button>
+            </div>
           </div>
-          <div className="mt-4 w-full flex justify-center lg:justify-end">
-            <button
-              onClick={handleSubmit}
-              className="global_button w-full lg:w-fit"
-            >
-              Create Purchase
-            </button>
-          </div>
-        </div>
-      )}
+        )}
+      </form>
     </div>
   );
 };

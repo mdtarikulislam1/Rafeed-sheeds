@@ -23,7 +23,6 @@ export default function PasswordChange() {
         headers: { token: getToken() },
       });
 
-      console.log(response.data);
 
       if (response?.data?.status === "Success") {
         SuccessToast(

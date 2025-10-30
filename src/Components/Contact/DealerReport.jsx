@@ -8,12 +8,12 @@ import loadingStore from "../../Zustand/LoadingStore";
 import { getToken } from "../../Helper/SessionHelper";
 import { BaseURL } from "../../Helper/Config";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
+import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const DealerReport = () => {
   const { id } = useParams();
   const { setGlobalLoader } = loadingStore();
   const [reportData, setReportData] = useState([]);
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
@@ -22,61 +22,7 @@ const DealerReport = () => {
   const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
 
-  // Helper functions
-  const startOfDay = (d) => {
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-  const endOfDay = (d) => {
-    d.setHours(23, 59, 59, 999);
-    return d;
-  };
-  const getDiffFromSaturday = (day) => (day + 1) % 7;
 
-  const getDateRange = (option) => {
-    const now = new Date();
-    let start, end;
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1);
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6);
-        break;
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-    return { start, end };
-  };
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -103,10 +49,10 @@ const DealerReport = () => {
           headers: { token: getToken() },
         }
       );
-      console.log(data?.data);
 
       if (data?.status === "Success") {
         setReportData(data?.data);
+        console.log(data?.data);
       }
     } catch (error) {
       console.error(error);
@@ -192,29 +138,28 @@ const DealerReport = () => {
         </div>
       </div>
 
+      {/* user data */}
+
+      <div>
+        {reportData?.dealerName ? (
+          <h4 className="user-name">Name: {reportData?.dealerName}</h4>
+        ) : (
+          ""
+        )}
+        {reportData?.dealerMobile ? (
+          <p className="user-mobile">Mobile: {reportData?.dealerMobile}</p>
+        ) : (
+          ""
+        )}
+        {reportData?.dealerAddress ? (
+          <address className="user-mobile">Address: {reportData?.dealerAddress}</address>
+        ) : (
+          ""
+        )}
+      </div>
+
       {/* dealer summary */}
 
-      <div className="w-full overflow-auto">
-        <h4 className="global_heading">Dealer Summary</h4>
-        <table className="global_table">
-          <thead className="global_thead">
-            <tr className="global_tr">
-              <th className="global_th">no</th>
-              <th className="global_th">dealer Name</th>
-              <th className="global_th">dealer Mobile</th>
-              <th className="global_th">dealer Address</th>
-            </tr>
-          </thead>
-          <tbody className="global_tbody">
-            <tr className="global_tr">
-              <td className="global_td">1</td>
-              <td className="global_td">{reportData?.dealerName}</td>
-              <td className="global_td">{reportData?.dealerMobile}</td>
-              <td className="global_td">{reportData?.dealerAddress}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       {/* summary */}
       <div className="w-full overflow-auto">
@@ -225,7 +170,7 @@ const DealerReport = () => {
               <th className="global_th">no</th>
               <th className="global_th">category Name</th>
               <th className="global_th">product name</th>
-              <th className="global_th">price</th>
+              <th className="global_th">per price</th>
               <th className="global_th">qtySold</th>
               <th className="global_th">per weight</th>
               <th className="global_th">total Weight</th>
@@ -284,34 +229,20 @@ const DealerReport = () => {
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td text-center"></td>
-                <td className="global_td">
+                <td className="global_td text-center"></td>
+                {/* <td className="global_td">
                   {reportData?.products?.reduce(
                     (sum, item) => sum + (item.price || 0),
                     0
                   )}
-                </td>
+                </td> */}
                 <td className="global_td">
                   {reportData?.products?.reduce(
                     (sum, item) => sum + (item.qtySold || 0),
                     0
                   )}
                 </td>
-                <td className="global_td">
-                  {(() => {
-                    const totalWeight = reportData?.products?.reduce(
-                      (sum, item) => sum + (item.weight || 0),
-                      0
-                    );
-
-                    const kg = Math.floor(totalWeight / 1000);
-                    const gram = totalWeight % 1000;
-
-                    if (totalWeight === 0) return "0 g";
-                    if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
-                    if (kg > 0) return `${kg} kg`;
-                    return `${gram} g`;
-                  })()}
-                </td>
+                <td className="global_td text-center"></td>
                 <td className="global_td">
                   {(() => {
                     const totalWeight = reportData?.products?.reduce(

@@ -67,7 +67,7 @@ const AddStock = () => {
         ...prev,
         {
           ...product,
-          qty: 1,
+          qty: 0,
 
           price: product.price || 0, // ✅ Sell Price
           sp: product.sp || 0, // ✅ Special Price
@@ -141,7 +141,7 @@ const AddStock = () => {
       <div className="flex w-full gap-2">
         <div className="w-full">
           <label className="block text-sm font-medium mb-1">
-            Product Name *
+            Product Name  <span className="text-red-500">*</span>
           </label>
           <Select
             options={products}

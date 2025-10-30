@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { printElement } from "../../Helper/Printer";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const ViewSupplierLaser = () => {
   const { id } = useParams(); // শুধু supplier ID আসবে
@@ -46,7 +47,6 @@ const ViewSupplierLaser = () => {
         { headers: { token: getToken() } }
       );
       if (res?.data) {
-        console.log(res.data);
         setLaser(res.data);
       }
     } catch (error) {
@@ -70,75 +70,7 @@ const ViewSupplierLaser = () => {
     laser?.data?.reduce((sum, t) => sum + (t.Debit || 0), 0) || 0;
   const closingBalance = laser?.contactDetails?.ClosingBalance || 0;
 
-  function getDateRange(option) {
-    const now = new Date();
-    let start, end;
 
-    const startOfDay = (d) => {
-      d.setHours(0, 0, 0, 0);
-      return d;
-    };
-
-    const endOfDay = (d) => {
-      d.setHours(23, 59, 59, 999);
-      return d;
-    };
-
-    // helper: Saturday = 6
-    const getDiffFromSaturday = (day) => {
-      // JS: Sunday = 0 ... Saturday = 6
-      return (day + 1) % 7; // so that Saturday → 0, Sunday → 1, Monday → 2 ... Friday → 6
-    };
-
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1); // গত সপ্তাহের শুক্রবার
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6); // শনিবার থেকে শুরু
-        break;
-
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-
-    return { start, end };
-  }
 
   return (
     <div className="p-6" ref={printRef}>
@@ -148,11 +80,38 @@ const ViewSupplierLaser = () => {
 
       {/* Supplier Info */}
       {laser?.contactDetails && (
-        <div className="mb-6 space-y-1 global_sub_container">
-          <h2 className="text-lg font-bold">{laser.contactDetails.company}</h2>
-          <p>{laser.contactDetails.supplier}</p>
-          <p>{laser.contactDetails.mobile}</p>
-          <p>{laser.contactDetails.address}</p>
+        <div className="mb-6 space-y-1 global_sub_container flex justify-between">
+          <div>
+            {laser?.contactDetails?.company ? (
+              <h2 className="user-name">
+                Company: {laser?.contactDetails?.company}
+              </h2>
+            ) : (
+              ""
+            )}
+            {laser?.contactDetails?.supplier ? (
+              <p className="user-mobile">
+                Name: {laser?.contactDetails?.supplier}
+              </p>
+            ) : (
+              ""
+            )}
+
+            {laser?.contactDetails?.mobile ? (
+              <p className="user-mobile">
+                Mobile: {laser.contactDetails.mobile}
+              </p>
+            ) : (
+              ""
+            )}
+            {laser?.contactDetails?.address ? (
+              <address className="user-mobile">
+                {laser?.contactDetails?.address}
+              </address>
+            ) : (
+              ""
+            )}
+          </div>
           <p
             className={`font-medium ${
               closingBalance < 0 ? "text-red-600" : "text-green-400"

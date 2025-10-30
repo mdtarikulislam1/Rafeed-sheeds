@@ -454,14 +454,20 @@ const ASM = () => {
                       >
                         Report
                       </Link>
-                      <Link to={`/MSO/${asm?.ASMID}`} className="global_button">
+                      <Link to={`/MSO/${asm?._id}`} className="global_button">
                         Mso
                       </Link>
                       <Link
-                        to={`/DealerList/${asm?.ASMID}`}
+                        to={`/DealerList/${asm?._id}`}
                         className="global_button"
                       >
                         Dealer
+                      </Link>
+                       <Link
+                        to={`/salereportPage/${asm._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
                       </Link>
                     </td>
                   </tr>

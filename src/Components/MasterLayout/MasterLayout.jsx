@@ -10,6 +10,7 @@ import { GrContactInfo } from "react-icons/gr";
 import { MdCreateNewFolder } from "react-icons/md";
 import { GiBuyCard, GiTeamIdea } from "react-icons/gi";
 import { useState, useEffect } from "react";
+import { CgProfile } from "react-icons/cg";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -29,6 +30,8 @@ import { PiBankBold, PiListStarFill } from "react-icons/pi";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { BiCategoryAlt } from "react-icons/bi";
 import { VscGitPullRequestGoToChanges } from "react-icons/vsc";
+import { MdOutlineReportGmailerrorred } from "react-icons/md";
+import { AiOutlineStock } from "react-icons/ai";
 import {
   getAdmin,
   getRole,
@@ -287,6 +290,26 @@ const MasterLayout = ({ children }) => {
             ],
           },
           {
+            id: "report",
+            title: "Report",
+            icon: <MdOutlineReportGmailerrorred />,
+            children: [
+              ...(isAdmin
+                ? [
+                    {
+                      id: "addstockreport",
+                      title: "Add Stock Report",
+                      icon: <AiOutlineStock />,
+                      path: "/report/addStockReport",
+                    },
+                  ]
+                : []),
+            ].filter(Boolean),
+
+            // This removes any falsy values
+          },
+          // settings
+          {
             id: "settings",
             title: "Settings",
             icon: <CiSettings />,
@@ -298,23 +321,26 @@ const MasterLayout = ({ children }) => {
                       title: "Business Setting",
                       path: "/BusinessSetting",
                     },
+                    {
+                      id: "profile",
+                      title: "profile",
+                      icon: <CgProfile />,
+                      path: "/profile",
+                    },
                   ]
                 : []),
-
-              { id: "profile", title: "profile", path: "/profile" },
             ].filter(Boolean),
 
             // This removes any falsy values
           },
         ]
       : []),
-          {
-            id: "changePassword",
-            title: "Change Password",
-            icon: <VscGitPullRequestGoToChanges />,
-            path: "/changePassword",
-          },
-      
+    {
+      id: "changePassword",
+      title: "Change Password",
+      icon: <VscGitPullRequestGoToChanges />,
+      path: "/changePassword",
+    },
   ];
 
   const [expandedItems, setExpandedItems] = useState({});

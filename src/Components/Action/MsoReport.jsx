@@ -8,6 +8,7 @@ import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
+import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const AsmReport = () => {
   const { id } = useParams();
@@ -19,66 +20,12 @@ const AsmReport = () => {
   // data state
   const [salesByCategory, setSalesByCategory] = useState([]);
   const [productWeightSummary, setProductWeightSummary] = useState([]);
+  const [totalData, setTotalData] = useState([]);
 
-  // download
+  // download xlsx
   const { downloadSelected } = useDownloadStore();
   const containerRef = useRef(null);
 
-  // Helper functions
-  const startOfDay = (d) => {
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-  const endOfDay = (d) => {
-    d.setHours(23, 59, 59, 999);
-    return d;
-  };
-  const getDiffFromSaturday = (day) => (day + 1) % 7;
-
-  const getDateRange = (option) => {
-    const now = new Date();
-    let start, end;
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1);
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6);
-        break;
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-    return { start, end };
-  };
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -107,8 +54,9 @@ const AsmReport = () => {
       );
 
       if (data?.status === "success") {
-        setProductWeightSummary(data?.productWeightSummary);
-        setSalesByCategory(data?.salesByCategory);
+        setProductWeightSummary(data?.productWeightSummary || []);
+        setSalesByCategory(data?.salesByCategory || []);
+        setTotalData(data?.MSO || []);
       }
     } catch (error) {
       console.error(error);
@@ -128,7 +76,7 @@ const AsmReport = () => {
     if (dateInitialized) {
       fetchData();
     }
-  }, [startDate, endDate, dateInitialized]);
+  }, [startDate, endDate,id, dateInitialized]);
 
   return (
     <div className="my-5 px-2" ref={containerRef}>
@@ -194,7 +142,13 @@ const AsmReport = () => {
         </div>
       </div>
 
-      {/* table by data */}
+      {/* user Data */}
+
+      <div>
+        {totalData?.MSOName ? <h4 className="user-name">Name: {totalData?.MSOName}</h4> : ""}
+        {totalData?.MSOMobile ?  <p className="user-mobile">Mobile: {totalData?.MSOMobile}</p> : ""}
+       
+      </div>
 
       {/* salesByCategory */}
       <div className="w-full overflow-auto">
@@ -267,7 +221,7 @@ const AsmReport = () => {
               <th className="global_th">product Name</th>
               <th className="global_th">total amount</th>
               <th className="global_th">total Weight</th>
-              <th className="global_th">total Qty Sold</th>
+              <th className="global_th">total Qty</th>
             </tr>
           </thead>
           <tbody className="global_tbody">

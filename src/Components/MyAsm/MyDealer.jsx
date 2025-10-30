@@ -24,7 +24,6 @@ export default function MyDealer() {
     };
     fetchData();
   }, []);
-  console.log(data);
   return (
     <div className="global_container">
       <div>

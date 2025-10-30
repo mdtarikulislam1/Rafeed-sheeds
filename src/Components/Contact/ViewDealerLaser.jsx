@@ -11,6 +11,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { printElement } from "../../Helper/Printer";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const ViewDealerLaser = () => {
   const { id } = useParams();
@@ -44,12 +45,14 @@ const ViewDealerLaser = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.get(
+      const { data } = await axios.get(
         `${BaseURL}/DealerLaser/${id}/${start}/${end}`,
         { headers: { token: getToken() } }
       );
-      if (res?.data) {
-        setLaser(res.data);
+      if (data?.status === "Success") {
+        setLaser(data);
+      } else {
+        ErrorToast("Data not found");
       }
     } catch (error) {
       ErrorToast(error.message);
@@ -73,101 +76,54 @@ const ViewDealerLaser = () => {
   const closingBalance = laser?.contactDetails?.ClosingBalance || 0;
   const totalDiscount =
     laser?.data?.reduce((sum, t) => sum + (parseInt(t.discount) || 0), 0) || 0;
-  function getDateRange(option) {
-    const now = new Date();
-    let start, end;
 
-    const startOfDay = (d) => {
-      d.setHours(0, 0, 0, 0);
-      return d;
-    };
 
-    const endOfDay = (d) => {
-      d.setHours(23, 59, 59, 999);
-      return d;
-    };
-
-    // helper: Saturday = 6
-    const getDiffFromSaturday = (day) => {
-      // JS: Sunday = 0 ... Saturday = 6
-      return (day + 1) % 7; // so that Saturday → 0, Sunday → 1, Monday → 2 ... Friday → 6
-    };
-
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1); // গত সপ্তাহের শুক্রবার
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6); // শনিবার থেকে শুরু
-        break;
-
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-
-    return { start, end };
-  }
 
   return (
     <div className="p-2" ref={printRef}>
       <h1 className="text-xl font-semibold mb-2">Dealer Transactions Report</h1>
 
       {/* Dealer Info */}
-      {laser?.contactDetails && (
-        <div className="mb-2 space-y-1 global_sub_container">
-          <h2 className="text-lg font-bold">{laser.contactDetails.name}</h2>
-          <p>{laser.contactDetails.mobile}</p>
-          <p>{laser.contactDetails.address}</p>
-          <p
-            className={`font-medium ${
-              laser?.contactDetails?.ClosingBalance < 0
-                ? "text-red-600"
-                : "text-green-400"
-            } `}
-          >
-            {laser?.contactDetails?.ClosingBalance < 0
-              ? `Receivable Closing Balance: ${Math.abs(
-                  laser?.contactDetails?.ClosingBalance
-                ).toLocaleString()}`
-              : `Payable Closing Balance: ${laser?.contactDetails?.ClosingBalance.toLocaleString()}`}
-          </p>
+      <div className="mb-2 space-y-1 global_sub_container flex justify-between">
+        <div>
+          {laser?.data[0]?.dealerDetails?.name ? (
+            <h2 className="user-name">
+              Name: {laser?.data[0]?.dealerDetails?.name}
+            </h2>
+          ) : (
+            ""
+          )}
+
+          {laser?.data[0]?.dealerDetails?.mobile ? (
+            <p className="user-mobile">
+              Mobile: {laser?.data[0]?.dealerDetails?.mobile}
+            </p>
+          ) : (
+            ""
+          )}
+          {laser?.data[0]?.dealerDetails?.address ? (
+            <address className="user-mobile">
+              Address: {laser?.data[0]?.dealerDetails?.address}
+            </address>
+          ) : (
+            ""
+          )}
         </div>
-      )}
+
+        <p
+          className={`font-medium ${
+            laser?.contactDetails?.ClosingBalance < 0
+              ? "text-red-600"
+              : "text-green-400"
+          } `}
+        >
+          {laser?.contactDetails?.ClosingBalance < 0
+            ? `Receivable Balance: ${Math.abs(
+                laser?.contactDetails?.ClosingBalance
+              ).toLocaleString()}`
+            : `Payable Balance: ${laser?.contactDetails?.ClosingBalance.toLocaleString()}`}
+        </p>
+      </div>
 
       {/* Date Filter */}
       <div id="no-print" className="flex flex-col lg:flex-row justify-between">
@@ -182,6 +138,7 @@ const ViewDealerLaser = () => {
             className="global_dropdown"
           >
             {[
+              "Custom",
               "Last 30 Days",
               "This Year",
               "This Month",

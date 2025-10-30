@@ -160,7 +160,7 @@ const NewSale = () => {
 
     const newProduct = {
       ...product,
-      qtySold: 1, // default quantity
+      qtySold: 0, // default quantity
       price: product.price, // use selling price if available
       total: product.price, // initial total
     };
@@ -488,6 +488,7 @@ const NewSale = () => {
                     )}
                   </td>
                   <td className="global_td">{p.stock || 0}</td>
+                  {/* qty sold */}
                   <td className="global_td w-24">
                     <input
                       type="number"
@@ -500,7 +501,7 @@ const NewSale = () => {
                       className={`global_input w-24 ${
                         p.qtySold > p.stock ? "border-red-500 bg-red-50" : ""
                       }`}
-                      min="1"
+                      // min=" "
                       max={p.stock}
                     />
                     {p.qtySold > p.stock && (

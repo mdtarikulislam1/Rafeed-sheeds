@@ -97,11 +97,13 @@ const PurchaseDetails = () => {
         <div className="overflow-x-auto mb-6 lg:px-5">
           <table className="global_table">
             <thead className="global_thead">
-              <th className="global_print_th">SL</th>
-              <th className="global_print_th">Product</th>
-              <th className="global_print_th">Qty</th>
-              <th className="global_print_th">Unit Cost</th>
-              <th className="global_print_th">Total</th>
+              <tr>
+                <th className="global_print_th">SL</th>
+                <th className="global_print_th">Product</th>
+                <th className="global_print_th">Qty</th>
+                <th className="global_print_th">Unit Cost</th>
+                <th className="global_print_th">Total</th>
+              </tr>
             </thead>
             <tbody>
               {details?.Products?.map((p, i) => (

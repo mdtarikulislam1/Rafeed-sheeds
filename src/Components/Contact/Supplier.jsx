@@ -295,16 +295,18 @@ const Supplier = () => {
           {" "}
           <table className="global_table">
             <thead className="global_thead">
-              <th className="global_th">#</th>
-              <th className="global_th">Name</th>
-              <th className="global_th">Company</th>
-              <th className="global_th">Mobile</th>
-              <th className="global_th">Address</th>
+              <tr>
+                <th className="global_th">#</th>
+                <th className="global_th">Name</th>
+                <th className="global_th">Company</th>
+                <th className="global_th">Mobile</th>
+                <th className="global_th">Address</th>
 
-              <th className="global_th">Balance</th>
+                <th className="global_th">Balance</th>
 
-              {/* <th className="global_th">Edit</th> */}
-              <th className="global_th">Laser</th>
+                {/* <th className="global_th">Edit</th> */}
+                <th className="global_th">Laser</th>
+              </tr>
             </thead>
             <tbody className="global_tbody">
               {suppliers.length > 0 ? (

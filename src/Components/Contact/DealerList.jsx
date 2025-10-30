@@ -86,6 +86,7 @@ const DealerList = () => {
         <table className="w-full divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
+              <th className="global_th">No</th>
               <th className="global_th">Name</th>
               <th className="global_th">Mobile</th>
               <th className="global_th">Address</th>
@@ -95,8 +96,9 @@ const DealerList = () => {
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {dealers.length > 0 ? (
-              dealers.map((c) => (
+              dealers.map((c,index) => (
                 <tr key={c._id} className="global_tr">
+                  <td className="global_td">{index +1}</td>
                   <td className="global_td">{c.name}</td>
                   <td className="global_td">{c.mobile}</td>
                   <td className="global_td">{c.address}</td>

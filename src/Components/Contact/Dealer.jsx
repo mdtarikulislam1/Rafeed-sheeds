@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
-import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { Link } from "react-router-dom";
@@ -136,6 +136,11 @@ const Dealer = () => {
       if (editId) {
         // UPDATE (no balance)
         const { name, email, mobile, proprietor, address } = form;
+        
+        if(IsMobile(mobile)){
+          return ErrorToast("Invalid mobile number")
+        }
+
         const res = await axios.put(
           `${BaseURL}/UpdateDealer/${editId}`,
           { name, email, mobile, proprietor, address },
@@ -150,6 +155,12 @@ const Dealer = () => {
         }
       } else {
         // CREATE (send balance as credit/debit)
+
+      if(!IsMobile(form.mobile)){
+         return ErrorToast("Invalid Mobile Number")
+      }
+
+        
         const payload = {
           name: form.name,
           email: form.email,
@@ -313,7 +324,7 @@ const Dealer = () => {
             </div>
           )}
           {/* select ASM */}
-          {!selectedMSO && (
+          {/* {!selectedMSO && (
             <div className="mb-4 col-span-3 lg:col-span-1">
               <label className="text-sm font-medium mb-1 flex items-center">
                 <FaWallet className="mr-2 text-green-600" /> Select ASM
@@ -334,7 +345,7 @@ const Dealer = () => {
                 ))}
               </select>
             </div>
-          )}
+          )} */}
 
           {/* Address */}
           <div className="flex flex-col col-span-3 lg:col-span-1">

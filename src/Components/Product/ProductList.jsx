@@ -270,6 +270,7 @@ const ProductList = () => {
                 />
               </div>
               <div className="flex gap-2 items-center col-span-2">
+                {/* weight */}
                 <div className="w-2/6">
                   <label className="block text-sm font-medium mb-1">
                     Pack Size
@@ -284,7 +285,7 @@ const ProductList = () => {
                     placeholder="0.00"
                   />
                 </div>
-
+               {/* packsize selection */}
                 <div className="flex items-end w-2/6 h-full">
                   <select
                     value={selectedPackSize}
@@ -342,7 +343,7 @@ const ProductList = () => {
                 />
               </div>
 
-              {/* Sell Price */}
+              {/* Special Price */}
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Special Price
@@ -357,7 +358,6 @@ const ProductList = () => {
               </div>
 
               {/* Stock */}
-
               <div>
                 <label className="block text-sm font-medium mb-1">Stock</label>
                 <input
@@ -466,7 +466,16 @@ const ProductList = () => {
                           {product.Categorys?.name || "N/A"}
                         </td>
                         <td className="global_td">
-                          {parseInt(product.stock || 0)}
+                          {parseInt(product.stock || 0)}{" "}
+                          {product.weight && (
+                            <span className="text-xs text-green-400">
+                              (
+                              {product.weight >= 1000
+                                ? product.weight / 1000 + " KG"
+                                : product.weight + " Gram"}
+                              )
+                            </span>
+                          )}
                         </td>
 
                         <td className="global_td">

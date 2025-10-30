@@ -322,10 +322,11 @@ const Expense = () => {
         <div className="gap-5 grid grid-cols-4">
           <div className="mb-4 col-span-4 lg:col-span-1">
             <label className="text-sm font-medium mb-1 flex items-center">
-              <FaWallet className="mr-2 text-green-600" /> Select RSM
+              <FaWallet className="mr-2 text-green-600" /> Select RSM <span className="text-red-400">*</span>
             </label>
 
             <select
+            required
               value={selectedRSM}
               onChange={(e) => setSelectedRSM(e.target.value)}
               className="global_dropdown"
@@ -342,9 +343,10 @@ const Expense = () => {
           {/* Expense Type Dropdown */}
           <div className="mb-4 col-span-4 lg:col-span-1">
             <label className="text-sm font-medium mb-1 flex items-center">
-              <FaTag className="mr-2 text-green-600" /> Expense Type
+              <FaTag className="mr-2 text-green-600" /> Expense Type <span className="text-red-400">*</span>
             </label>
             <select
+            required
               value={selectedExpense}
               onChange={(e) => setSelectedExpense(e.target.value)}
               className="global_dropdown"
@@ -384,9 +386,10 @@ const Expense = () => {
           {/* Amount Input */}
           <div className="mb-4 col-span-4 lg:col-span-1">
             <label className=" text-sm font-medium mb-1 flex items-center">
-              <FaDollarSign className="mr-2 text-green-600" /> Amount
+              <FaDollarSign className="mr-2 text-green-600" /> Amount <span className="text-red-400">*</span>
             </label>
             <input
+            required
               type="number"
               value={amount}
               onChange={(e) => {
@@ -432,7 +435,7 @@ const Expense = () => {
           </div>
         </div>
 
-        <div className="lg:p-4 rounded-2xl shadow-md mb-1">
+        <div className="lg:p-4  mb-1">
           <div className="flex flex-row gap-4 items-center">
             <div>
               <label className="block text-sm">Start Date</label>
@@ -480,8 +483,8 @@ const Expense = () => {
         {/* table */}
         <div className="rounded-2xl shadow-md overflow-hidden">
           {expenseReport.length > 0 ? (
-            <div className="overflow-x-auto" ref={componentRef}>
-              <table className="global-table">
+            <div className="overflow-x-auto min-w-full" ref={componentRef}>
+              <table className="global_table">
                 <thead className="global_thead">
                   <th className="global_th">Type</th>
                   <th className="global_th">RSM</th>
@@ -514,7 +517,7 @@ const Expense = () => {
                   <tr className="global_tr">
                     <td className="global_td font-bold">Total</td>
                     <td className="global_td"></td>
-                    <td className="global_td font-bold text-red-700">
+                    <td className="global_td font-bold text-green-500">
                       {totalAmount.toFixed(2)}
                     </td>
                     <td className="global_td"></td>

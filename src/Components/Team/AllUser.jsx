@@ -169,7 +169,7 @@ const AllUser = () => {
           role: "",
           parentId: "",
         });
-        await Promise.all([fetchRSM(), fetchASM(), fetchAllUsers()]);
+        await Promise.all([ fetchAllUsers()]);
       } else ErrorToast(res.data.message);
     } catch (error) {
       ErrorToast(error.response?.data?.message || "Failed to update user");
@@ -518,7 +518,7 @@ const AllUser = () => {
       )}
 
       {/* Users Table */}
-      <div className="global_sub_container overflow-x-auto">
+      <div className="global_sub_container ">
         <div className="flex flex-col lg:flex-row gap-2 justify-between mb-4">
           <h2 className="text-xl font-bold">User List</h2>
           <input
@@ -526,10 +526,11 @@ const AllUser = () => {
             placeholder="Search with name or mobile"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="global_input w-fit h-fit"
+            className="global_input max-w-lg h-fit"
           />
         </div>
-        <table className="global_table">
+      <div className="overflow-x-auto w-full">
+          <table className="global_table">
           <thead className="global_thead">
             <th className="global_th">Name</th>
             <th className="global_th">Mobile</th>
@@ -622,6 +623,7 @@ const AllUser = () => {
               ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

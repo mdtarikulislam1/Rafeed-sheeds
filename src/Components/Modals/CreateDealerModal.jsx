@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import openCloseStore from "../../Zustand/OpenCloseStore";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
-import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
 import { getToken } from "../../Helper/SessionHelper"; // make sure you have this
 import { FaWallet } from "react-icons/fa"; // since you used <FaWallet />
 import loadingStore from "../../Zustand/LoadingStore";
@@ -114,6 +114,10 @@ const CreateDealerModal = () => {
     // if (!selectedMSO || ! selectedASM) {
     //   return ErrorToast("Please select an MSO");
     // }
+
+     if(!IsMobile(form.mobile)){
+      return ErrorToast('Mobile number incorrect')
+     }
 
     try {
       setLoading(true);

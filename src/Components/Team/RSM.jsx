@@ -3,7 +3,7 @@ import loadingStore from "../../Zustand/LoadingStore";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
-import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
+import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
 
 const RSM = () => {
@@ -113,6 +113,9 @@ const RSM = () => {
     e.preventDefault();
 
     if (!validateForm(form)) return;
+    // if(!IsMobile(form.mobile)){
+    //   return ErrorToast('invalid mobile number')
+    // }
 
     try {
       setGlobalLoader(true);
@@ -410,6 +413,12 @@ const RSM = () => {
                         className="global_button"
                       >
                         Dealer
+                      </Link>
+                      <Link
+                        to={`/salereportPage/${RSM._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
                       </Link>
                     </td>
                   </tr>

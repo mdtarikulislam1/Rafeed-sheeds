@@ -8,6 +8,7 @@ import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
+import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const AsmReport = () => {
   const { id } = useParams();
@@ -16,6 +17,8 @@ const AsmReport = () => {
   const [summary, setSummary] = useState([]);
   const [weight, setWeight] = useState([]);
   const [msoSummary, setMsoSummary] = useState([]);
+  const [totalData, setTotalData] = useState([]);
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
@@ -24,61 +27,7 @@ const AsmReport = () => {
   const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
 
-  // Helper functions
-  const startOfDay = (d) => {
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-  const endOfDay = (d) => {
-    d.setHours(23, 59, 59, 999);
-    return d;
-  };
-  const getDiffFromSaturday = (day) => (day + 1) % 7;
 
-  const getDateRange = (option) => {
-    const now = new Date();
-    let start, end;
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1);
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6);
-        break;
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-    return { start, end };
-  };
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -99,17 +48,18 @@ const AsmReport = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.get(
+      const { data } = await axios.get(
         `${BaseURL}/ASMReport/${id}/${start}/${end}`,
         {
           headers: { token: getToken() },
         }
       );
 
-      if (res?.data?.status === "success") {
-        setSummary(res.data.salesByCategory || []);
-        setWeight(res.data.productWeightSummary || []);
-        setMsoSummary(res.data.msoSummary || []);
+      if (data?.status === "success") {
+        setSummary(data?.salesByCategory || []);
+        setWeight(data?.productWeightSummary || []);
+        setMsoSummary(data?.msoSummary || []);
+        setTotalData(data?.ASM || []);
       }
     } catch (error) {
       console.error(error);
@@ -131,7 +81,7 @@ const AsmReport = () => {
     if (dateInitialized) {
       fetchData();
     }
-  }, [startDate, endDate, dateInitialized]);
+  }, [startDate,id, endDate, dateInitialized]);
 
   return (
     <div className="my-5 px-2" ref={containerRef}>
@@ -196,6 +146,21 @@ const AsmReport = () => {
           </div>
         </div>
       </div>
+
+      {/* user data */}
+      <div>
+        {totalData?.ASMName ? (
+          <h4 className="user-name">NAME: {totalData?.ASMName}</h4>
+        ) : (
+          ""
+        )}
+        {totalData?.ASMMobile ? (
+          <p className="user-mobile">MOBILE: {totalData?.ASMMobile}</p>
+        ) : (
+          ""
+        )}
+      </div>
+
       {/* salesByCategory */}
 
       <div className="w-full overflow-x-auto text-nowrap my-3">
@@ -269,7 +234,7 @@ const AsmReport = () => {
               <th className="global_th">No</th>
               <th className="global_th">Product Name</th>
               <th className="global_th">Total Weight</th>
-              <th className="global_th">total Qty Sold</th>
+              <th className="global_th">total Qty</th>
               <th className="global_th">Total Amount</th>
             </tr>
           </thead>

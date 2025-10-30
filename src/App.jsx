@@ -1,9 +1,9 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { getToken } from "./Helper/SessionHelper";
 import Login from "./Components/Login/Login";
 import DashboardPage from "./Pages/Dashboard/DashboardPage";
-import BusinessSettingPage from "./Pages/BusinessSetting/BusinessSettingPage";
+import BusinessSettingPage from "./Pages/Setting/BusinessSettingPage";
 import ProductListPage from "./Pages/Product/ProductListPage";
 import CreateCategoryPage from "./Pages/Product/CategoryPage";
 import AllUserPage from "./Pages/Team/AllUserPage";
@@ -48,9 +48,27 @@ import MyMsoPage from "./Pages/MyMso/MyMsoPage";
 import AsmReportPage from "./Pages/MyAsm/AsmReportPage"
 import DealerPage from "./Pages/ActionPage/DealerPage";
 import DealerReportPage from "./Pages/Contact/DealerReportPage";
+import ProfilePage from "./Pages/Setting/ProfilePage";
+import AddStockReportPage from "./Pages/ReportPage/AddStockReportPage";
+import SaleReportPage from "./Pages/ReportPage/SaleReportPage";
 
 function App() {
   const isLoggedIn = getToken();
+
+  // number er scroll er jonno
+
+
+  useEffect(() => {
+    const handleWheel = (e) => {
+      const active = document.activeElement;
+      if (active && active.type === "number") {
+        active.blur(); // scroll করলে input unfocus হয়ে যাবে
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    return () => window.removeEventListener("wheel", handleWheel);
+  }, []);
 
   return (
     <Fragment>
@@ -58,7 +76,6 @@ function App() {
         {isLoggedIn ? (
           <Routes>
             <Route path="/" element={<DashboardPage />} />
-            <Route path="/BusinessSetting" element={<BusinessSettingPage />} />
             <Route path="/ProductList" element={<ProductListPage />} />
             <Route path="/Category" element={<CreateCategoryPage />} />
             <Route path="/AddStock" element={<AddStockPage />} />
@@ -111,6 +128,16 @@ function App() {
 
 
             <Route path="/myMso/Page" element={<MyMsoPage/>}/>
+
+             {/* report */}
+             <Route path="/report/addStockReport" element={<AddStockReportPage/>}/>
+             <Route path="/salereportPage/:id" element={<SaleReportPage/>}/>
+
+
+            {/* setting */}
+            <Route path="/BusinessSetting" element={<BusinessSettingPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+             
 
             {/* dealer */}
             <Route path="/my/dealer" element={<MyDealerPages/>}/>

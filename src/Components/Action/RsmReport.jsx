@@ -8,6 +8,8 @@ import loadingStore from "../../Zustand/LoadingStore";
 import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
+import { getDateRange } from "../../Helper/dateRangeHelper";
+import SaleReport from "../Report/SaleReport";
 
 const RsmReport = () => {
   const { id } = useParams();
@@ -16,69 +18,16 @@ const RsmReport = () => {
   const [weight, setWeight] = useState([]);
   const [msoSummary, setMsoSummary] = useState([]);
   const [salesByCategory, setSalesByCategory] = useState([]);
+  const [totalData, setTotalData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
 
   // download
-   const containerRef = useRef();
+  const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
 
-  // Helper functions
-  const startOfDay = (d) => {
-    d.setHours(0, 0, 0, 0);
-    return d;
-  };
-  const endOfDay = (d) => {
-    d.setHours(23, 59, 59, 999);
-    return d;
-  };
-  const getDiffFromSaturday = (day) => (day + 1) % 7;
 
-  const getDateRange = (option) => {
-    const now = new Date();
-    let start, end;
-    switch (option) {
-      case "Last 30 Days":
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - 30);
-        end = endOfDay(new Date(now));
-        break;
-      case "This Year":
-        start = startOfDay(new Date(now.getFullYear(), 0, 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-        break;
-      case "This Week":
-        const diff = getDiffFromSaturday(now.getDay());
-        start = startOfDay(new Date(now));
-        start.setDate(now.getDate() - diff);
-        end = endOfDay(new Date(now));
-        break;
-      case "Last Week":
-        const diff2 = getDiffFromSaturday(now.getDay());
-        end = endOfDay(new Date(now));
-        end.setDate(now.getDate() - diff2 - 1);
-        start = startOfDay(new Date(end));
-        start.setDate(end.getDate() - 6);
-        break;
-      case "Last Month":
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-        end = endOfDay(new Date(now.getFullYear(), now.getMonth(), 0));
-        break;
-      case "Last Year":
-        start = startOfDay(new Date(now.getFullYear() - 1, 0, 1));
-        end = endOfDay(new Date(now.getFullYear() - 1, 11, 31));
-        break;
-      default:
-        start = startOfDay(new Date(now.getFullYear(), now.getMonth(), 1));
-        end = endOfDay(new Date(now));
-    }
-    return { start, end };
-  };
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -99,18 +48,19 @@ const RsmReport = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.get(
+      const { data } = await axios.get(
         `${BaseURL}/RSMReport/${id}/${start}/${end}`,
         {
           headers: { token: getToken() },
         }
       );
 
-      if (res?.data?.status === "success") {
-        setAsmSummary(res.data.asmSummary || []);
-        setWeight(res.data.productWeightSummary || []);
-        setMsoSummary(res.data.msoSummary || []);
-        setSalesByCategory(res.data.salesByCategory || []);
+      if (data?.status === "success") {
+        setAsmSummary(data.asmSummary || []);
+        setWeight(data.productWeightSummary || []);
+        setMsoSummary(data.msoSummary || []);
+        setSalesByCategory(data.salesByCategory || []);
+        setTotalData(data?.RSM || []);
       }
     } catch (error) {
       console.error(error);
@@ -132,10 +82,10 @@ const RsmReport = () => {
     if (dateInitialized) {
       fetchData();
     }
-  }, [startDate, endDate, dateInitialized]);
+  }, [startDate,id, endDate, dateInitialized]);
 
   return (
-    <div className="my-5 px-2 "  ref={containerRef}>
+    <div className="my-5 px-2 " ref={containerRef}>
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
@@ -198,11 +148,30 @@ const RsmReport = () => {
         </div>
       </div>
 
+      {/* user Data */}
+
+      <div>
+        {totalData?.RSMName ? (
+          <h4 className="user-name">Name: {totalData?.RSMName}</h4>
+        ) : (
+          ""
+        )}
+        {totalData?.RSMMobile ? (
+          <p className="user-mobile">Mobile: {totalData?.RSMMobile}</p>
+        ) : (
+          ""
+        )}
+      </div>
+
       {/* table */}
+
+{/* sales report */}
+<SaleReport id={id} start={startDate} end={endDate} />
+
 
       <div>
         {/* salesByCategory   */}
-        <div className="my-4" >
+        <div className="my-4">
           <h4 className="global_heading">Sales By Category</h4>
           <div className="w-full overflow-auto">
             <table className="global_table ">
@@ -402,7 +371,7 @@ const RsmReport = () => {
 
                       <Link
                         to={`/MSO/${items?.ASMID}`}
-                        className="global_button_red"
+                        className="global_button"
                       >
                         MSO
                       </Link>
@@ -579,7 +548,7 @@ const RsmReport = () => {
       </button>
       <button
         className="global_button cursor-pointer no-print mx-3"
-       onClick={() => downloadSelected(containerRef, "report")}
+        onClick={() => downloadSelected(containerRef, "report")}
       >
         Download Excel
       </button>

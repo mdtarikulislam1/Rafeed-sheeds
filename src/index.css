@@ -64,11 +64,11 @@ body {
     shadow-sm
     hover:shadow-md transition-shadow;
   }
-  .global_no-data{
-    @apply text-xl font-bold text-red-600 text-center
+  .global_no-data {
+    @apply text-xl font-bold text-red-600 text-center;
   }
-  .global_heading{
-    @apply text-xl text-center font-semibold py-3
+  .global_heading {
+    @apply text-xl text-center font-semibold py-3;
   }
 }
 
@@ -239,7 +239,8 @@ body {
 /* React Select */
 /* Control (container) */
 .react-select__control {
-  @apply bg-white text-gray-900 border-gray-300 rounded-full;
+  @apply bg-white text-gray-900 border-gray-300;
+  border-radius: 9999px !important;
 }
 .dark .react-select__control {
   @apply bg-gray-800 text-white border-gray-600 rounded-full;
@@ -280,11 +281,13 @@ body {
   @apply text-gray-400;
 }
 /* Typed input text */
-.react-select__input {
-  @apply text-gray-900;
+/* Input text while typing */
+.react-select__input input {
+  color: #111827 !important; /* Light mode -> text-gray-900 */
 }
-.dark .react-select__input {
-  @apply text-white;
+
+.dark .react-select__input input {
+  color: #ffffff !important; /* Dark mode -> white */
 }
 
 /* lazy loading style */
@@ -318,4 +321,14 @@ body {
   }
 }
 
+
+
+/* report user */
+
+.user-name{
+  @apply font-semibold text-lg
+}
+.user-mobile{
+  @apply font-semibold text-gray-600
+}
 

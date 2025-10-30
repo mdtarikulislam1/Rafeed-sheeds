@@ -1,22 +1,22 @@
-import React, { Fragment, Suspense, lazy } from "react";
+import { Fragment, lazy, Suspense } from "react";
 import MasterLayout from "../../Components/MasterLayout/MasterLayout";
 import LazyLoader from "../../Components/MasterLayout/LazyLoader";
-const BusinessSetting = lazy(() =>
-  import("../../Components/BusinessSetting/BusinessSetting")
+
+const SaleReport = lazy(() =>
+  import("../../Components/Report/SaleReport")
 );
 
-
-
-const BusinessSettingPage = () => {
+const SaleReportPage = () => {
   return (
     <Fragment>
       <MasterLayout>
         <Suspense fallback={<LazyLoader />}>
-          <BusinessSetting />
+          {/* <AddStockReport /> */}
+          <SaleReport />
         </Suspense>
       </MasterLayout>
     </Fragment>
   );
 };
 
-export default BusinessSettingPage;
+export default SaleReportPage;
