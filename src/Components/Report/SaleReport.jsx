@@ -167,7 +167,6 @@ const SaleReport = () => {
               <th className="global_th ">Category Name</th>
               <th className="global_th ">Total Sale</th>
               <th className="global_th ">total Weight</th>
-              <th className="global_th ">count</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
@@ -177,8 +176,16 @@ const SaleReport = () => {
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
                   <td className="global_td">{items?.TotalSale || 0}</td>
-                  <td className="global_td">{items?.totalWeight || 0}</td>
-                  <td className="global_td">{items?.count || 0}</td>
+                  <td className="global_td">      {(() => {
+                      const weight = items?.totalWeight || 0;
+                      const kg = Math.floor(weight / 1000);
+                      const gram = weight % 1000;
+
+                      if (weight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}</td>
                 </tr>
               ))
             ) : (
@@ -232,11 +239,11 @@ const SaleReport = () => {
           <thead className="global_thead">
             <tr className="global_tr">
               <th className="global_th ">no</th>
+              <th className="global_th ">ID</th>
               <th className="global_th ">Name</th>
               <th className="global_th ">address</th>
               <th className="global_th ">proprietor</th>
               <th className="global_th ">mobile</th>
-              <th className="global_th ">ID</th>
               <th className="global_th ">totalBalance</th>
             </tr>
           </thead>
@@ -245,11 +252,11 @@ const SaleReport = () => {
               matchedDealers.map((item, index) => (
                 <tr className="global_tr" key={item._id}>
                   <td className="global_td">{index + 1}</td>
+                  <td className="global_td">{item.ID || 'N/A'}</td>
                   <td className="global_td">{item.name || 'N/A'}</td>
                   <td className="global_td">{item.address || 'N/A'}</td>
                   <td className="global_td">{item.proprietor || 'N/A'}</td>
                   <td className="global_td">{item.mobile || 'N/A'}</td>
-                  <td className="global_td">{item.ID || 'N/A'}</td>
                   <td className="global_td">{item.totalBalance || 0}</td>
                 </tr>
               ))

@@ -156,13 +156,20 @@ const Dashboard = () => {
                 {s.CategoryName}
               </div>
               <div className="p-2 space-y-3">
-                <div className="flex justify-between border-t border-gray-200 pt-2">
+                <div className="flex justify-between  pt-2">
                   <span className="text-xs ">Total Sales:</span>
                   <span className="text-lg font-bold text-green-600">
-                    {s?.TotalSale || 0}
+                    ৳{(s?.TotalSale || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-gray-200 pt-2">
+                <div className="flex justify-between">
+                  <span className="text-xs ">Collection</span>
+                  <span className="text-lg font-bold text-green-600">
+                    ৳{(s?.TotalDebit || 0).toLocaleString("en-IN")}
+                  </span>
+                </div>
+
+                <div className="flex justify-between  pt-2">
                   <span className="text-xs ">Total Weight:</span>
                   <span className="text-lg font-bold text-green-600">
                     {(() => {
@@ -177,23 +184,22 @@ const Dashboard = () => {
                     })()}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-xs ">Discount</span>
-                  <span className="text-sm font-medium text-red-500">
-                    {s.TotalDiscount}
-                  </span>
-                </div>
-
-                <div className="flex justify-between border-t border-gray-200 pt-2">
-                  <span className="text-xs ">Total</span>
-                  <span className="text-lg font-bold text-green-500">
-                    {s.TotalCredit}
-                  </span>
-                </div>
               </div>
-              <div className="px-5 py-2 flex justify-between items-center bg-amber-100 dark:bg-amber-800 text-xs font-medium">
-                {/* <span className="text-xs ">Invoice</span>
-                <span className="font-bold text-green-500">{s.count}</span> */}
+              <div className="px-5 py-3 flex justify-between items-center bg-gradient-to-r from-amber-200 to-amber-400 dark:from-amber-700 dark:to-amber-900 text-sm font-semibold rounded-xl shadow-md">
+                <div className="flex flex-col">
+                  <span className="text-gray-700 dark:text-gray-200">
+                    Collection
+                  </span>
+                  <span className="text-gray-900 dark:text-white text-lg mt-1">
+                    {s.TotalCredit > 0
+                      ? `${((s.TotalDebit / s.TotalCredit) * 100).toFixed(2)}%`
+                      : "0%"}
+                  </span>
+                </div>
+                <div className="bg-white dark:bg-amber-800 px-3 py-1 rounded-full shadow-inner text-gray-800 dark:text-white text-sm font-medium">
+                  {/* Optional: could show icon or extra info */}
+                  {s.TotalDebit.toLocaleString("en-IN")}
+                </div>
               </div>
             </div>
           ))}

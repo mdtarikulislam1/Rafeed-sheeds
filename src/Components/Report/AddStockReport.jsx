@@ -5,6 +5,7 @@ import { getDateRange } from "../../Helper/dateRangeHelper";
 import { getToken } from "../../Helper/SessionHelper";
 import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
+import TimeAgo from "../../Helper/UI/TimeAgo";
 
 export default function AddStockReport() {
   const [startDate, setStartDate] = useState(null);
@@ -44,7 +45,7 @@ export default function AddStockReport() {
   };
 
   // first time set this month
-    useEffect(() => {
+  useEffect(() => {
     const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
@@ -65,7 +66,7 @@ export default function AddStockReport() {
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
-               value={selectedRange} // 🔥 এখন React control করবে value
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
               const value = e.target.value;
               setSelectedRange(value); // 🔥 selectedRange আপডেট
@@ -134,7 +135,9 @@ export default function AddStockReport() {
             <tr className="global_tr">
               <th className="global_th ">no</th>
               <th className="global_th ">product Name</th>
-              <th className="global_th ">product Weight</th>
+              <th className="global_th ">per Weight</th>
+              <th className="global_th ">total Weight</th>
+              <th className="global_th ">Date</th>
               <th className="global_th ">qty</th>
             </tr>
           </thead>
@@ -147,8 +150,35 @@ export default function AddStockReport() {
                     {items?.productName ? items?.productName : "N/A"}
                   </td>
                   <td className="global_td">
-                    {items?.productWeight ? items?.productWeight : "N/A"}
+                    {items?.productWeight
+                      ? (() => {
+                          const weight = items?.productWeight || 0;
+                          const kg = Math.floor(weight / 1000);
+                          const gram = weight % 1000;
+
+                          if (weight === 0) return "0 g";
+                          if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                          if (kg > 0) return `${kg} kg`;
+                          return `${gram} g`;
+                        })()
+                      : "N/A"}
                   </td>
+                  <td className="global_td">
+                    {items?.productWeight
+                      ? (() => {
+                          const totalWeight =
+                            (items.productWeight || 0) * (items.qty || 1); // weight * qty
+                          const kg = Math.floor(totalWeight / 1000);
+                          const gram = totalWeight % 1000;
+
+                          if (totalWeight === 0) return "0 g";
+                          if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                          if (kg > 0) return `${kg} kg`;
+                          return `${gram} g`;
+                        })()
+                      : "N/A"}
+                  </td>
+                  <td className="global_td"><TimeAgo date={items.CreatedDate} /></td>
                   <td className="global_td">{items?.qty ? items?.qty : 0}</td>
                 </tr>
               ))
@@ -159,27 +189,28 @@ export default function AddStockReport() {
                 </td>
               </tr>
             )}
-           
           </tbody>
-           {stockReport && stockReport.length > 0 && (
-              <tfoot className="text-green-700">
-                <tr className="global_tr">
-                  <td className="global_td text-center">Total</td>
-                  <td className="global_td text-center"></td>
-                  <td className="global_td">
-                    {stockReport.reduce(
+          {stockReport && stockReport.length > 0 && (
+            <tfoot className="text-green-700">
+              <tr className="global_tr">
+                <td className="global_td text-center">Total</td>
+                <td className="global_td text-center"></td>
+                <td className="global_td text-center"></td>
+                <td className="global_td text-center"></td>
+                <td className="global_td">
+                  {/* {stockReport.reduce(
                       (sum, item) => sum + (item.productWeight || 0),
                       0
-                    )}
-                  </td>
-                  <td className="global_td text-center"></td>
-                </tr>
-              </tfoot>
-            )}
+                    )} */}
+                </td>
+                <td className="global_td text-center">
+                  {stockReport.reduce((sum, item) => sum + (item.qty || 0), 0)}
+                </td>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
-
-
     </div>
   );
 }
