@@ -96,25 +96,25 @@ const DealerList = () => {
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {dealers.length > 0 ? (
-              dealers.map((c,index) => (
+              dealers.map((c, index) => (
                 <tr key={c._id} className="global_tr">
-                  <td className="global_td">{index +1}</td>
+                  <td className="global_td">{index + 1}</td>
                   <td className="global_td">{c.name}</td>
                   <td className="global_td">{c.mobile}</td>
                   <td className="global_td">{c.address}</td>
                   <td
-                    className={`global_td text-sm font-medium ${c.totalBalance >= 0
+                    className={`global_td text-sm font-medium ${
+                      c.totalBalance >= 0
                         ? "text-green-600 dark:text-green-400"
                         : "text-red-600 dark:text-red-400"
-                      }`}
+                    }`}
                   >
                     {c.totalBalance}
                   </td>
-                  <td className="global_td">
+                  <td className="global_td space-x-2">
                     <Link
                       to={`/DealerReport/${c._id}`}
                       className="global_button_red"
-                      style={{ marginRight: "8px" }} // 👈 adds horizontal gap
                     >
                       Report
                     </Link>
@@ -124,8 +124,13 @@ const DealerList = () => {
                     >
                       Laser
                     </Link>
+                    <Link
+                      to={`/salereportPage/${c._id}`}
+                      className="global_button"
+                    >
+                      Sale Report
+                    </Link>
                   </td>
-
                 </tr>
               ))
             ) : (
@@ -148,10 +153,11 @@ const DealerList = () => {
           <button
             onClick={() => setPage((p) => Math.max(p - 1, 1))}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
+            className={`px-4 py-2 rounded-r-md rounded-l-full ${
+              page === 1
                 ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 : "global_button"
-              }`}
+            }`}
           >
             Previous
           </button>
@@ -161,10 +167,11 @@ const DealerList = () => {
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page >= Math.ceil(total / limit)}
-            className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
+            className={`px-4 py-2 rounded-l-md rounded-r-full ${
+              page >= Math.ceil(total / limit)
                 ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                 : "global_button"
-              }`}
+            }`}
           >
             Next
           </button>

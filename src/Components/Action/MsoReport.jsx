@@ -16,6 +16,7 @@ const AsmReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // data state
   const [salesByCategory, setSalesByCategory] = useState([]);
@@ -25,7 +26,6 @@ const AsmReport = () => {
   // download xlsx
   const { downloadSelected } = useDownloadStore();
   const containerRef = useRef(null);
-
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -66,9 +66,10 @@ const AsmReport = () => {
   };
 
   useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -76,16 +77,18 @@ const AsmReport = () => {
     if (dateInitialized) {
       fetchData();
     }
-  }, [startDate, endDate,id, dateInitialized]);
+  }, [startDate, endDate, id, dateInitialized]);
 
   return (
     <div className="my-5 px-2" ref={containerRef}>
       <div className="flex flex-col lg:flex-row items-start justify-between no-print ">
         <div className="flex items-end mb-4">
           <select
-            defaultValue="This Month"
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
@@ -145,9 +148,16 @@ const AsmReport = () => {
       {/* user Data */}
 
       <div>
-        {totalData?.MSOName ? <h4 className="user-name">Name: {totalData?.MSOName}</h4> : ""}
-        {totalData?.MSOMobile ?  <p className="user-mobile">Mobile: {totalData?.MSOMobile}</p> : ""}
-       
+        {totalData?.MSOName ? (
+          <h4 className="user-name">Name: {totalData?.MSOName}</h4>
+        ) : (
+          ""
+        )}
+        {totalData?.MSOMobile ? (
+          <p className="user-mobile">Mobile: {totalData?.MSOMobile}</p>
+        ) : (
+          ""
+        )}
       </div>
 
       {/* salesByCategory */}

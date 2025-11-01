@@ -10,6 +10,7 @@ export default function AddStockReport() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // data state
   const [stockReport, setStockReport] = useState([]);
@@ -43,10 +44,11 @@ export default function AddStockReport() {
   };
 
   // first time set this month
-  useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+    useEffect(() => {
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -63,9 +65,11 @@ export default function AddStockReport() {
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
-            defaultValue="This Month"
+               value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}

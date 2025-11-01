@@ -9,7 +9,6 @@ import { BaseURL } from "../../Helper/Config";
 import { getToken } from "../../Helper/SessionHelper";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
 import { getDateRange } from "../../Helper/dateRangeHelper";
-import SaleReport from "../Report/SaleReport";
 
 const RsmReport = () => {
   const { id } = useParams();
@@ -22,12 +21,11 @@ const RsmReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // download
   const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
-
-
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -69,11 +67,11 @@ const RsmReport = () => {
     }
   };
 
-  // ✅ প্রথমে শুধু একবার "This Month" সেট করা
   useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -82,16 +80,18 @@ const RsmReport = () => {
     if (dateInitialized) {
       fetchData();
     }
-  }, [startDate,id, endDate, dateInitialized]);
+  }, [startDate, id, endDate, dateInitialized]);
 
   return (
     <div className="my-5 px-2 " ref={containerRef}>
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
-            defaultValue="This Month"
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
@@ -164,10 +164,6 @@ const RsmReport = () => {
       </div>
 
       {/* table */}
-
-{/* sales report */}
-<SaleReport id={id} start={startDate} end={endDate} />
-
 
       <div>
         {/* salesByCategory   */}
@@ -331,6 +327,7 @@ const RsmReport = () => {
       </div>
 
       {/* Asm Summary  */}
+
       <div className="my-4 no-print no-download">
         <h4 className="global_heading">Asm Summary</h4>
         <div className="w-full overflow-auto">

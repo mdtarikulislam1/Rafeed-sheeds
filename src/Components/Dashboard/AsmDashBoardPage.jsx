@@ -18,32 +18,36 @@ const AsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
   const [salesByCategory, setSalesByCategory] = useState([]);
   const [productWeightSummary, setProductWeightSummary] = useState([]);
-  const [asmSummary, setAsmSummary] = useState([]);
   const [msoSummary, setMsoSummary] = useState([]);
 
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 0))
-  );
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   const formatDate = (date, endOfDay = false) => {
+    if (!date) return null;
     const d = new Date(date);
-    if (endOfDay) {
-      d.setHours(23, 59, 59, 999);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
+    if (endOfDay) d.setHours(23, 59, 59, 999);
+    else d.setHours(0, 0, 0, 0);
 
-    const bdOffset = 6 * 60; // minutes
+    const bdOffset = 6 * 60; // Bangladesh +6
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
     const bdTime = new Date(utc + bdOffset * 60000);
 
-    return bdTime.toISOString();
+    // ✅ শুধু YYYY-MM-DD পাঠানো হবে
+    const yyyy = bdTime.getFullYear();
+    const mm = String(bdTime.getMonth() + 1).padStart(2, "0");
+    const dd = String(bdTime.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
   };
 
   const fetchData = async () => {
-    const start = formatDate(startDate, false); // 00:00:00
-    const end = formatDate(endDate, true); // 23:59:59
+    if (!startDate || !endDate) return;
+
+    const start = formatDate(startDate, false);
+    const end = formatDate(endDate, true);
 
     try {
       setGlobalLoader(true);
@@ -55,7 +59,6 @@ const AsmDashBoardPage = () => {
       );
       setSalesByCategory(data?.salesByCategory);
       setProductWeightSummary(data?.productWeightSummary);
-      setAsmSummary(data?.asmSummary);
       setMsoSummary(data?.msoSummary);
     } catch (error) {
       ErrorToast(error.message);
@@ -66,16 +69,23 @@ const AsmDashBoardPage = () => {
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
+    const { start, end } = getDateRange("This Year");
+    setStartDate(start);
+    setEndDate(end);
+    setSelectedRange("This Year");
+    setDateInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (dateInitialized) {
       fetchData();
     }
   }, [startDate, endDate]);
 
-
-
   const pieColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
   // ---------- RENDER ----------
+
 
   return (
     <div className="p-1">
@@ -83,8 +93,11 @@ const AsmDashBoardPage = () => {
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex items-end mb-4">
           <select
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
@@ -267,8 +280,18 @@ const AsmDashBoardPage = () => {
                     <td className="global_td">{items?.totalCredit || 0}</td>
                     <td className="global_td">{items?.totalGrand || 0}</td>
                     <td className="global_td space-x-2">
-                      <Link className="global_button" to={`/MSOReport/${items?.MSOID}`}>Report</Link>
-                      <Link className="global_button_red" to={`/DealerList/${items?.MSOID}`}>Dealer</Link>
+                      <Link
+                        className="global_button"
+                        to={`/MSOReport/${items?.MSOID}`}
+                      >
+                        Report
+                      </Link>
+                      <Link
+                        className="global_button_red"
+                        to={`/DealerList/${items?.MSOID}`}
+                      >
+                        Dealer
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -285,15 +308,9 @@ const AsmDashBoardPage = () => {
             {msoSummary && msoSummary.length > 0 && (
               <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center">
-                    Total
-                  </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center">Total</td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
                   <td className="global_td">
                     {msoSummary.reduce(
                       (sum, item) => sum + (item.totalSale || 0),
@@ -324,9 +341,7 @@ const AsmDashBoardPage = () => {
                       0
                     )}
                   </td>
-                   <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center"></td>
                 </tr>
               </tfoot>
             )}
@@ -370,12 +385,8 @@ const AsmDashBoardPage = () => {
             {productWeightSummary && productWeightSummary.length > 0 && (
               <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center">
-                    Total
-                  </td>
-                  <td className="global_td text-center">
-                   
-                  </td>
+                  <td className="global_td text-center">Total</td>
+                  <td className="global_td text-center"></td>
                   <td className="global_td">
                     {productWeightSummary.reduce(
                       (sum, item) => sum + (item.totalWeight || 0),
@@ -394,7 +405,6 @@ const AsmDashBoardPage = () => {
                       0
                     )}
                   </td>
-                 
                 </tr>
               </tfoot>
             )}

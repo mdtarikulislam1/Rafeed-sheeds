@@ -18,6 +18,9 @@ const ViewDealerLaser = () => {
   const [laser, setLaser] = useState(null);
   const { setGlobalLoader } = loadingStore();
 
+  const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
+
   const [startDate, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 30))
   ); // last 30 days default
@@ -61,9 +64,16 @@ const ViewDealerLaser = () => {
       setGlobalLoader(false);
     }
   };
+  useEffect(() => {
+    const { start, end } = getDateRange("This Year");
+    setStartDate(start);
+    setEndDate(end);
+    setSelectedRange("This Year");
+    setDateInitialized(true);
+  }, []);
 
   useEffect(() => {
-    if (id && startDate && endDate) {
+    if (dateInitialized) {
       fetchDealerLaser();
     }
   }, [id, startDate, endDate]);
@@ -76,8 +86,6 @@ const ViewDealerLaser = () => {
   const closingBalance = laser?.contactDetails?.ClosingBalance || 0;
   const totalDiscount =
     laser?.data?.reduce((sum, t) => sum + (parseInt(t.discount) || 0), 0) || 0;
-
-
 
   return (
     <div className="p-2" ref={printRef}>
@@ -130,8 +138,11 @@ const ViewDealerLaser = () => {
         {" "}
         <div className="flex items-end mb-4">
           <select
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}

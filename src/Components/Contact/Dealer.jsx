@@ -463,12 +463,9 @@ const Dealer = () => {
                       <TimeAgo date={c.updatedAt} />
                     </td>
 
-                    <td className="global_td">
+                    <td className="global_td space-x-2">
                       <Link
                         to={`/ViewDealerLaser/${c._id}`}
-                        // onClick={() => {
-                        //   handleEdit(c);
-                        // }}
                         className="global_button"
                       >
                         View Laser
@@ -476,9 +473,14 @@ const Dealer = () => {
                       <Link
                         to={`/DealerReport/${c._id}`}
                         className="global_button_red"
-                        style={{ marginLeft: "8px" }} 
                       >
                         Report
+                      </Link>
+                       <Link
+                        to={`/salereportPage/${c._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
                       </Link>
                     </td>
                   </tr>

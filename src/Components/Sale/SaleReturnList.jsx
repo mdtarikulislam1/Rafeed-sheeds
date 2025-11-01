@@ -106,7 +106,6 @@ const SaleReturnList = () => {
       ) : (
         <div>
           <div className="overflow-x-auto">
-            {" "}
             <table className="global_table w-full" ref={printRef}>
               <thead className="global_thead">
                 <tr className="global_tr">

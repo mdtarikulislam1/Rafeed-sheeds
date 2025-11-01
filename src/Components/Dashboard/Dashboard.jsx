@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // data state
   const [summary, setSummary] = useState([]);
@@ -28,7 +29,6 @@ const Dashboard = () => {
     const bdTime = new Date(utc + bdOffset * 60000);
     return bdTime.toISOString();
   };
-
   // data fetching
   const fetchData = async () => {
     setGlobalLoader(true);
@@ -41,7 +41,7 @@ const Dashboard = () => {
       const { data } = await axios.get(`${BaseURL}/Dashboard/${start}/${end}`, {
         headers: { token: getToken() },
       });
-      console.log(data)
+      console.log(data);
       if (data?.status === "Success") {
         setSummary(data?.data);
       }
@@ -53,9 +53,10 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -72,8 +73,11 @@ const Dashboard = () => {
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex items-end mb-4">
           <select
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
@@ -158,13 +162,28 @@ const Dashboard = () => {
                     {s?.TotalSale || 0}
                   </span>
                 </div>
+                <div className="flex justify-between border-t border-gray-200 pt-2">
+                  <span className="text-xs ">Total Weight:</span>
+                  <span className="text-lg font-bold text-green-600">
+                    {(() => {
+                      const weight = s?.totalWeight || 0;
+                      const kg = Math.floor(weight / 1000);
+                      const gram = weight % 1000;
+
+                      if (weight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}
+                  </span>
+                </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Discount</span>
                   <span className="text-sm font-medium text-red-500">
                     {s.TotalDiscount}
                   </span>
                 </div>
-            
+
                 <div className="flex justify-between border-t border-gray-200 pt-2">
                   <span className="text-xs ">Total</span>
                   <span className="text-lg font-bold text-green-500">
@@ -172,11 +191,9 @@ const Dashboard = () => {
                   </span>
                 </div>
               </div>
-              <div className="px-5 py-2 text-center bg-amber-100 dark:bg-amber-800 text-xs font-medium">
-                {s.totalSales > 0
-                  ? ((s.TotalCredit / s.TotalSale) * 100).toFixed(1)
-                  : 0}
-                % Collection Rate
+              <div className="px-5 py-2 flex justify-between items-center bg-amber-100 dark:bg-amber-800 text-xs font-medium">
+                {/* <span className="text-xs ">Invoice</span>
+                <span className="font-bold text-green-500">{s.count}</span> */}
               </div>
             </div>
           ))}

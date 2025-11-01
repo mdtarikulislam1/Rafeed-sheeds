@@ -17,6 +17,7 @@ const DealerReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // download
   const containerRef = useRef();
@@ -61,10 +62,11 @@ const DealerReport = () => {
     }
   };
 
-  useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+   useEffect(() => {
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -79,9 +81,11 @@ const DealerReport = () => {
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
-            defaultValue="This Month"
+                  value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}

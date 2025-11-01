@@ -15,6 +15,7 @@ const SaleReport = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
 
   // data state
   const [reportData, setReportData] = useState([]);
@@ -74,11 +75,11 @@ const SaleReport = () => {
       setGlobalLoader(false);
     }
   };
-
   useEffect(() => {
-    const { start, end } = getDateRange("This Month");
+    const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
+    setSelectedRange("This Year");
     setDateInitialized(true);
   }, []);
 
@@ -93,9 +94,11 @@ const SaleReport = () => {
       <div className="flex flex-col lg:flex-row items-start justify-between no-print ">
         <div className="flex items-end mb-4">
           <select
-            defaultValue="This Month"
+                value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
