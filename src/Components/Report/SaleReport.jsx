@@ -206,9 +206,9 @@ const SaleReport = () => {
               matchedUsers.map((item, index) => (
                 <tr className="global_tr" key={index}>
                   <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{item.name}</td>
-                  <td className="global_td">{item.mobile}</td>
-                  <td className="global_td">{item.role}</td>
+                  <td className="global_td">{item?.name ? item?.name : 'N/A'}</td>
+                  <td className="global_td">{item?.mobile ? item?.mobile : 'N/A'}</td>
+                  <td className="global_td">{item?.role ? item?.role : 'N/A'}</td>
                 </tr>
               ))
             ) : (
@@ -242,12 +242,12 @@ const SaleReport = () => {
               matchedDealers.map((item, index) => (
                 <tr className="global_tr" key={item._id}>
                   <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{item.name}</td>
-                  <td className="global_td">{item.address}</td>
-                  <td className="global_td">{item.proprietor}</td>
-                  <td className="global_td">{item.mobile}</td>
-                  <td className="global_td">{item.ID}</td>
-                  <td className="global_td">{item.totalBalance}</td>
+                  <td className="global_td">{item.name || 'N/A'}</td>
+                  <td className="global_td">{item.address || 'N/A'}</td>
+                  <td className="global_td">{item.proprietor || 'N/A'}</td>
+                  <td className="global_td">{item.mobile || 'N/A'}</td>
+                  <td className="global_td">{item.ID || 'N/A'}</td>
+                  <td className="global_td">{item.totalBalance || 0}</td>
                 </tr>
               ))
             ) : (

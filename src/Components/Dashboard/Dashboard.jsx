@@ -1,84 +1,74 @@
-import React, { useEffect, useState } from "react";
-
-import { ErrorToast } from "../../Helper/FormHelper";
-import loadingStore from "../../Zustand/LoadingStore";
+import { FaCalendarAlt } from "react-icons/fa";
+import { getDateRange } from "../../Helper/dateRangeHelper";
+import DatePicker from "react-datepicker";
 import axios from "axios";
 import { BaseURL } from "../../Helper/Config";
-import { getToken, removeSessions } from "../../Helper/SessionHelper";
-import { FaCalendarAlt } from "react-icons/fa";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { getToken } from "../../Helper/SessionHelper";
+import loadingStore from "../../Zustand/LoadingStore";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { Link } from "react-router-dom";
-import { getDateRange } from "../../Helper/dateRangeHelper";
 
 const Dashboard = () => {
   const { setGlobalLoader } = loadingStore();
-  const [RSMdetails, setRSMdetails] = useState([]);
-  const [ASMdetails, setASMdetails] = useState([]);
-  const [MSOdetails, setMSOdetails] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [dateInitialized, setDateInitialized] = useState(false);
+
+  // data state
   const [summary, setSummary] = useState([]);
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 0))
-  );
-  const [endDate, setEndDate] = useState(new Date());
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
-    if (endOfDay) {
-      d.setHours(23, 59, 59, 999);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
+    if (endOfDay) d.setHours(23, 59, 59, 999);
+    else d.setHours(0, 0, 0, 0);
 
-    const bdOffset = 6 * 60; // minutes
+    const bdOffset = 6 * 60;
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
     const bdTime = new Date(utc + bdOffset * 60000);
-
     return bdTime.toISOString();
   };
 
+  // data fetching
   const fetchData = async () => {
-    const start = formatDate(startDate, false); // 00:00:00
-    const end = formatDate(endDate, true); // 23:59:59
+    setGlobalLoader(true);
+    if (!startDate || !endDate) return;
+
+    const start = formatDate(startDate, false);
+    const end = formatDate(endDate, true);
 
     try {
-      setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetByDate/${start}/${end}`, {
+      const { data } = await axios.get(`${BaseURL}/Dashboard/${start}/${end}`, {
         headers: { token: getToken() },
       });
-      if (res?.data.summary) {
-        setSummary(res.data.summary);
-        setRSMdetails(res.data.detailsByRSM);
-        setASMdetails(res.data.detailsByASM);
-        setMSOdetails(res.data.detailsByMSO);
+      console.log(data)
+      if (data?.status === "Success") {
+        setSummary(data?.data);
       }
     } catch (error) {
-      ErrorToast(error.message);
-      console.error(error);
-      removeSessions();
+      console.log(error);
     } finally {
       setGlobalLoader(false);
     }
   };
 
   useEffect(() => {
-    if (startDate && endDate) {
+    const { start, end } = getDateRange("This Month");
+    setStartDate(start);
+    setEndDate(end);
+    setDateInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (dateInitialized) {
       fetchData();
     }
-  }, [startDate, endDate]);
-
-  
+  }, [startDate, endDate, dateInitialized]);
 
   const pieColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
-  // ---------- RENDER ----------
-
   return (
     <div className="p-1">
-      {/* Date Filter */}
       <div className="flex flex-col lg:flex-row justify-between">
         <div className="flex items-end mb-4">
           <select
@@ -150,8 +140,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      {/* ---------- SIMPLE SUMMARY CARDS And pie ---------- */}
-      <div className="flex flex-col lg:flex-row gap-2">
+      <div className="flex flex-col lg:flex-row gap-2 mt-4">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 flex-1">
           {summary.map((s, i) => (
@@ -160,37 +149,32 @@ const Dashboard = () => {
               className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
             >
               <div className="px-5 py-1 text-center text-lg font-semibold text-white bg-green-500">
-                {s.categoryName}
+                {s.CategoryName}
               </div>
               <div className="p-2 space-y-3">
                 <div className="flex justify-between border-t border-gray-200 pt-2">
                   <span className="text-xs ">Total Sales:</span>
                   <span className="text-lg font-bold text-green-600">
-                    {s?.totalSales || 0}
+                    {s?.TotalSale || 0}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Discount</span>
                   <span className="text-sm font-medium text-red-500">
-                    {s.totalDiscount}
+                    {s.TotalDiscount}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-xs ">Grand Total</span>
-                  <span className="text-sm font-medium text-green-700">
-                    {s.totalGrand}
-                  </span>
-                </div>
+            
                 <div className="flex justify-between border-t border-gray-200 pt-2">
-                  <span className="text-xs ">Total Collection</span>
+                  <span className="text-xs ">Total</span>
                   <span className="text-lg font-bold text-green-500">
-                    {s.totalDebit}
+                    {s.TotalCredit}
                   </span>
                 </div>
               </div>
               <div className="px-5 py-2 text-center bg-amber-100 dark:bg-amber-800 text-xs font-medium">
                 {s.totalSales > 0
-                  ? ((s.totalDebit / s.totalSales) * 100).toFixed(1)
+                  ? ((s.TotalCredit / s.TotalSale) * 100).toFixed(1)
                   : 0}
                 % Collection Rate
               </div>
@@ -199,7 +183,7 @@ const Dashboard = () => {
         </div>
 
         {/* rsm Distribution Pie Chart */}
-        <div className=" rounded-xl shadow-md border border-gray-200 w-full lg:w-80 flex-shrink-0">
+        <div className=" rounded-xl shadow-md border outline-0 border-gray-200 w-full lg:w-80 flex-shrink-0">
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -207,8 +191,8 @@ const Dashboard = () => {
                 cx="45%"
                 cy="50%"
                 outerRadius={60}
-                dataKey="totalSales"
-                nameKey="categoryName"
+                dataKey="TotalSale"
+                nameKey="CategoryName"
                 label={({ name, percent, midAngle, cx, cy, outerRadius }) => {
                   const RADIAN = Math.PI / 180;
                   const radius = outerRadius + 10;
@@ -241,299 +225,6 @@ const Dashboard = () => {
               <Tooltip formatter={(value) => value} />
             </PieChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Example Summary Data Rendering */}
-
-      <div className="flex flex-col gap-2 mt-5">
-        {/* RSM */}
-        <div className="global_sub_container overflow-auto">
-          <h1 className="text-center font-[600] ">RSM</h1>{" "}
-          {
-            <table className="global_table">
-              <thead className="global_thead">
-                <tr>
-                  <th className="global_th">no</th>
-                  <th className="global_th">Name</th>
-                  <th className="global_th">Category</th>
-                  <th className="global_th">Sale</th>
-                  <th className="global_th">Discount</th>
-                  <th className="global_th">debit</th>
-                  <th className="global_th">Grand</th>
-                  <th className="global_th">Action</th>
-                </tr>
-              </thead>
-              <tbody className="global_tbody">
-                {RSMdetails.length > 0 ? (
-                  RSMdetails.map((rsm, index) => (
-                    <tr key={index} className="global_tr">
-                      <td className="global_td">{index + 1}</td>
-                      <td className="global_td">{rsm.rsmName}</td>
-                      <td className="global_td">{rsm.categoryName}</td>
-                      <td className="global_td">{rsm.totalSales}</td>
-                      <td className="global_td">{rsm.totalDiscount}</td>
-                      <td className="global_td">{rsm.totalDebit}</td>
-                      <td className="global_td">{rsm.totalGrand}</td>
-
-                      <td className="global_td space-x-2">
-                        <Link
-                          to={`/RSMReport/${rsm?.RSMID}`}
-                          className="global_button"
-                        >
-                          Report
-                        </Link>
-                        <Link
-                          to={`/ASM/${rsm?.RSMID}`}
-                          className="global_button"
-                        >
-                          Asm
-                        </Link>
-                        <Link
-                          to={`/MSO/${rsm?.RSMID}`}
-                          className="global_button"
-                        >
-                          Mso
-                        </Link>
-                        <Link
-                          to={`/DealerList/${rsm?.RSMID}`}
-                          className="global_button"
-                        >
-                          Dealer
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="text-center py-3 text-gray-500">
-                      No Data
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              {RSMdetails && RSMdetails.length > 0 && (
-                <tfoot className="text-green-700">
-                  <tr className="global_tr">
-                    <td className="global_td text-center">Total</td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td">
-                      {RSMdetails.reduce(
-                        (sum, item) => sum + (item.totalSales || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {RSMdetails.reduce(
-                        (sum, item) => sum + (item.totalDiscount || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {RSMdetails.reduce(
-                        (sum, item) => sum + (item.totalDebit || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {RSMdetails.reduce(
-                        (sum, item) => sum + (item.totalGrand || 0),
-                        0
-                      )}
-                    </td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          }
-        </div>
-
-        {/* asm */}
-        <div className="global_sub_container overflow-auto">
-          <h1 className="text-center font-[600] ">ASM</h1>{" "}
-          {
-            <table className="global_table">
-              <thead className="global_thead">
-                <tr>
-                  <th className="global_th">no</th>
-                  <th className="global_th">Name</th>
-                  <th className="global_th">Category</th>
-                  <th className="global_th">Sale</th>
-                  <th className="global_th">Discount</th>
-                  <th className="global_th">debit</th>
-                  <th className="global_th">Grand</th>
-                  <th className="global_th">Action</th>
-                </tr>
-              </thead>
-              <tbody className="global_tbody">
-                {ASMdetails.length > 0 ? (
-                  ASMdetails.map((asm, index) => (
-                    <tr key={index} className="global_tr">
-                      <td className="global_td">{index + 1}</td>
-                      <td className="global_td">{asm.asmName}</td>
-                      <td className="global_td">{asm.categoryName}</td>
-                      <td className="global_td">{asm.totalSales}</td>
-                      <td className="global_td">{asm.totalDiscount}</td>
-                      <td className="global_td">{asm.totalDebit}</td>
-                      <td className="global_td">{asm.totalGrand}</td>
-                      <td className="global_td space-x-2">
-                        {/* akane ai report ta dynamic hobe */}
-                        <Link
-                          to={`/ASMReport/${asm?.ASMID}`}
-                          className="global_button"
-                        >
-                          Report
-                        </Link>
-                        <Link
-                          to={`/MSO/${asm?.ASMID}`}
-                          className="global_button"
-                        >
-                          Mso
-                        </Link>
-                        <Link
-                          to={`/DealerList/${asm?.ASMID}`}
-                          className="global_button"
-                        >
-                          Dealer
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="text-center py-3 text-gray-500">
-                      No Data
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              {/* ✅ Table Footer Totals */}
-              {ASMdetails && ASMdetails.length > 0 && (
-                <tfoot className="text-green-700">
-                  <tr className="global_tr">
-                    <td className="global_td text-center">Total</td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td">
-                      {ASMdetails.reduce(
-                        (sum, item) => sum + (item.totalSales || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {ASMdetails.reduce(
-                        (sum, item) => sum + (item.totalDiscount || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {ASMdetails.reduce(
-                        (sum, item) => sum + (item.totalDebit || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {ASMdetails.reduce(
-                        (sum, item) => sum + (item.totalGrand || 0),
-                        0
-                      )}
-                    </td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          }
-        </div>
-
-        {/* MSO */}
-        <div className="global_sub_container overflow-auto">
-          <h1 className="text-center font-[600] ">MSO</h1>{" "}
-          {
-            <table className="global_table">
-              <thead className="global_thead">
-                <tr>
-                  <th className="global_th">No</th>
-                  <th className="global_th">Name</th>
-                  <th className="global_th">Category</th>
-                  <th className="global_th">Sale</th>
-                  <th className="global_th">Discount</th>
-                  <th className="global_th">total Debit</th>
-                  <th className="global_th">Grand</th>
-                  <th className="global_th">action</th>
-                </tr>
-              </thead>
-              <tbody className="global_tbody">
-                {MSOdetails.length > 0 ? (
-                  MSOdetails.map((mso, index) => (
-                    <tr key={index} className="global_tr">
-                      <td className="global_td">{index + 1}</td>
-                      <td className="global_td">{mso.msoName}</td>
-                      <td className="global_td">{mso.categoryName}</td>
-                      <td className="global_td">{mso.totalSales}</td>
-                      <td className="global_td">{mso.totalDiscount}</td>
-                      <td className="global_td">{mso.totalDebit}</td>
-                      <td className="global_td">{mso.totalGrand}</td>
-                      <td className="global_td space-x-2">
-                        <Link
-                          className="global_button"
-                          to={`/MSOReport/${mso?.MSOID}`}
-                        >
-                          Report
-                        </Link>
-                        <Link
-                          to={`/DealerList/${mso?.MSOID}`}
-                          className="global_button"
-                        >
-                          Dealer
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="text-center py-3 text-gray-500">
-                      No Data
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              {/* ✅ Table Footer Totals */}
-              {MSOdetails && MSOdetails.length > 0 && (
-                <tfoot className="text-green-700">
-                  <tr className="global_tr">
-                    <td className="global_td text-center">Total</td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td text-center"></td>
-                    <td className="global_td">
-                      {MSOdetails.reduce(
-                        (sum, item) => sum + (item.totalSales || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {MSOdetails.reduce(
-                        (sum, item) => sum + (item.totalDiscount || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {MSOdetails.reduce(
-                        (sum, item) => sum + (item.totalDebit || 0),
-                        0
-                      )}
-                    </td>
-                    <td className="global_td">
-                      {MSOdetails.reduce(
-                        (sum, item) => sum + (item.totalGrand || 0),
-                        0
-                      )}
-                    </td>
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          }
         </div>
       </div>
     </div>
