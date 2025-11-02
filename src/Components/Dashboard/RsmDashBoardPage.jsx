@@ -106,6 +106,7 @@ const RsmDashBoardPage = () => {
           >
             {[
               "Custom",
+               "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",

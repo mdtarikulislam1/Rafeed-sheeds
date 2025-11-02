@@ -150,6 +150,7 @@ const ViewDealerLaser = () => {
           >
             {[
               "Custom",
+               "Today",
               "Last 30 Days",
               "This Year",
               "This Month",

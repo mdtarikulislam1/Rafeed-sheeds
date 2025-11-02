@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
@@ -12,13 +12,15 @@ import { getDateRange } from "../../Helper/dateRangeHelper";
 const SaleReport = () => {
   const { id } = useParams();
   const { setGlobalLoader } = loadingStore();
+
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
   const [selectedRange, setSelectedRange] = useState("This Year");
+  const [selectedSort, setSelectedSort] = useState("0");
 
-  // data state
   const [reportData, setReportData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [matchedUsers, setMatchedUsers] = useState([]);
   const [matchedDealers, setMatchedDealers] = useState([]);
 
@@ -32,7 +34,6 @@ const SaleReport = () => {
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
     const bdTime = new Date(utc + bdOffset * 60000);
 
-    // ✅ শুধু YYYY-MM-DD পাঠানো হবে
     const yyyy = bdTime.getFullYear();
     const mm = String(bdTime.getMonth() + 1).padStart(2, "0");
     const dd = String(bdTime.getDate()).padStart(2, "0");
@@ -42,7 +43,6 @@ const SaleReport = () => {
 
   const fetchData = async () => {
     if (!startDate || !endDate) return;
-
     const start = formatDate(startDate, false);
     const end = formatDate(endDate, true);
 
@@ -50,23 +50,18 @@ const SaleReport = () => {
       setGlobalLoader(true);
       const { data } = await axios.get(
         `${BaseURL}/SaleReport/${id}/0/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
+        { headers: { token: getToken() } }
       );
+
       if (data?.status === "Success") {
-        setReportData(data?.data || []);
+        const allData = data?.data || [];
+        setReportData(allData);
+        setFilteredData(allData);
 
-        const allMatchedUsers = data?.data
-          ?.flatMap((item) => item.matchedUsers || []) 
-          .flat(); 
-
+        const allMatchedUsers = allData.flatMap((i) => i.matchedUsers || []).flat();
         setMatchedUsers(allMatchedUsers);
 
-        const allMatchedDealers = data?.data
-          ?.flatMap((item) => item.matchedDealers || []) 
-          .flat(); 
-
+        const allMatchedDealers = allData.flatMap((i) => i.matchedDealers || []).flat();
         setMatchedDealers(allMatchedDealers);
       }
     } catch (error) {
@@ -75,6 +70,7 @@ const SaleReport = () => {
       setGlobalLoader(false);
     }
   };
+
   useEffect(() => {
     const { start, end } = getDateRange("This Year");
     setStartDate(start);
@@ -89,15 +85,37 @@ const SaleReport = () => {
     }
   }, [startDate, endDate, id, dateInitialized]);
 
+  // ✅ FILTERING (Category অনুযায়ী সব table আপডেট হবে)
+  useEffect(() => {
+    if (selectedSort === "0") {
+      // All
+      setFilteredData(reportData);
+      setMatchedUsers(reportData.flatMap((i) => i.matchedUsers || []).flat());
+      setMatchedDealers(reportData.flatMap((i) => i.matchedDealers || []).flat());
+    } else {
+      const selected = reportData.find((item) => item.CategoryName === selectedSort);
+      if (selected) {
+        setFilteredData([selected]);
+        setMatchedUsers(selected.matchedUsers?.flat() || []);
+        setMatchedDealers(selected.matchedDealers || []);
+      } else {
+        setFilteredData([]);
+        setMatchedUsers([]);
+        setMatchedDealers([]);
+      }
+    }
+  }, [selectedSort, reportData]);
+
   return (
     <div className="my-5 px-2">
+      {/* Date Range Filter */}
       <div className="flex flex-col lg:flex-row items-start justify-between no-print ">
         <div className="flex items-end mb-4">
           <select
-                value={selectedRange} // 🔥 এখন React control করবে value
+            value={selectedRange}
             onChange={(e) => {
               const value = e.target.value;
-              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              setSelectedRange(value);
               const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
@@ -106,6 +124,7 @@ const SaleReport = () => {
           >
             {[
               "Custom",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -138,6 +157,7 @@ const SaleReport = () => {
             </div>
           </div>
 
+          {/* End Date */}
           <div>
             <label className="block text-sm">End Date</label>
             <div className="relative">
@@ -155,28 +175,45 @@ const SaleReport = () => {
         </div>
       </div>
 
-      {/* data table */}
+      {/* Category Filter */}
+      <div className="w-full flex justify-end items-end">
+        <select
+          className="global_dropdown max-w-40"
+          value={selectedSort}
+          onChange={(e) => setSelectedSort(e.target.value)}
+        >
+          <option value="0">All</option>
+          {reportData &&
+            reportData.length > 0 &&
+            reportData.map((items, index) => (
+              <option key={index} value={items?.CategoryName}>
+                {items?.CategoryName}
+              </option>
+            ))}
+        </select>
+      </div>
 
-      {/* categogy table */}
+      {/* Category Summary Table */}
       <div className="w-full overflow-auto">
         <h4 className="global_heading">Category Summary</h4>
         <table className="global_table">
           <thead className="global_thead">
             <tr className="global_tr">
-              <th className="global_th ">no</th>
-              <th className="global_th ">Category Name</th>
-              <th className="global_th ">Total Sale</th>
-              <th className="global_th ">total Weight</th>
+              <th className="global_th">no</th>
+              <th className="global_th">Category Name</th>
+              <th className="global_th">Total Sale</th>
+              <th className="global_th">Total Weight</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {reportData && reportData.length > 0 ? (
-              reportData.map((items, index) => (
+            {filteredData.length > 0 ? (
+              filteredData.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
                   <td className="global_td">{items?.TotalSale || 0}</td>
-                  <td className="global_td">      {(() => {
+                  <td className="global_td">
+                    {(() => {
                       const weight = items?.totalWeight || 0;
                       const kg = Math.floor(weight / 1000);
                       const gram = weight % 1000;
@@ -185,40 +222,8 @@ const SaleReport = () => {
                       if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
                       if (kg > 0) return `${kg} kg`;
                       return `${gram} g`;
-                    })()}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center py-3 text-gray-500">
-                  No Data Found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/*  */}
-      <div className="w-full overflow-auto">
-        <h4 className="global_heading">Matched Users</h4>
-        <table className="global_table">
-          <thead className="global_thead">
-            <tr className="global_tr">
-              <th className="global_th ">no</th>
-              <th className="global_th ">Name</th>
-              <th className="global_th ">Mobile</th>
-              <th className="global_th ">role</th>
-            </tr>
-          </thead>
-          <tbody className="global_tbody">
-            {matchedUsers && matchedUsers.length > 0 ? (
-              matchedUsers.map((item, index) => (
-                <tr className="global_tr" key={index}>
-                  <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{item?.name ? item?.name : 'N/A'}</td>
-                  <td className="global_td">{item?.mobile ? item?.mobile : 'N/A'}</td>
-                  <td className="global_td">{item?.role ? item?.role : 'N/A'}</td>
+                    })()}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -232,37 +237,70 @@ const SaleReport = () => {
         </table>
       </div>
 
-      {/*  */}
+      {/* Matched Users Table */}
+      <div className="w-full overflow-auto">
+        <h4 className="global_heading">Matched Users</h4>
+        <table className="global_table">
+          <thead className="global_thead">
+            <tr className="global_tr">
+              <th className="global_th">no</th>
+              <th className="global_th">Name</th>
+              <th className="global_th">Mobile</th>
+              <th className="global_th">Role</th>
+            </tr>
+          </thead>
+          <tbody className="global_tbody">
+            {matchedUsers.length > 0 ? (
+              matchedUsers.map((item, index) => (
+                <tr className="global_tr" key={index}>
+                  <td className="global_td">{index + 1}</td>
+                  <td className="global_td">{item?.name || "N/A"}</td>
+                  <td className="global_td">{item?.mobile || "N/A"}</td>
+                  <td className="global_td">{item?.role || "N/A"}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-3 text-gray-500">
+                  No Data Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Matched Dealers Table */}
       <div className="w-full overflow-auto">
         <h4 className="global_heading">Matched Dealers</h4>
         <table className="global_table">
           <thead className="global_thead">
             <tr className="global_tr">
-              <th className="global_th ">no</th>
-              <th className="global_th ">ID</th>
-              <th className="global_th ">Name</th>
-              <th className="global_th ">address</th>
-              <th className="global_th ">proprietor</th>
-              <th className="global_th ">mobile</th>
-              <th className="global_th ">totalBalance</th>
+              <th className="global_th">no</th>
+              <th className="global_th">ID</th>
+              <th className="global_th">Name</th>
+              <th className="global_th">Address</th>
+              <th className="global_th">Proprietor</th>
+              <th className="global_th">Mobile</th>
+              <th className="global_th">Total Balance</th>
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {matchedDealers && matchedDealers.length > 0 ? (
+            {matchedDealers.length > 0 ? (
               matchedDealers.map((item, index) => (
                 <tr className="global_tr" key={item._id}>
                   <td className="global_td">{index + 1}</td>
-                  <td className="global_td">{item.ID || 'N/A'}</td>
-                  <td className="global_td">{item.name || 'N/A'}</td>
-                  <td className="global_td">{item.address || 'N/A'}</td>
-                  <td className="global_td">{item.proprietor || 'N/A'}</td>
-                  <td className="global_td">{item.mobile || 'N/A'}</td>
+                  <td className="global_td">{item.ID || "N/A"}</td>
+                  <td className="global_td">{item.name || "N/A"}</td>
+                  <td className="global_td">{item.address || "N/A"}</td>
+                  <td className="global_td">{item.proprietor || "N/A"}</td>
+                  <td className="global_td">{item.mobile || "N/A"}</td>
                   <td className="global_td">{item.totalBalance || 0}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="9" className="text-center py-3 text-gray-500">
+                <td colSpan="7" className="text-center py-3 text-gray-500">
                   No Data Found
                 </td>
               </tr>

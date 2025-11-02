@@ -21,6 +21,11 @@ export const getDateRange = (option) => {
   let start, end;
 
   switch (option) {
+    case "Today":
+      start = startOfDay(new Date(now));
+      end = endOfDay(new Date(now));
+      break;
+
     case "Last 30 Days":
       start = startOfDay(new Date(now));
       start.setDate(now.getDate() - 30);
@@ -79,16 +84,6 @@ export const getDateRange = (option) => {
 
   return { start, end };
 };
-
-
-
-
-
-
-
-
-
-
 
 // comment pore lagte pare ai jonno raka
 

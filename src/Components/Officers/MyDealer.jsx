@@ -117,9 +117,9 @@ const MyDealer = () => {
             </thead>
             <tbody className="global_tbody">
               {Mydealers.length > 0 ? (
-                Mydealers.map((c,index) => (
+                Mydealers.map((c, index) => (
                   <tr key={c._id} className="global_tr">
-                    <td className="global_td">{index+1}</td>
+                    <td className="global_td">{index + 1}</td>
                     <td className="global_td">{c.name}</td>
                     <td className="global_td">{c.mobile}</td>
                     <td className="global_td max-w-[150px] truncate">
@@ -153,7 +153,13 @@ const MyDealer = () => {
                         to={`/DealerReport/${c._id}`}
                         className="global_edit"
                       >
-                       Report
+                        Report
+                      </Link>
+                      <Link
+                        to={`/salereportPage/${c._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
                       </Link>
                     </td>
                   </tr>

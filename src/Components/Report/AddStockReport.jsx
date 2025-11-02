@@ -78,6 +78,7 @@ export default function AddStockReport() {
           >
             {[
               "Custom",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -204,7 +205,7 @@ export default function AddStockReport() {
                     )} */}
                 </td>
                 <td className="global_td text-center">
-                  {stockReport.reduce((sum, item) => sum + (item.qty || 0), 0)}
+                  {/* {stockReport.reduce((sum, item) => sum + (item.qty || 0), 0)} */}
                 </td>
               </tr>
             </tfoot>

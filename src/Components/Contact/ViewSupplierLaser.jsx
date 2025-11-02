@@ -139,6 +139,7 @@ const ViewSupplierLaser = () => {
             className="global_dropdown"
           >
             {[
+               "Today",
               "Last 30 Days",
               "This Year",
               "This Month",

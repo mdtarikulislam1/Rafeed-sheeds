@@ -37,6 +37,7 @@ import {
   getRole,
   getBusinessDetails,
   removeSessions,
+  getName,
 } from "../../Helper/SessionHelper";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -615,14 +616,18 @@ const MasterLayout = ({ children }) => {
               </span>
             </button>
           </div>
-          <button
-            onClick={() => {
-              removeSessions();
-            }}
-            className="global_button"
-          >
-            Logout
-          </button>
+          <div className="flex gap-4">
+            <p className="text-green-600 font-semibold sm:text-lg">{getName()}</p>
+
+            <button
+              onClick={() => {
+                removeSessions();
+              }}
+              className="global_button"
+            >
+              Logout
+            </button>
+          </div>
         </nav>
 
         {/* Content */}

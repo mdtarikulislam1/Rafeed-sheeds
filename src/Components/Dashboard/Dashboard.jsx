@@ -85,6 +85,7 @@ const Dashboard = () => {
           >
             {[
               "Custom",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -166,6 +167,12 @@ const Dashboard = () => {
                   <span className="text-xs ">Collection</span>
                   <span className="text-lg font-bold text-green-600">
                     ৳{(s?.TotalDebit || 0).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-gray-400">
+                  <span className="text-xs ">Total due</span>
+                  <span className="text-lg font-bold text-green-600">
+                    ৳{(s?.TotalSale -  s?.TotalDebit).toLocaleString("en-IN")}
                   </span>
                 </div>
 

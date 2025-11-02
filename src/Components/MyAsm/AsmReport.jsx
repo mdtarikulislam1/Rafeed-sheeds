@@ -100,6 +100,7 @@ const AsmReport = () => {
           >
             {[
               "Custom",
+               "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -354,6 +355,12 @@ const AsmReport = () => {
                     >
                       Dealer
                     </Link>
+                         <Link
+                        to={`/salereportPage/${items._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
+                      </Link>
                   </td>
                 </tr>
               ))

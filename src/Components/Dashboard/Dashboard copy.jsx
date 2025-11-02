@@ -55,6 +55,7 @@ const Dashboard = () => {
   // Memoized date range options
   const dateRangeOptions = useMemo(
     () => [
+       "Today",
       "Last 30 Days",
       "This Year",
       "This Month",
