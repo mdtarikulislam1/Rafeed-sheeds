@@ -17,11 +17,13 @@ const DealerReport = () => {
   const [dateInitialized, setDateInitialized] = useState(false);
   const [selectedRange, setSelectedRange] = useState("This Year");
 
+  // new state for filter
+  const [selectedCategory, setSelectedCategory] = useState("0"); // "0" = All
+  const [categories, setCategories] = useState([]);
+
   // download
   const containerRef = useRef();
   const { downloadSelected } = useDownloadStore();
-
-
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
@@ -42,9 +44,7 @@ const DealerReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await api.get(
-        `/DealerReport/${id}/${start}/${end}`
-      );
+      const { data } = await api.get(`/DealerReport/${id}/${start}/${end}`);
 
       if (data?.status === "Success") {
         setReportData(data?.data);
@@ -57,7 +57,7 @@ const DealerReport = () => {
     }
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
@@ -71,12 +71,26 @@ const DealerReport = () => {
     }
   }, [startDate, endDate, dateInitialized]);
 
+  useEffect(() => {
+    if (reportData?.products?.length) {
+      const uniqueCategories = [
+        ...new Set(reportData.products.map((p) => p.categoryName)),
+      ];
+      setCategories(uniqueCategories);
+    }
+  }, [reportData]);
+
+  const filteredProducts =
+    selectedCategory === "0"
+      ? reportData.products
+      : reportData.products.filter((p) => p.categoryName === selectedCategory);
+
   return (
     <div className="my-5 px-2 " ref={containerRef}>
       <div className="flex flex-col lg:flex-row items-start justify-between no-print">
         <div className="flex items-end mb-4">
           <select
-                  value={selectedRange} // 🔥 এখন React control করবে value
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
               const value = e.target.value;
               setSelectedRange(value); // 🔥 selectedRange আপডেট
@@ -88,7 +102,7 @@ const DealerReport = () => {
           >
             {[
               "Custom",
-               "Today",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -138,28 +152,55 @@ const DealerReport = () => {
         </div>
       </div>
 
-      {/* user data */}
+      <div className="flex justify-between">
+        {/* user data */}
 
-      <div>
-        {reportData?.dealerName ? (
-          <h4 className="user-name">Name: {reportData?.dealerName}</h4>
-        ) : (
-          ""
-        )}
-        {reportData?.dealerMobile ? (
-          <p className="user-mobile">Mobile: {reportData?.dealerMobile}</p>
-        ) : (
-          ""
-        )}
-        {reportData?.dealerAddress ? (
-          <address className="user-mobile">Address: {reportData?.dealerAddress}</address>
-        ) : (
-          ""
-        )}
+        <div>
+          {reportData?.dealerName ? (
+            <h4 className="user-name">Name: {reportData?.dealerName}</h4>
+          ) : (
+            ""
+          )}
+          {reportData?.dealerMobile ? (
+            <p className="user-mobile">Mobile: {reportData?.dealerMobile}</p>
+          ) : (
+            ""
+          )}
+          {reportData?.dealerID ? (
+            <p className="user-mobile">
+              Dealer-Id:{" "}
+              <span className="text-green-500">{reportData?.dealerID}</span>
+            </p>
+          ) : (
+            ""
+          )}
+          {reportData?.dealerAddress ? (
+            <address className="user-mobile">
+              Address: {reportData?.dealerAddress}
+            </address>
+          ) : (
+            ""
+          )}
+        </div>
+
+        {/* Category Filter */}
+        <div>
+          <select
+            className="global_dropdown min-w-40"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="0">All</option>
+            {categories.map((cat, index) => (
+              <option key={index} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* dealer summary */}
-
 
       {/* summary */}
       <div className="w-full overflow-auto">
@@ -178,13 +219,15 @@ const DealerReport = () => {
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {reportData?.products && reportData?.products?.length > 0 ? (
-              reportData?.products?.map((items, index) => (
+            {filteredProducts && filteredProducts.length > 0 ? (
+              filteredProducts.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.categoryName || "N/A"}</td>
                   <td className="global_td">{items?.name || "N/A"}</td>
-                  <td className="global_td">{(items?.price || "N/A").toLocaleString("en-IN")}</td>
+                  <td className="global_td">
+                    {(items?.price || 0).toLocaleString("en-IN")}
+                  </td>
                   <td className="global_td">{items?.qtySold || 0}</td>
                   <td className="global_td">
                     {(() => {
@@ -210,7 +253,9 @@ const DealerReport = () => {
                       return `${gram} g`;
                     })()}
                   </td>
-                  <td className="global_td">{(items?.total || 0).toLocaleString("en-IN")}</td>
+                  <td className="global_td">
+                    {(items?.total || 0).toLocaleString("en-IN")}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -223,51 +268,51 @@ const DealerReport = () => {
           </tbody>
 
           {/* ✅ Table Footer Totals */}
-          {reportData?.products && reportData?.products?.length > 0 && (
-            <tfoot className="text-green-700">
-              <tr className="global_tr">
-                <td className="global_td text-center">Total</td>
-                <td className="global_td text-center"></td>
-                <td className="global_td text-center"></td>
-                <td className="global_td text-center"></td>
-                {/* <td className="global_td">
+          {filteredProducts?.products &&
+            filteredProducts?.products?.length > 0 && (
+              <tfoot className="text-green-700">
+                <tr className="global_tr">
+                  <td className="global_td text-center">Total</td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td text-center"></td>
+                  {/* <td className="global_td">
                   {reportData?.products?.reduce(
                     (sum, item) => sum + (item.price || 0),
                     0
                   )}
                 </td> */}
-                <td className="global_td">
-                  {reportData?.products?.reduce(
-                    (sum, item) => sum + (item.qtySold || 0),
-                    0
-                  )}
-                </td>
-                <td className="global_td text-center"></td>
-                <td className="global_td">
-                  {(() => {
-                    const totalWeight = reportData?.products?.reduce(
-                      (sum, item) => sum + (item.totalWeight || 0),
+                  <td className="global_td">
+                    {filteredProducts?.products?.reduce(
+                      (sum, item) => sum + (item.qtySold || 0),
                       0
-                    );
+                    )}
+                  </td>
+                  <td className="global_td text-center"></td>
+                  <td className="global_td">
+                    {(() => {
+                      const totalWeight = filteredProducts?.products?.reduce(
+                        (sum, item) => sum + (item.totalWeight || 0),
+                        0
+                      );
 
-                    const kg = Math.floor(totalWeight / 1000);
-                    const gram = totalWeight % 1000;
+                      const kg = Math.floor(totalWeight / 1000);
+                      const gram = totalWeight % 1000;
 
-                    if (totalWeight === 0) return "0 g";
-                    if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
-                    if (kg > 0) return `${kg} kg`;
-                    return `${gram} g`;
-                  })()}
-                </td>
-                <td className="global_td">
-                  {reportData?.products?.reduce(
-                    (sum, item) => sum + (item.total || 0),
-                    0
-                  ).toLocaleString("en-IN")}
-                </td>
-              </tr>
-            </tfoot>
-          )}
+                      if (totalWeight === 0) return "0 g";
+                      if (kg > 0 && gram > 0) return `${kg} kg ${gram} g`;
+                      if (kg > 0) return `${kg} kg`;
+                      return `${gram} g`;
+                    })()}
+                  </td>
+                  <td className="global_td">
+                    {filteredProducts?.products
+                      ?.reduce((sum, item) => sum + (item.total || 0), 0)
+                      .toLocaleString("en-IN")}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
         </table>
       </div>
       <button

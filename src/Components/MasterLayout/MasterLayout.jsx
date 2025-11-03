@@ -11,6 +11,7 @@ import { MdCreateNewFolder } from "react-icons/md";
 import { GiBuyCard, GiTeamIdea } from "react-icons/gi";
 import { useState, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
+import { SiActualbudget } from "react-icons/si";
 import {
   FaChevronDown,
   FaChevronRight,
@@ -256,6 +257,19 @@ const MasterLayout = ({ children }) => {
                 title: "Bank Accounts",
                 icon: <PiBankBold />,
                 path: "/BankAccount",
+              },
+            ],
+          },
+          {
+            id: "budzets",
+            title: "Budzet",
+            icon: <SiActualbudget />,
+            children: [
+              {
+                id: "createbudget",
+                title: "Create Budzet",
+                icon: <PiBankBold />,
+                path: "/createbudzets",
               },
             ],
           },

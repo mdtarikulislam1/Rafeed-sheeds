@@ -17,10 +17,16 @@ const AsmReport = () => {
   const [msoSummary, setMsoSummary] = useState([]);
   const [totalData, setTotalData] = useState([]);
 
+    // new state for filter
+  const [selectedCategory, setSelectedCategory] = useState("0");
+
+// date sate
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateInitialized, setDateInitialized] = useState(false);
   const [selectedRange, setSelectedRange] = useState("This Year");
+
+  
 
   // download
   const containerRef = useRef();
@@ -75,6 +81,19 @@ const AsmReport = () => {
       fetchData();
     }
   }, [startDate, id, endDate, dateInitialized]);
+
+  // category summary
+
+    const filteredsummary =
+    selectedCategory === "0"
+      ? summary
+      : summary.filter((item) => item.CategoryName === selectedCategory);
+
+      // weight
+    const filteredweight =
+    selectedCategory === "0"
+      ? weight
+      : weight.filter((item) => item.CategoryName === selectedCategory);
 
   return (
     <div className="my-5 px-2" ref={containerRef}>
@@ -143,18 +162,35 @@ const AsmReport = () => {
         </div>
       </div>
 
-      {/* user data */}
-      <div>
-        {totalData?.ASMName ? (
-          <h4 className="user-name">NAME: {totalData?.ASMName}</h4>
-        ) : (
-          ""
-        )}
-        {totalData?.ASMMobile ? (
-          <p className="user-mobile">MOBILE: {totalData?.ASMMobile}</p>
-        ) : (
-          ""
-        )}
+      <div className="flex justify-between">
+        {/* user data */}
+        <div>
+          {totalData?.ASMName ? (
+            <h4 className="user-name">NAME: {totalData?.ASMName}</h4>
+          ) : (
+            ""
+          )}
+          {totalData?.ASMMobile ? (
+            <p className="user-mobile">MOBILE: {totalData?.ASMMobile}</p>
+          ) : (
+            ""
+          )}
+        </div>
+        {/* Category Filter */}
+        <div>
+          <select
+            className="global_dropdown min-w-40"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="0">All</option>
+            {summary.map((items, index) => (
+              <option key={index} value={items?.CategoryName}>
+                {items?.CategoryName}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* salesByCategory */}
@@ -173,8 +209,8 @@ const AsmReport = () => {
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {summary && summary.length > 0 ? (
-              summary.map((items, index) => (
+            {filteredsummary && filteredsummary.length > 0 ? (
+              filteredsummary.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
@@ -197,23 +233,23 @@ const AsmReport = () => {
               </tr>
             )}
           </tbody>
-          {summary && summary.length > 0 && (
+          {filteredsummary && filteredsummary.length > 0 && (
             <tfoot className="text-green-700">
               <tr className="global_tr">
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {summary
+                  {filteredsummary
                     .reduce((sum, item) => sum + (item.totalSale || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
-                  {summary
+                  {filteredsummary
                     .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
-                  {summary
+                  {filteredsummary
                     .reduce((sum, item) => sum + (item.TotalGrand || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
@@ -238,8 +274,8 @@ const AsmReport = () => {
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {weight && weight.length > 0 ? (
-              weight.map((items, index) => (
+            {filteredweight && filteredweight.length > 0 ? (
+              filteredweight.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.productName || "N/A"}</td>
@@ -270,14 +306,14 @@ const AsmReport = () => {
             )}
           </tbody>
 
-          {weight && weight.length > 0 && (
+          {filteredweight && filteredweight.length > 0 && (
             <tfoot className="text-green-700">
               <tr className="global_tr">
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
                   {(() => {
-                    const totalWeight = weight.reduce(
+                    const totalWeight = filteredweight.reduce(
                       (sum, item) => sum + (item.totalWeight || 0),
                       0
                     );
@@ -292,13 +328,13 @@ const AsmReport = () => {
                   })()}
                 </td>
                 <td className="global_td">
-                  {weight.reduce(
+                  {filteredweight.reduce(
                     (sum, item) => sum + (item.totalQtySold || 0),
                     0
                   )}
                 </td>
                 <td className="global_td">
-                  {weight
+                  {filteredweight
                     .reduce((sum, item) => sum + (item.totalAmount || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
@@ -321,7 +357,7 @@ const AsmReport = () => {
               <th className="global_th">Total Sale</th>
               <th className="global_th">Discount</th>
               <th className="global_th">totalDebit</th>
-              <th className="global_th">totalCredit</th>
+              {/* <th className="global_th">totalCredit</th> */}
               <th className="global_th">totalGrand</th>
               <th className="global_th">action</th>
             </tr>
@@ -342,9 +378,9 @@ const AsmReport = () => {
                   <td className="global_td">
                     {(items?.totalDebit || 0).toLocaleString("en-IN")}
                   </td>
-                  <td className="global_td">
+                  {/* <td className="global_td">
                     {(items?.totalCredit || 0).toLocaleString("en-IN")}
-                  </td>
+                  </td> */}
                   <td className="global_td">
                     {(items?.totalGrand || 0).toLocaleString("en-IN")}
                   </td>
@@ -363,7 +399,7 @@ const AsmReport = () => {
                       Dealer
                     </Link>
                     <Link
-                      to={`/salereportPage/${items._id}`}
+                      to={`/salereportPage/${items.MSOID}`}
                       className="global_button"
                     >
                       Sale Report
@@ -401,11 +437,11 @@ const AsmReport = () => {
                     .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
-                <td className="global_td">
+                {/* <td className="global_td">
                   {msoSummary
                     .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
                     .toLocaleString("en-IN")}
-                </td>
+                </td> */}
                 <td className="global_td">
                   {msoSummary
                     .reduce((sum, item) => sum + (item.totalGrand || 0), 0)

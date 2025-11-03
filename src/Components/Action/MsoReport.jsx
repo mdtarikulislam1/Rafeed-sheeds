@@ -16,6 +16,9 @@ const AsmReport = () => {
   const [dateInitialized, setDateInitialized] = useState(false);
   const [selectedRange, setSelectedRange] = useState("This Year");
 
+    // new state for filter
+    const [selectedCategory, setSelectedCategory] = useState("0");
+
   // data state
   const [salesByCategory, setSalesByCategory] = useState([]);
   const [productWeightSummary, setProductWeightSummary] = useState([]);
@@ -44,10 +47,7 @@ const AsmReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await api.get(
-        `/MSOReport/${id}/${start}/${end}`
-        
-      );
+      const { data } = await api.get(`/MSOReport/${id}/${start}/${end}`);
 
       if (data?.status === "success") {
         setProductWeightSummary(data?.productWeightSummary || []);
@@ -74,6 +74,16 @@ const AsmReport = () => {
       fetchData();
     }
   }, [startDate, endDate, id, dateInitialized]);
+
+  const filteredWeight =
+    selectedCategory === "0"
+      ? productWeightSummary
+      : productWeightSummary.filter((item) => item.CategoryName === selectedCategory);
+      
+  const filteredsalesByCategory =
+    selectedCategory === "0"
+      ? salesByCategory
+      : salesByCategory.filter((item) => item.CategoryName === selectedCategory);
 
   return (
     <div className="my-5 px-2" ref={containerRef}>
@@ -142,19 +152,37 @@ const AsmReport = () => {
         </div>
       </div>
 
-      {/* user Data */}
+      <div className="flex justify-between">
+        {/* user Data */}
 
-      <div>
-        {totalData?.MSOName ? (
-          <h4 className="user-name">Name: {totalData?.MSOName}</h4>
-        ) : (
-          ""
-        )}
-        {totalData?.MSOMobile ? (
-          <p className="user-mobile">Mobile: {totalData?.MSOMobile}</p>
-        ) : (
-          ""
-        )}
+        <div>
+          {totalData?.MSOName ? (
+            <h4 className="user-name">Name: {totalData?.MSOName}</h4>
+          ) : (
+            ""
+          )}
+          {totalData?.MSOMobile ? (
+            <p className="user-mobile">Mobile: {totalData?.MSOMobile}</p>
+          ) : (
+            ""
+          )}
+        </div>
+
+        {/* Category Filter */}
+        <div>
+          <select
+            className="global_dropdown min-w-40"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="0">All</option>
+            {salesByCategory.map((items, index) => (
+              <option key={index} value={items?.CategoryName}>
+                {items?.CategoryName}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* salesByCategory */}
@@ -171,8 +199,8 @@ const AsmReport = () => {
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {salesByCategory && salesByCategory.length > 0 ? (
-              salesByCategory.map((items, index) => (
+            {filteredsalesByCategory && filteredsalesByCategory.length > 0 ? (
+              filteredsalesByCategory.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
@@ -195,29 +223,25 @@ const AsmReport = () => {
               </tr>
             )}
           </tbody>
-          {salesByCategory && salesByCategory.length > 0 && (
+          {filteredsalesByCategory && filteredsalesByCategory.length > 0 && (
             <tfoot className="text-green-700 no-download">
               <tr className="global_tr">
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {salesByCategory
+                  {filteredsalesByCategory
                     .reduce((sum, item) => sum + (item.totalSale || 0), 0)
                     .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) =>
-                      sum + (item.totalDiscount || 0),
-                    0
-                  ).toLocaleString("en-IN")}
+                  {filteredsalesByCategory
+                    .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
+                    .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) =>
-                      sum + (item.totalGrand || 0),
-                    0
-                  ).toLocaleString("en-IN")}
+                  {filteredsalesByCategory
+                    .reduce((sum, item) => sum + (item.totalGrand || 0), 0)
+                    .toLocaleString("en-IN")}
                 </td>
               </tr>
             </tfoot>
@@ -239,12 +263,14 @@ const AsmReport = () => {
             </tr>
           </thead>
           <tbody className="global_tbody">
-            {productWeightSummary && productWeightSummary.length > 0 ? (
-              productWeightSummary.map((items, index) => (
+            {filteredWeight && filteredWeight.length > 0 ? (
+              filteredWeight.map((items, index) => (
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.productName || "N/A"}</td>
-                  <td className="global_td">{(items?.totalAmount || 0).toLocaleString("en-IN")}</td>
+                  <td className="global_td">
+                    {(items?.totalAmount || 0).toLocaleString("en-IN")}
+                  </td>
                   <td className="global_td">
                     {(() => {
                       const weight = items?.totalWeight || 0;
@@ -268,20 +294,19 @@ const AsmReport = () => {
               </tr>
             )}
           </tbody>
-          {productWeightSummary && productWeightSummary.length > 0 && (
+          {filteredWeight && filteredWeight.length > 0 && (
             <tfoot className="text-green-700">
               <tr className="global_tr">
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {productWeightSummary.reduce(
-                    (sum, item) => sum + (item.totalAmount || 0),
-                    0
-                  ).toLocaleString("en-IN")}
+                  {filteredWeight
+                    .reduce((sum, item) => sum + (item.totalAmount || 0), 0)
+                    .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
                   {(() => {
-                    const totalWeight = productWeightSummary.reduce(
+                    const totalWeight = filteredWeight.reduce(
                       (sum, item) => sum + (item.totalWeight || 0),
                       0
                     );
@@ -296,7 +321,7 @@ const AsmReport = () => {
                   })()}
                 </td>
                 <td className="global_td">
-                  {productWeightSummary.reduce(
+                  {filteredWeight.reduce(
                     (sum, item) => sum + (item.totalQtySold || 0),
                     0
                   )}

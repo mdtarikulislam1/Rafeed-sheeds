@@ -52,6 +52,7 @@ import ProfilePage from "./Pages/Setting/ProfilePage";
 import AddStockReportPage from "./Pages/ReportPage/AddStockReportPage";
 import SaleReportPage from "./Pages/ReportPage/SaleReportPage";
 import CreateTransictionPage from "./Pages/Transiction/CreateTransictionPage";
+import CreateBudzetPage from "./Pages/BudzetPage/CreateBudzet";
 
 function App() {
   const isLoggedIn = getToken();
@@ -164,6 +165,12 @@ function App() {
               element={<CreateTransictionPage />}
             />
 
+            {/* budzet */}
+
+            <Route
+              path="/createbudzets"
+              element={<CreateBudzetPage />}
+            />
           </Routes>
         ) : (
           <Routes>

@@ -254,7 +254,7 @@ const AsmDashBoardPage = () => {
                 <th className="global_th">total Sale</th>
                 <th className="global_th">total Discount</th>
                 <th className="global_th">total Debit</th>
-                <th className="global_th">total Credit</th>
+                {/* <th className="global_th">total Credit</th> */}
                 <th className="global_th">total Grand</th>
                 <th className="global_th">action</th>
               </tr>
@@ -276,9 +276,9 @@ const AsmDashBoardPage = () => {
                     <td className="global_td">
                       {(items?.totalDebit || 0).toLocaleString("en-IN")}
                     </td>
-                    <td className="global_td">
+                    {/* <td className="global_td">
                       {(items?.totalCredit || 0).toLocaleString("en-IN")}
-                    </td>
+                    </td> */}
                     <td className="global_td">
                       {(items?.totalGrand || 0).toLocaleString("en-IN")}
                     </td>
@@ -335,11 +335,11 @@ const AsmDashBoardPage = () => {
                       .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
-                  <td className="global_td">
+                  {/* <td className="global_td">
                     {msoSummary
                       .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
                       .toLocaleString("en-IN")}
-                  </td>
+                  </td> */}
                   <td className="global_td">
                     {msoSummary
                       .reduce((sum, item) => sum + (item.totalGrand || 0), 0)

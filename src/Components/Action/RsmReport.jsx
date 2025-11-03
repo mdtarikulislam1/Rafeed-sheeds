@@ -90,17 +90,17 @@ const RsmReport = () => {
       ? weight
       : weight.filter((item) => item.CategoryName === selectedCategory);
 
-  //  Filtered ASM Summary
-  const filteredAsmSummary =
-    selectedCategory === "0"
-      ? asmSummary
-      : asmSummary.filter((item) => item.CategoryName === selectedCategory);
+  // //  Filtered ASM Summary
+  // const filteredAsmSummary =
+  //   selectedCategory === "0"
+  //     ? asmSummary
+  //     : asmSummary.filter((item) => item.CategoryName === selectedCategory);
 
-  // Filtered MSO Summary
-  const filteredMsoSummary =
-    selectedCategory === "0"
-      ? msoSummary
-      : msoSummary.filter((item) => item.CategoryName === selectedCategory);
+  // // Filtered MSO Summary
+  // const filteredMsoSummary =
+  //   selectedCategory === "0"
+  //     ? msoSummary
+  //     : msoSummary.filter((item) => item.CategoryName === selectedCategory);
 
   return (
     <div className="my-5 px-2 " ref={containerRef}>
@@ -179,7 +179,7 @@ const RsmReport = () => {
           )}
         </div>
 
-        {/* 🔥 Category Filter */}
+        {/*Category Filter */}
         <div>
           <select
             className="global_dropdown min-w-40"
@@ -196,7 +196,7 @@ const RsmReport = () => {
         </div>
       </div>
 
-      {/* ✅ Sales By Category Table */}
+      {/*Sales By Category Table */}
       <div className="my-4">
         <h4 className="global_heading">Sales By Category</h4>
         <div className="w-full overflow-auto">
@@ -335,14 +335,14 @@ const RsmReport = () => {
                 <th className="global_th">total Sale</th>
                 <th className="global_th">total Discount</th>
                 <th className="global_th">total Debit</th>
-                <th className="global_th">total Credit</th>
+                {/* <th className="global_th">total Credit</th> */}
                 <th className="global_th">total Grand</th>
                 <th className="global_th">action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
-              {filteredAsmSummary.length > 0 ? (
-                filteredAsmSummary.map((items, index) => (
+              {asmSummary.length > 0 ? (
+                asmSummary.map((items, index) => (
                   <tr key={index} className="global_tr ">
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.ASMName || "N/A"}</td>
@@ -356,9 +356,9 @@ const RsmReport = () => {
                     <td className="global_td">
                       {(items?.totalDebit || 0).toLocaleString("en-IN")}
                     </td>
-                    <td className="global_td">
+                    {/* <td className="global_td">
                       {(items?.totalCredit || 0).toLocaleString("en-IN")}
-                    </td>
+                    </td> */}
                     <td className="global_td">
                       {(items?.totalGrand || 0).toLocaleString("en-IN")}
                     </td>
@@ -398,34 +398,34 @@ const RsmReport = () => {
                 </tr>
               )}
             </tbody>
-            {filteredAsmSummary && filteredAsmSummary.length > 0 && (
+            {asmSummary && asmSummary.length > 0 && (
               <tfoot className="text-green-700">
                 <tr className="global_tr">
                   <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {filteredAsmSummary
+                    {asmSummary
                       .reduce((sum, item) => sum + (item.totalSale || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {filteredAsmSummary
+                    {asmSummary
                       .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {filteredAsmSummary
+                    {asmSummary
                       .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
-                  <td className="global_td">
-                    {filteredAsmSummary
+                  {/* <td className="global_td">
+                    {asmSummary
                       .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
                       .toLocaleString("en-IN")}
-                  </td>
+                  </td> */}
                   <td className="global_td">
-                    {filteredAsmSummary
+                    {asmSummary
                       .reduce((sum, item) => sum + (item.totalGrand || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
@@ -455,14 +455,14 @@ const RsmReport = () => {
                 <th className="global_th">total Sale</th>
                 <th className="global_th">total Discount</th>
                 <th className="global_th">total Debit</th>
-                <th className="global_th">total Credit</th>
+                {/* <th className="global_th">total Credit</th> */}
                 <th className="global_th">total Grand</th>
                 <th className="global_th">action</th>
               </tr>
             </thead>
             <tbody className="global_tbody">
-              {filteredMsoSummary.length > 0 ? (
-                filteredMsoSummary.map((items, index) => (
+              {msoSummary.length > 0 ? (
+                msoSummary.map((items, index) => (
                   <tr key={index} className="global_tr">
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.MSOName || "N/A"}</td>
@@ -477,9 +477,9 @@ const RsmReport = () => {
                     <td className="global_td">
                       {(items?.totalDebit || 0).toLocaleString("en-IN")}
                     </td>
-                    <td className="global_td">
+                    {/* <td className="global_td">
                       {(items?.totalCredit || 0).toLocaleString("en-IN")}
-                    </td>
+                    </td> */}
                     <td className="global_td">
                       {(items?.totalGrand || 0).toLocaleString("en-IN")}
                     </td>
@@ -513,34 +513,34 @@ const RsmReport = () => {
                 </tr>
               )}
             </tbody>
-            {filteredMsoSummary && filteredMsoSummary.length > 0 && (
+            {msoSummary && msoSummary.length > 0 && (
               <tfoot className="text-green-700">
                 <tr className="global_tr">
                   <td className="global_td text-center">Total</td>
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {filteredMsoSummary
+                    {msoSummary
                       .reduce((sum, item) => sum + (item.totalSale || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {filteredMsoSummary
+                    {msoSummary
                       .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {filteredMsoSummary
+                    {msoSummary
                       .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
-                  <td className="global_td">
-                    {filteredMsoSummary
+                  {/* <td className="global_td">
+                    {msoSummary
                       .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
                       .toLocaleString("en-IN")}
-                  </td>
+                  </td> */}
                   <td className="global_td">
-                    {filteredMsoSummary
+                    {msoSummary
                       .reduce((sum, item) => sum + (item.totalGrand || 0), 0)
                       .toLocaleString("en-IN")}
                   </td>
