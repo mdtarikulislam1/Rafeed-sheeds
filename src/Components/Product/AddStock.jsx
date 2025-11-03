@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
-import axios from "axios";
 import Select from "react-select";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { useNavigate } from "react-router-dom";
 
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AddStock = () => {
   const [products, setProducts] = useState([]);
@@ -30,9 +28,7 @@ const AddStock = () => {
   const fetchProducts = async (keyword = 0) => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/ProductList/1/20/${keyword}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/ProductList/1/20/${keyword}`);
       if (res.data.status === "Success") {
         setProducts(
           res.data.data.map((p) => ({
@@ -115,9 +111,7 @@ const AddStock = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(`${BaseURL}/AddStock`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/AddStock`, payload);
       if (res.data.status === "Success") {
         SuccessToast("Purchase created successfully");
         setSelectedProducts([]);

@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { FaCalendarAlt } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
@@ -13,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const RsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -52,12 +50,7 @@ const RsmDashBoardPage = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/RSMReport/0/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
-      );
+      const { data } = await api.get(`/RSMReport/0/${start}/${end}`);
       setSalesByCategory(data?.salesByCategory);
       setProductWeightSummary(data?.productWeightSummary);
       setAsmSummary(data?.asmSummary);
@@ -106,7 +99,7 @@ const RsmDashBoardPage = () => {
           >
             {[
               "Custom",
-               "Today",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -275,10 +268,18 @@ const RsmDashBoardPage = () => {
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.ASMName || "N/A"}</td>
                     <td className="global_td">{items?.ASMMobile || "N/A"}</td>
-                    <td className="global_td">{items?.totalSale || 0}</td>
-                    <td className="global_td">{items?.totalDiscount || 0}</td>
-                    <td className="global_td">{items?.totalDebit || 0}</td>
-                    <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td">
+                      {(items?.totalSale || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDiscount || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDebit || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalCredit || 0).toLocaleString("en-IN")}
+                    </td>
                     <td className="global_td">
                       <Link
                         to={`/ASMReport/${items?.ASMID}`}
@@ -300,6 +301,12 @@ const RsmDashBoardPage = () => {
                       >
                         Dealer
                       </Link>
+                      <Link
+                        to={`/salereportPage/${items.ASMID}`}
+                        className="global_button"
+                      >
+                        Sale Report
+                      </Link>
                     </td>
                   </tr>
                 ))
@@ -320,28 +327,24 @@ const RsmDashBoardPage = () => {
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalSale || 0),
-                      0
-                    )}
+                    {asmSummary
+                      .reduce((sum, item) => sum + (item.totalSale || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalDiscount || 0),
-                      0
-                    )}
+                    {asmSummary
+                      .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalDebit || 0),
-                      0
-                    )}
+                    {asmSummary
+                      .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {asmSummary.reduce(
-                      (sum, item) => sum + (item.totalCredit || 0),
-                      0
-                    )}
+                    {asmSummary
+                      .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td text-center"></td>
                 </tr>
@@ -383,7 +386,9 @@ const RsmDashBoardPage = () => {
                       })()}
                     </td>
                     <td className="global_td">{items?.totalQtySold || 0}</td>
-                    <td className="global_td">{items?.totalAmount || 0}</td>
+                    <td className="global_td">
+                      {(items?.totalAmount || 0).toLocaleString("en-IN")}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -424,10 +429,9 @@ const RsmDashBoardPage = () => {
                     )}
                   </td>
                   <td className="global_td">
-                    {productWeightSummary.reduce(
-                      (sum, item) => sum + (item.totalAmount || 0),
-                      0
-                    )}
+                    {productWeightSummary
+                      .reduce((sum, item) => sum + (item.totalAmount || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                 </tr>
               </tfoot>
@@ -459,10 +463,18 @@ const RsmDashBoardPage = () => {
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.MSOName || "N/A"}</td>
                     <td className="global_td">{items?.MSOMobile || "N/A"}</td>
-                    <td className="global_td">{items?.totalSale || 0}</td>
-                    <td className="global_td">{items?.totalDiscount || 0}</td>
-                    <td className="global_td">{items?.totalDebit || 0}</td>
-                    <td className="global_td">{items?.totalCredit || 0}</td>
+                    <td className="global_td">
+                      {(items?.totalSale || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDiscount || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDebit || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalCredit || 0).toLocaleString("en-IN")}
+                    </td>
                     <td className="global_td space-x-2">
                       <Link
                         to={`/MSOReport/${items?.MSOID}`}
@@ -496,28 +508,24 @@ const RsmDashBoardPage = () => {
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalSale || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalSale || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDiscount || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDebit || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalCredit || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td text-center"></td>
                 </tr>

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function MyMso() {
   const { setGlobalLoader } = loadingStore();
@@ -14,9 +12,7 @@ export default function MyMso() {
       setGlobalLoader(true);
 
       try {
-        const { data } = await axios.get(`${BaseURL}/MSO/0`, {
-          headers: { token: getToken() },
-        });
+        const { data } = await api.get(`/MSO/0`);
         setData(data?.data);
       } catch (error) {
         console.error("Error fetching MSO data:", error);

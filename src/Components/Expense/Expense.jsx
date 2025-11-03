@@ -10,9 +10,6 @@ import {
 } from "react-icons/fa";
 
 import { format } from "date-fns";
-import axios from "axios";
-import { getToken } from "../../Helper/SessionHelper";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import Swal from "sweetalert2";
@@ -23,6 +20,7 @@ import { createPortal } from "react-dom";
 
 import { printElement } from "../../Helper/Printer";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Expense = () => {
   const [RSM, setRSM] = useState([]);
@@ -72,9 +70,7 @@ const Expense = () => {
   const fetchRSM = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/getRSM`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/getRSM`);
       const data = res.data.data || [];
       setRSM(data);
 
@@ -93,9 +89,7 @@ const Expense = () => {
   const fetchExpenseTypes = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetExpenseTypes`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetExpenseTypes`);
       setExpenseTypes(res.data.data || []);
     } catch (error) {
       // ErrorToast("Failed to load Expenses");
@@ -110,9 +104,8 @@ const Expense = () => {
       const formattedStart = start.toISOString();
       const formattedEnd = end.toISOString();
 
-      const res = await axios.get(
-        `${BaseURL}/GetExpenseByDate/${formattedStart}/${formattedEnd}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/GetExpenseByDate/${formattedStart}/${formattedEnd}`
       );
 
       if (res.data.status === "Success") {
@@ -178,11 +171,8 @@ const Expense = () => {
       if (result.isConfirmed) {
         try {
           setGlobalLoader(true);
-          const response = await axios.delete(
-            `${BaseURL}/DeleteExpense/${id}`,
-            {
-              headers: { token: getToken() },
-            }
+          const response = await api.delete(
+            `/DeleteExpense/${id}`
           );
           if (response.data.status === "Success") {
             SuccessToast(response.data.message);
@@ -217,9 +207,7 @@ const Expense = () => {
 
     setGlobalLoader(true);
     try {
-      const res = await axios.post(`${BaseURL}/CreateExpense`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/CreateExpense`, payload);
       if (res.data.status === "Success") {
         SuccessToast("Expense created successfully");
         setSelectedExpense("");
@@ -291,9 +279,7 @@ const Expense = () => {
 
       setGlobalLoader(true);
       try {
-        const res = await axios.post(`${BaseURL}/CreateExpense`, payload, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/CreateExpense`, payload);
         if (res.data.status === "Success") {
           SuccessToast("Expense created successfully");
           setSelectedExpense("");

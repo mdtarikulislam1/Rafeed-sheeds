@@ -1,13 +1,12 @@
 import { FaCalendarAlt } from "react-icons/fa";
 import { getDateRange } from "../../Helper/dateRangeHelper";
 import DatePicker from "react-datepicker";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import SearchByDealerOfficers from "./SearchByDealerOfficers";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Dashboard = () => {
   const { setGlobalLoader } = loadingStore();
@@ -38,9 +37,7 @@ const Dashboard = () => {
     const end = formatDate(endDate, true);
 
     try {
-      const { data } = await axios.get(`${BaseURL}/Dashboard/${start}/${end}`, {
-        headers: { token: getToken() },
-      });
+      const { data } = await api.get(`/Dashboard/${start}/${end}`);
       console.log(data);
       if (data?.status === "Success") {
         setSummary(data?.data);
@@ -169,9 +166,9 @@ const Dashboard = () => {
                     ৳{(s?.TotalDebit || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-gray-400">
+                <div className="flex justify-between border-t border-gray-300 pt-2">
                   <span className="text-xs ">Total due</span>
-                  <span className="text-lg font-bold text-green-600">
+                  <span className="font-bold text-red-600">
                     ৳{(s?.TotalSale -  s?.TotalDebit).toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -257,6 +254,9 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
+        <div className="px-2 mt-4 mb-80">
+     <SearchByDealerOfficers/>
+   </div>
     </div>
   );
 };

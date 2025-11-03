@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const TransictionDetails = () => {
   const { id } = useParams(); // get transaction ID from URL
@@ -17,9 +15,7 @@ const TransictionDetails = () => {
   const fetchTransactionDetails = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetPostTransactionById/${id}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetPostTransactionById/${id}`);
 
       if (res.data.status === "Success") {
         setTransaction(res.data.transaction);
@@ -43,9 +39,7 @@ const TransictionDetails = () => {
     try {
       setGlobalLoader(true);
 
-      const res = await axios.get(`${BaseURL}/ApproveTransaction/${id}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/ApproveTransaction/${id}`);
 
       if (res.data.status === "Success") {
         SuccessToast("Transaction Approved Successfully");

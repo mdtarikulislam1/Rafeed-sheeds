@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { FaCalendarAlt } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
@@ -13,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -51,12 +49,7 @@ const AsmDashBoardPage = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/ASMReport/0/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
-      );
+      const { data } = await api.get(`/ASMReport/0/${start}/${end}`);
       setSalesByCategory(data?.salesByCategory);
       setProductWeightSummary(data?.productWeightSummary);
       setMsoSummary(data?.msoSummary);
@@ -86,7 +79,6 @@ const AsmDashBoardPage = () => {
 
   // ---------- RENDER ----------
 
-
   return (
     <div className="p-1">
       {/* Date Filter */}
@@ -105,7 +97,7 @@ const AsmDashBoardPage = () => {
           >
             {[
               "Custom",
-               "Today",
+              "Today",
               "Last 30 Days",
               "This Week",
               "Last Week",
@@ -181,19 +173,19 @@ const AsmDashBoardPage = () => {
                 <div className="flex justify-between border-t border-gray-200 pt-2">
                   <span className="text-xs ">Total Sales:</span>
                   <span className="text-lg font-bold text-green-600">
-                    {s?.totalSale || 0}
+                    {(s?.totalSale || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Discount</span>
                   <span className="text-sm font-medium text-red-500">
-                    {s.totalDiscount}
+                    {s.totalDiscount.toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Grand Total</span>
                   <span className="text-sm font-medium text-green-700">
-                    {s.totalGrand}
+                    {s.totalGrand.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -275,11 +267,21 @@ const AsmDashBoardPage = () => {
                     <td className="global_td">{index + 1}</td>
                     <td className="global_td">{items?.MSOName || "N/A"}</td>
                     <td className="global_td">{items?.MSOMobile || "N/A"}</td>
-                    <td className="global_td">{items?.totalSale || 0}</td>
-                    <td className="global_td">{items?.totalDiscount || 0}</td>
-                    <td className="global_td">{items?.totalDebit || 0}</td>
-                    <td className="global_td">{items?.totalCredit || 0}</td>
-                    <td className="global_td">{items?.totalGrand || 0}</td>
+                    <td className="global_td">
+                      {(items?.totalSale || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDiscount || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalDebit || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalCredit || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="global_td">
+                      {(items?.totalGrand || 0).toLocaleString("en-IN")}
+                    </td>
                     <td className="global_td space-x-2">
                       <Link
                         className="global_button"
@@ -292,6 +294,12 @@ const AsmDashBoardPage = () => {
                         to={`/DealerList/${items?.MSOID}`}
                       >
                         Dealer
+                      </Link>
+                      <Link
+                        to={`/salereportPage/${items._id}`}
+                        className="global_button"
+                      >
+                        Sale Report
                       </Link>
                     </td>
                   </tr>
@@ -313,34 +321,29 @@ const AsmDashBoardPage = () => {
                   <td className="global_td text-center"></td>
                   <td className="global_td text-center"></td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalSale || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalSale || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDiscount || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalDebit || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalDebit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalCredit || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalCredit || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td">
-                    {msoSummary.reduce(
-                      (sum, item) => sum + (item.totalGrand || 0),
-                      0
-                    )}
+                    {msoSummary
+                      .reduce((sum, item) => sum + (item.totalGrand || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                   <td className="global_td text-center"></td>
                 </tr>
@@ -370,7 +373,9 @@ const AsmDashBoardPage = () => {
                     <td className="global_td">{items?.productName || "N/A"}</td>
                     <td className="global_td">{items?.totalWeight || 0}</td>
                     <td className="global_td">{items?.totalQtySold || 0}</td>
-                    <td className="global_td">{items?.totalAmount || 0}</td>
+                    <td className="global_td">
+                      {(items?.totalAmount || 0).toLocaleString("en-IN")}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -401,10 +406,9 @@ const AsmDashBoardPage = () => {
                     )}
                   </td>
                   <td className="global_td">
-                    {productWeightSummary.reduce(
-                      (sum, item) => sum + (item.totalAmount || 0),
-                      0
-                    )}
+                    {productWeightSummary
+                      .reduce((sum, item) => sum + (item.totalAmount || 0), 0)
+                      .toLocaleString("en-IN")}
                   </td>
                 </tr>
               </tfoot>

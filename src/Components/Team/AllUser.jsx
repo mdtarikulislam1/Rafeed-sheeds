@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { FiLock, FiUnlock } from "react-icons/fi";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AllUser = () => {
   const [role, setRole] = useState([]);
@@ -43,9 +41,7 @@ const AllUser = () => {
   const fetchAllRole = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetRole`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetRole`);
 
       // যদি response সরাসরি array হয়
       if (Array.isArray(res.data)) {
@@ -69,9 +65,7 @@ const AllUser = () => {
   const fetchAllUsers = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/userList`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/userList`);
       if (res.data.status === "Success") setAllUsers(res.data.data);
       else ErrorToast(res.data.message);
     } catch (error) {
@@ -84,10 +78,10 @@ const AllUser = () => {
   const handleActivation = async (userId, status) => {
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/updateUser/${userId}`,
+      const res = await api.post(
+        `/updateUser/${userId}`,
         { active: status },
-        { headers: { token: getToken() } }
+        
       );
       if (res.data.status === "Success") {
         SuccessToast(
@@ -153,10 +147,9 @@ const AllUser = () => {
       if (editForm.role === "ASM") requestBody.RSMID = editForm.parentId;
       if (editForm.role === "MSO") requestBody.ASMID = editForm.parentId;
 
-      const res = await axios.post(
-        `${BaseURL}/updateUser/${editingUser._id}`,
+      const res = await api.post(
+        `/updateUser/${editingUser._id}`,
         requestBody,
-        { headers: { token: getToken() } }
       );
       if (res.data.status === "Success") {
         SuccessToast("User updated successfully");
@@ -211,9 +204,7 @@ const AllUser = () => {
         password: form.password,
       };
 
-      const res = await axios.post(`${BaseURL}/createUser`, requestBody, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/createUser`, requestBody);
       if (res.data.status === "Success") {
         SuccessToast(`${selectedRoleType} created successfully`);
         setForm({ name: "", mobile: "", password: "", confirmPassword: "" });
@@ -248,11 +239,7 @@ const AllUser = () => {
         role: selectedRole[userID].name,
       };
 
-      const res = await axios.post(`${BaseURL}/AddRole`, payload, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.post(`/AddRole`, payload);
 
       if (res.data.status === "Success") {
         SuccessToast(res.data.message || "Role Assigned Successfull");

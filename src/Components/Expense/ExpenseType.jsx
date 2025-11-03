@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import Swal from "sweetalert2";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ExpenseType = () => {
   const [expenseTypes, setExpenseTypes] = useState([]);
@@ -17,9 +15,7 @@ const ExpenseType = () => {
   const GetExpenseTypes = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetExpenseTypes`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetExpenseTypes`);
       setExpenseTypes(res.data.data || []);
     } catch (error) {
       ErrorToast("Failed to load Expenses");
@@ -43,12 +39,9 @@ const ExpenseType = () => {
 
     try {
       if (editId) {
-        const res = await axios.put(
-          `${BaseURL}/UpdateExpenseTypes/${editId}`,
-          form,
-          {
-            headers: { token: getToken() },
-          }
+        const res = await api.put(
+          `/UpdateExpenseTypes/${editId}`,
+          form
         );
         if (res.data.status === "Success") {
           SuccessToast("Expenses updated successfully!");
@@ -59,9 +52,7 @@ const ExpenseType = () => {
           ErrorToast(res.data.message || "Failed to update Expenses");
         }
       } else {
-        const res = await axios.post(`${BaseURL}/CreateExpenseTypes`, form, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/CreateExpenseTypes`, form);
         if (res.data.status === "Success") {
           SuccessToast("Expenses created successfully!");
           setForm({ name: "" });
@@ -117,11 +108,8 @@ const ExpenseType = () => {
       if (result.isConfirmed) {
         try {
           setGlobalLoader(true);
-          const response = await axios.delete(
-            `${BaseURL}/DeleteExpenseTypes/${id}`,
-            {
-              headers: { token: getToken() },
-            }
+          const response = await api.delete(
+            `/DeleteExpenseTypes/${id}`
           );
           if (response.data.status === "Success") {
             SuccessToast(response.data.message);

@@ -45,18 +45,18 @@ import RsmReportPage from "./Pages/ActionPage/RsmReportPage";
 import MsoListPage from "./Pages/ActionPage/MsoListPage";
 import MsoReportPage from "./Pages/ActionPage/MsoReportPage";
 import MyMsoPage from "./Pages/MyMso/MyMsoPage";
-import AsmReportPage from "./Pages/MyAsm/AsmReportPage"
+import AsmReportPage from "./Pages/MyAsm/AsmReportPage";
 import DealerPage from "./Pages/ActionPage/DealerPage";
 import DealerReportPage from "./Pages/Contact/DealerReportPage";
 import ProfilePage from "./Pages/Setting/ProfilePage";
 import AddStockReportPage from "./Pages/ReportPage/AddStockReportPage";
 import SaleReportPage from "./Pages/ReportPage/SaleReportPage";
+import CreateTransictionPage from "./Pages/Transiction/CreateTransictionPage";
 
 function App() {
   const isLoggedIn = getToken();
 
   // number er scroll er jonno
-
 
   useEffect(() => {
     const handleWheel = (e) => {
@@ -122,37 +122,35 @@ function App() {
             <Route path="/SellList" element={<SellListPage />} />
             <Route path="/PostTransiction" element={<PostTransictionPage />} />
             <Route path="/TransictionList" element={<TransictionListPage />} />
-            <Route path="/changePassword" element={<ChangePassword/>}/>
-            <Route path="/MyAsmPage" element={<MyAsmPage/>}/>
-            <Route path="/ASMReport/:id" element={<AsmReportPage/>}/>
+            <Route path="/changePassword" element={<ChangePassword />} />
+            <Route path="/MyAsmPage" element={<MyAsmPage />} />
+            <Route path="/ASMReport/:id" element={<AsmReportPage />} />
 
+            <Route path="/myMso/Page" element={<MyMsoPage />} />
 
-            <Route path="/myMso/Page" element={<MyMsoPage/>}/>
-
-             {/* report */}
-             <Route path="/report/addStockReport" element={<AddStockReportPage/>}/>
-             <Route path="/salereportPage/:id" element={<SaleReportPage/>}/>
-
+            {/* report */}
+            <Route
+              path="/report/addStockReport"
+              element={<AddStockReportPage />}
+            />
+            <Route path="/salereportPage/:id" element={<SaleReportPage />} />
 
             {/* setting */}
             <Route path="/BusinessSetting" element={<BusinessSettingPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-             
 
             {/* dealer */}
-            <Route path="/my/dealer" element={<MyDealerPages/>}/>
+            <Route path="/my/dealer" element={<MyDealerPages />} />
             <Route path="/Dealer" element={<DealerPage />} />
-            <Route path="/DealerReport/:id" element={<DealerReportPage/>} />
-
+            <Route path="/DealerReport/:id" element={<DealerReportPage />} />
 
             {/* Dashboard action */}
-            <Route path="/RSMReport/:id" element={<RsmReportPage/>}/>
-            <Route path="/ASM/:id" element={<AsmPage/>}/>
-            <Route path="/MSO/:id" element={<MsoListPage/>}/>
-            <Route path="/MSOReport/:id" element={<MsoReportPage/>}/>
-          
+            <Route path="/RSMReport/:id" element={<RsmReportPage />} />
+            <Route path="/ASM/:id" element={<AsmPage />} />
+            <Route path="/MSO/:id" element={<MsoListPage />} />
+            <Route path="/MSOReport/:id" element={<MsoReportPage />} />
 
-
+            {/* transiction */}
             <Route
               path="/AllTransictionList"
               element={<AllTransictionListPage />}
@@ -161,6 +159,11 @@ function App() {
               path="/TransictionDetails/:id"
               element={<TransictionDetailsPage />}
             />
+            <Route
+              path="/createTransiction"
+              element={<CreateTransictionPage />}
+            />
+
           </Routes>
         ) : (
           <Routes>

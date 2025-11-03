@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import { printElement } from "../../Helper/Printer";
 import { Link } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AddStockList = () => {
   const [AddStocks, setAddStocks] = useState([]);
@@ -21,9 +19,8 @@ const AddStockList = () => {
   const fetchAddStocks = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/AddStockList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/AddStockList/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         let data = res.data.data;

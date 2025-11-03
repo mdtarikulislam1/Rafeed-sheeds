@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import openCloseStore from "../../Zustand/OpenCloseStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper"; // make sure you have this
 import { FaWallet } from "react-icons/fa"; // since you used <FaWallet />
 import loadingStore from "../../Zustand/LoadingStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const CreateDealerModal = () => {
   const { dealerModal, setDealerModal } = openCloseStore();
@@ -50,9 +48,7 @@ const CreateDealerModal = () => {
   const fetchMSO = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${BaseURL}/GetMSO`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetMSO`);
 
       if (res.data.status === "Success") {
         setMSO(res.data.data);
@@ -71,11 +67,7 @@ const CreateDealerModal = () => {
     try {
       setGlobalLoader(true);
 
-      const res = await axios.get(`${BaseURL}/GetASM`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetASM`);
 
       if (res.data.status === "Success") {
         setASM(res.data.data);
@@ -141,9 +133,7 @@ const CreateDealerModal = () => {
           : {}),
       };
 
-      const res = await axios.post(`${BaseURL}/adDealer`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/adDealer`, payload);
 
       if (res.data.status === "Success") {
         SuccessToast("Dealer created successfully");

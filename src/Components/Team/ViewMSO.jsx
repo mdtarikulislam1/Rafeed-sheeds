@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { getToken } from "../../Helper/SessionHelper";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ViewMSO = () => {
   const { id } = useParams();
@@ -15,11 +13,7 @@ const ViewMSO = () => {
   const getMSOByASMID = async (id) => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetMSObyASM/${id}`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`GetMSObyASM/${id}`);
 
       if (res.data.status === "Success") {
         setData({

@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { FaPlus, FaTag } from "react-icons/fa";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
-import axios from "axios";
 import openCloseStore from "../../Zustand/OpenCloseStore";
 import { formatDate } from "date-fns";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ProductList = () => {
   // State management
@@ -40,11 +38,8 @@ const ProductList = () => {
     setGlobalLoader(true);
 
     try {
-      const res = await axios.get(
-        `${BaseURL}/ProductList/${page}/${limit}/${search || 0}`,
-        {
-          headers: { token: getToken() },
-        }
+      const res = await api.get(
+        `/ProductList/${page}/${limit}/${search || 0}`
       );
 
       if (res.data.status === "Success") {
@@ -63,7 +58,7 @@ const ProductList = () => {
   const fetchDropdownData = async () => {
     try {
       const [categoriesRes] = await Promise.all([
-        axios.get(`${BaseURL}/GetCategory`, { headers: { token: getToken() } }),
+        api.get(`/GetCategory`),
       ]);
 
       setCategories(categoriesRes.data.data || []);
@@ -154,9 +149,7 @@ const ProductList = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(`${BaseURL}/CreateProduct`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/CreateProduct`, payload);
 
       if (res.data.status === "Success") {
         SuccessToast("Product created successfully!");
@@ -194,12 +187,9 @@ const ProductList = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/UpdateProduct/${editingProduct._id}`,
-        payload,
-        {
-          headers: { token: getToken() },
-        }
+      const res = await api.post(
+        `/UpdateProduct/${editingProduct._id}`,
+        payload
       );
 
       if (res.data.status === "Success") {

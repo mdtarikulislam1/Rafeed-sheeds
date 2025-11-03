@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function MyDealer() {
   const { setGlobalLoader } = loadingStore();
@@ -12,9 +10,7 @@ export default function MyDealer() {
     const fetchData = async () => {
       setGlobalLoader(true);
       try {
-        const { data } = await axios.get(`${BaseURL}/MyDealer`, {
-          headers: { token: getToken() },
-        });
+        const { data } = await api.get(`/MyDealer`);
         setData(data);
       } catch (error) {
         console.log(error);
@@ -65,7 +61,7 @@ export default function MyDealer() {
                         {items?.proprietor ? items?.proprietor : "N/A"}
                       </td>
                       <td className="global_td ">
-                        {items?.totalBalance ? items?.totalBalance : "N/A"}
+                        {(items?.totalBalance ? items?.totalBalance : 0).toLocaleString("en-IN")}
                       </td>
 
                       <td className="global_td ">

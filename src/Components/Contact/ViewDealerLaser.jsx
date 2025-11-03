@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { FaCalendarAlt } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
@@ -12,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { printElement } from "../../Helper/Printer";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ViewDealerLaser = () => {
   const { id } = useParams();
@@ -48,9 +46,8 @@ const ViewDealerLaser = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/DealerLaser/${id}/${start}/${end}`,
-        { headers: { token: getToken() } }
+      const { data } = await api.get(
+        `/DealerLaser/${id}/${start}/${end}`
       );
       if (data?.status === "Success") {
         setLaser(data);
@@ -101,6 +98,13 @@ const ViewDealerLaser = () => {
           ) : (
             ""
           )}
+           {laser?.data[0]?.dealerDetails?.proprietor ? (
+            <p className="user-mobile">
+              Proprietor: {laser?.data[0]?.dealerDetails?.proprietor}
+            </p>
+          ) : (
+            ""
+          )}
 
           {laser?.data[0]?.dealerDetails?.mobile ? (
             <p className="user-mobile">
@@ -109,6 +113,7 @@ const ViewDealerLaser = () => {
           ) : (
             ""
           )}
+         
           {laser?.data[0]?.dealerDetails?.address ? (
             <address className="user-mobile">
               Address: {laser?.data[0]?.dealerDetails?.address}
@@ -119,16 +124,15 @@ const ViewDealerLaser = () => {
         </div>
 
         <p
-          className={`font-medium ${
-            laser?.contactDetails?.ClosingBalance < 0
+          className={`font-medium ${laser?.contactDetails?.ClosingBalance < 0
               ? "text-red-600"
               : "text-green-400"
-          } `}
+            } `}
         >
           {laser?.contactDetails?.ClosingBalance < 0
             ? `Receivable Balance: ${Math.abs(
-                laser?.contactDetails?.ClosingBalance
-              ).toLocaleString()}`
+              laser?.contactDetails?.ClosingBalance
+            ).toLocaleString()}`
             : `Payable Balance: ${laser?.contactDetails?.ClosingBalance.toLocaleString()}`}
         </p>
       </div>
@@ -150,7 +154,7 @@ const ViewDealerLaser = () => {
           >
             {[
               "Custom",
-               "Today",
+              "Today",
               "Last 30 Days",
               "This Year",
               "This Month",
@@ -253,25 +257,25 @@ const ViewDealerLaser = () => {
                     {(Number(t?.Credit) || 0) + (Number(t?.discount) || 0)}
                   </td>
                   <td className="global_td">{t.discount}</td>
-                  <td className="global_td">{t.Credit.toFixed(2)}</td>
-                  <td className="global_td">{t.Debit.toFixed(2)}</td>
+                  <td className="global_td">{(t.Credit.toFixed(2)).toLocaleString("en-IN")}</td>
+                  <td className="global_td">{(t.Debit.toFixed(2)).toLocaleString("en-IN")}</td>
                   <td
                     className={
                       "global_td " +
                       (t.TotalDebit - t.TotalCredit > 0
                         ? "text-red-400"
                         : t.TotalDebit - t.TotalCredit < 0
-                        ? "text-green-500"
-                        : "")
+                          ? "text-green-500"
+                          : "")
                     }
                   >
                     {t.TotalDebit - t.TotalCredit > 0
                       ? `Payable: ${(t.TotalDebit - t.TotalCredit).toFixed(2)}`
                       : t.TotalDebit - t.TotalCredit < 0
-                      ? `Receivable: ${Math.abs(
+                        ? `Receivable: ${Math.abs(
                           t.TotalDebit - t.TotalCredit
                         ).toFixed(2)}`
-                      : "0.00"}
+                        : "0.00"}
                   </td>
                   <td id="no-print" className="global_td">
                     {t.saleID && (

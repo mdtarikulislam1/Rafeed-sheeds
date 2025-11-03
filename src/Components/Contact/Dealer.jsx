@@ -1,13 +1,11 @@
 import { FaWallet } from "react-icons/fa";
 
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Dealer = () => {
   const [dealers, setDealers] = useState([]);
@@ -42,11 +40,7 @@ const Dealer = () => {
     try {
       setGlobalLoader(true);
 
-      const res = await axios.get(`${BaseURL}/GetMSO`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetMSO`);
 
       if (res.data.status === "Success") {
         setMSO(res.data.data);
@@ -65,11 +59,7 @@ const Dealer = () => {
     try {
       setGlobalLoader(true);
 
-      const res = await axios.get(`${BaseURL}/GetASM`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetASM`);
 
       if (res.data.status === "Success") {
         setASM(res.data.data);
@@ -88,9 +78,8 @@ const Dealer = () => {
   const fetchDealers = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/DealerList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/DealerList/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         setDealers(res.data.data);
@@ -141,10 +130,9 @@ const Dealer = () => {
           return ErrorToast("Invalid mobile number")
         }
 
-        const res = await axios.put(
-          `${BaseURL}/UpdateDealer/${editId}`,
+        const res = await api.put(
+          `/UpdateDealer/${editId}`,
           { name, email, mobile, proprietor, address },
-          { headers: { token: getToken() } }
         );
         if (res.data.status === "Success") {
           SuccessToast("Dealer updated successfully");
@@ -186,9 +174,7 @@ const Dealer = () => {
           payload.debit = Math.abs(parseFloat(form.balance));
         }
 
-        const res = await axios.post(`${BaseURL}/adDealer`, payload, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/adDealer`, payload);
         if (res.data.status === "Success") {
           SuccessToast("Dealer created successfully");
           resetForm();

@@ -1,10 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { BiShow,BiHide } from "react-icons/bi";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken, removeSessions } from "../../Helper/SessionHelper";
-import { BaseURL } from "../../Helper/Config";
 import loadingStore from "../../Zustand/LoadingStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function PasswordChange() {
   const { setGlobalLoader } = loadingStore();
@@ -19,16 +17,13 @@ export default function PasswordChange() {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     try {
-      const response = await axios.post(`${BaseURL}/changePassword`, data, {
-        headers: { token: getToken() },
-      });
+      const response = await api.post(`/changePassword`, data);
 
 
       if (response?.data?.status === "Success") {
         SuccessToast(
           response?.data?.message || "Password changed successfully!"
         );
-        removeSessions();
       } else {
         ErrorToast(response?.data?.message || "Something went wrong!");
       }

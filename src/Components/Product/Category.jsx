@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import Swal from "sweetalert2";
 import categoryStore from "../../Zustand/CategoryStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Category = () => {
   const { categories, setCategories } = categoryStore();
@@ -18,9 +16,7 @@ const Category = () => {
   const fetchCategories = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetCategory`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetCategory`);
       setCategories(res.data.data || []);
     } catch (error) {
       ErrorToast("Failed to load Categories");
@@ -44,12 +40,9 @@ const Category = () => {
 
     try {
       if (editId) {
-        const res = await axios.put(
-          `${BaseURL}/UpdateCategory/${editId}`,
+        const res = await api.put(
+          `/UpdateCategory/${editId}`,
           form,
-          {
-            headers: { token: getToken() },
-          }
         );
         if (res.data.status === "Success") {
           SuccessToast("Category updated successfully!");
@@ -60,9 +53,7 @@ const Category = () => {
           ErrorToast(res.data.message || "Failed to update category");
         }
       } else {
-        const res = await axios.post(`${BaseURL}/CreateCategory`, form, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/CreateCategory`, form);
         if (res.data.status === "Success") {
           SuccessToast("Category created successfully!");
           setForm({ name: "" });
@@ -118,11 +109,8 @@ const Category = () => {
       if (result.isConfirmed) {
         try {
           setGlobalLoader(true);
-          const response = await axios.delete(
-            `${BaseURL}/DeleteCategory/${id}`,
-            {
-              headers: { token: getToken() },
-            }
+          const response = await api.delete(
+            `/DeleteCategory/${id}`,
           );
           if (response.data.status === "Success") {
             SuccessToast(response.data.message);

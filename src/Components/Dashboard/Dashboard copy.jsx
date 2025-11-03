@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import axios from "axios";
-import { getToken, removeSessions } from "../../Helper/SessionHelper";
-import { BaseURL } from "../../Helper/Config";
+// import {  removeSessions } from "../../Helper/SessionHelper";
 import {
   LineChart,
   Line,
@@ -32,6 +30,7 @@ import {
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Dashboard = () => {
   // State management
@@ -203,16 +202,16 @@ const Dashboard = () => {
   }, [categoryData, rsmData, asmData]);
 
   // Enhanced API error handling
-  const handleApiError = useCallback((error, context) => {
-    console.error(`Error in ${context}:`, error);
+  // const handleApiError = useCallback((error, context) => {
+  //   console.error(`Error in ${context}:`, error);
 
-    if (error.response?.status === 401) {
-      removeSessions();
-      window.location.href = "/login";
-    } else {
-      setError(`Failed to load ${context}. Please try again.`);
-    }
-  }, []);
+  //   if (error.response?.status === 401) {
+  //     removeSessions();
+  //     window.location.href = "/login";
+  //   } else {
+  //     setError(`Failed to load ${context}. Please try again.`);
+  //   }
+  // }, []);
 
   // Fetch sales data with better error handling
   const fetchSalesData = useCallback(async () => {
@@ -220,14 +219,9 @@ const Dashboard = () => {
     setError(null);
 
     try {
-      const token = getToken();
-      if (!token) {
-        removeSessions();
-        return;
-      }
+    
 
-      const res = await axios.get(`${BaseURL}/Last30DaysSale`, {
-        headers: { token },
+      const res = await api.get(`/Last30DaysSale`, {
         timeout: 10000,
       });
 
@@ -256,11 +250,7 @@ const Dashboard = () => {
       setError(null);
 
       try {
-        const token = getToken();
-        if (!token) {
-          removeSessions();
-          return;
-        }
+      
 
         const start = customStart || startDate;
         const end = customEnd || endDate;
@@ -269,10 +259,9 @@ const Dashboard = () => {
           return date.toISOString().split("T")[0];
         };
 
-        const res = await axios.get(
-          `${BaseURL}/GetByDate/${formatDate(start)}/${formatDate(end)}`,
+        const res = await api.get(
+          `/GetByDate/${formatDate(start)}/${formatDate(end)}`,
           {
-            headers: { token },
             timeout: 15000,
           }
         );

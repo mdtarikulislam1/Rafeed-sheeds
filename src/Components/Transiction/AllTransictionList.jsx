@@ -1,12 +1,11 @@
 import { FaWallet } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
+
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AllTransictionList = () => {
   const [TransictionLists, setTransictionLists] = useState([]);
@@ -21,9 +20,8 @@ const AllTransictionList = () => {
   const fetchTransictionLists = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/PostTransactionsList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/PostTransactionsList/${page}/${limit}/${search || 0}`
       );
 
       if (res.data.status === "Success") {

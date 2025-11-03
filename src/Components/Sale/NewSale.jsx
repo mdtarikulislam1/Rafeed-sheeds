@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaPlus } from "react-icons/fa";
 
-import axios from "axios";
 import Select from "react-select";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
@@ -14,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
 import openCloseStore from "../../Zustand/OpenCloseStore";
 import ToggleSwitch from "../../Helper/UI/ToogleSwitch";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const NewSale = () => {
   const { setGlobalLoader } = loadingStore();
@@ -43,11 +41,8 @@ const NewSale = () => {
   const fetchDealers = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/DealerList/1/20/${searchDealerKeyword || 0}`,
-        {
-          headers: { token: getToken() },
-        }
+      const res = await api.get(
+        `/DealerList/1/20/${searchDealerKeyword || 0}`
       );
       if (res.data.status === "Success") {
         setDealers(
@@ -77,9 +72,7 @@ const NewSale = () => {
   const fetchCategories = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetCategory`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetCategory`);
       if (res.data.status === "Success") {
         setCategories(
           res.data.data.map((c) => ({ value: c._id, label: c.name }))
@@ -100,9 +93,8 @@ const NewSale = () => {
     if (!categoryID) return;
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/GetProductByCategoryID/${categoryID}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/GetProductByCategoryID/${categoryID}`
       );
       if (res.data.status === "Success") {
         setProducts(
@@ -262,9 +254,7 @@ const NewSale = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(`${BaseURL}/CreateSales`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/CreateSales`, payload);
       if (res.data.status === "Success") {
         setSelectedProducts([]);
         setSelectedDealer(null);

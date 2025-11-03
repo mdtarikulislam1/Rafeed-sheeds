@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const MSO = () => {
   const formRef = useRef(null);
@@ -31,9 +29,7 @@ const MSO = () => {
   const fetchASM = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetASM`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetASM`);
       if (res.data.status === "Success") {
         setASM(res.data.data);
       } else {
@@ -50,9 +46,7 @@ const MSO = () => {
   const fetchMSO = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetMSO`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetMSO`);
       if (res.data.status === "Success") {
         setMSO(res.data.data);
       } else {
@@ -123,10 +117,9 @@ const MSO = () => {
     if (!validateForm(form)) return;
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/CreateUser`,
+      const res = await api.post(
+        `/CreateUser`,
         { ...form, role: "MSO" },
-        { headers: { token: getToken() } }
       );
       if (res.data.status === "Success") {
         SuccessToast("MSO created successfully");
@@ -152,10 +145,9 @@ const MSO = () => {
     e.preventDefault();
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/updateUser/${editID}`,
+      const res = await api.post(
+        `/updateUser/${editID}`,
         { name: updateForm.name, password: updateForm.password || undefined },
-        { headers: { token: getToken() } }
       );
       if (res.data.status === "Success") {
         SuccessToast("MSO updated successfully");

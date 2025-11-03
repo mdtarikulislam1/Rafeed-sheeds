@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { Link, useParams } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const DealerList = () => {
   const [dealers, setDealers] = useState([]);
@@ -20,9 +18,8 @@ const DealerList = () => {
     try {
       const query =
         search.trim() === "" ? "0" : encodeURIComponent(search.trim());
-      const res = await axios.get(
-        `${BaseURL}/MyDealerList/${id}/${page}/${limit}/${query}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/MyDealerList/${id}/${page}/${limit}/${query}`
       );
       if (res.data.status === "Success") {
         setDealers(res.data.data);
@@ -109,7 +106,7 @@ const DealerList = () => {
                         : "text-red-600 dark:text-red-400"
                     }`}
                   >
-                    {c.totalBalance}
+                    {(c.totalBalance).toLocaleString("en-IN")}
                   </td>
                   <td className="global_td space-x-2">
                     <Link

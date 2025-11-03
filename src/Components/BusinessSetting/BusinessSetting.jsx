@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   getBusinessDetails,
-  getToken,
-  removeSessions,
 } from "../../Helper/SessionHelper";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast, IsEmpty } from "../../Helper/FormHelper";
-import axios from "axios";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const BusinessSetting = () => {
   const [formData, setFormData] = useState({
@@ -56,20 +53,13 @@ const BusinessSetting = () => {
         return;
       }
 
-      const response = await axios.put(
-        `${BaseURL}/UpdateBusiness/${businessId}`,
+      const response = await api.put(
+        `/UpdateBusiness/${businessId}`,
         formData,
-        {
-          headers: {
-            token: getToken(),
-            "Content-Type": "application/json",
-          },
-        }
       );
 
       if (response.status === 200) {
         SuccessToast("Business information updated successfully!");
-        removeSessions();
       } else {
         ErrorToast("Failed to update business information.");
       }

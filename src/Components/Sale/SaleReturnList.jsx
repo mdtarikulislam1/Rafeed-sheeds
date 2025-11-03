@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import { printElement } from "../../Helper/Printer";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const SaleReturnList = () => {
   const [returns, setReturns] = useState([]);
@@ -17,11 +15,8 @@ const SaleReturnList = () => {
   const fetchReturns = async (pageNumber = 1, searchTerm = "") => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/SaleReturnList/${pageNumber}/${limit}/0`,
-        {
-          headers: { token: getToken() },
-        }
+      const res = await api.get(
+        `/SaleReturnList/${pageNumber}/${limit}/0`
       );
 
       if (res.data.status === "Success") {

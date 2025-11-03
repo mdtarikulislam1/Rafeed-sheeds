@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import {
   FiEdit2,
@@ -13,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { TbCurrencyTaka } from "react-icons/tb";
 import bankStore from "../../Zustand/BankStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const BankAccount = () => {
   const [search, setSearch] = useState("");
@@ -34,9 +32,7 @@ const BankAccount = () => {
   const fetchAccounts = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetBank`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetBank`,);
       if (res.data.status === "Success") {
         setBanks(res.data.data);
       } else {
@@ -74,9 +70,7 @@ const BankAccount = () => {
 
     try {
       // Create Mode
-      await axios.post(`${BaseURL}/createBank`, form, {
-        headers: { token: getToken() },
-      });
+      await api.post(`/createBank`, form);
       SuccessToast("Account created successfully!");
 
       resetForm();

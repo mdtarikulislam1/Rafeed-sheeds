@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ASM = () => {
   const [search, setSearch] = useState("");
@@ -30,11 +28,7 @@ const ASM = () => {
   const fetchRSM = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetRSM`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetRSM`);
 
       if (res.data.status === "Success") {
         setRSM(res.data.data);
@@ -53,11 +47,7 @@ const ASM = () => {
   const fetchASM = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetASM`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetASM`);
 
       if (res.data.status === "Success") {
         setASM(res.data.data);
@@ -150,8 +140,8 @@ const ASM = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/createUser`,
+      const res = await api.post(
+        `/createUser`,
         {
           name: form.name,
           mobile: form.mobile,
@@ -159,11 +149,7 @@ const ASM = () => {
           RSMID: form.RSMID,
           role: "ASM",
         },
-        {
-          headers: {
-            token: getToken(),
-          },
-        }
+      
       );
 
       if (res.data.status === "Success") {
@@ -194,17 +180,13 @@ const ASM = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/updateUser/${editID}`,
+      const res = await api.post(
+        `/updateUser/${editID}`,
         {
           name: updateForm.name,
           password: updateForm.password || undefined,
         },
-        {
-          headers: {
-            token: getToken(),
-          },
-        }
+       
       );
 
       if (res.data.status === "Success") {
@@ -409,7 +391,7 @@ const ASM = () => {
 
       <div className="global_sub_container w-full mt-8 overflow-auto">
         <div className="flex justify-between flex-col lg:flex-row mb-4 gap-2">
-          <h2 className="text-xl font-bold">Associated ASMs</h2>
+          <h2 className="text-xl font-bold">Associated ASM</h2>
           <input
             type="text"
             placeholder="Search ASM"

@@ -1,12 +1,10 @@
 import { FaWallet } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const TransictionList = () => {
   const [TransictionLists, setTransictionLists] = useState([]);
@@ -21,9 +19,8 @@ const TransictionList = () => {
   const fetchTransictionLists = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/MyTransactionsList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/MyTransactionsList/${page}/${limit}/${search || 0}`
       );
 
       if (res.data.status === "Success") {
@@ -115,7 +112,7 @@ const TransictionList = () => {
                           : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      {c.total}
+                      {(c.total).toLocaleString("en-IN")}
                     </td>
 
                     <td className="global_td">

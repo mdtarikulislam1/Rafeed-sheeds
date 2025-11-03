@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function Asm() {
   const { setGlobalLoader } = loadingStore();
@@ -14,9 +12,7 @@ export default function Asm() {
     const fetchData = async () => {
       setGlobalLoader(true);
       try {
-        const { data } = await axios.get(`${BaseURL}/GetASMbyRSM/${id}`, {
-          headers: { token: getToken() },
-        });
+        const { data } = await api.get(`/GetASMbyRSM/${id}`);
         setData(data);
       } catch (error) {
         console.error("Error fetching ASM data:", error);

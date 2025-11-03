@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
-import axios, { Axios } from "axios";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Supplier = () => {
   const [editId, setEditId] = useState(null);
@@ -29,9 +27,8 @@ const Supplier = () => {
   const fetchSuppliers = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/SupplierList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/SupplierList/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         setSuppliers(res.data.data);
@@ -96,10 +93,10 @@ const Supplier = () => {
       if (editId) {
         // UPDATE (no balance)
         const { company, email, mobile, address, supplier } = form;
-        const res = await axios.put(
-          `${BaseURL}/UpdateSupplierByID/${editId}`,
+        const res = await api.put(
+          `/UpdateSupplierByID/${editId}`,
           { company, email, mobile, address, supplier },
-          { headers: { token: getToken() } }
+       
         );
         if (res.data.status === "Success") {
           SuccessToast("Supplier updated successfully");
@@ -118,9 +115,7 @@ const Supplier = () => {
           supplier: form.supplier,
         };
 
-        const res = await axios.post(`${BaseURL}/CreateSupplier`, payload, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/CreateSupplier`, payload);
         if (res.data.status === "Success") {
           SuccessToast("Dealer created successfully");
           resetForm();

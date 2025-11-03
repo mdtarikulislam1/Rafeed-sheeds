@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Select from "react-select";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { useNavigate } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const PostTransaction = () => {
   const { setGlobalLoader } = loadingStore();
@@ -29,9 +27,7 @@ const PostTransaction = () => {
   const fetchBanks = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetBank`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetBank`);
       if (res.data.status === "Success") {
         setBanks(
           res.data.data.map((b) => ({
@@ -55,9 +51,7 @@ const PostTransaction = () => {
   const fetchCategories = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetCategory`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetCategory`);
       if (res.data.status === "Success") {
         setCategories(
           res.data.data.map((c) => ({
@@ -81,11 +75,8 @@ const PostTransaction = () => {
   const fetchDealers = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/Dealer/1/5/${searchDealerKeyword || 0}`,
-        {
-          headers: { token: getToken() },
-        }
+      const res = await api.get(
+        `/Dealer/1/5/${searchDealerKeyword || 0}`
       );
       if (res.data.status === "Success") {
         setDealers(
@@ -201,9 +192,7 @@ const PostTransaction = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(`${BaseURL}/PostTransaction`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/PostTransaction`, payload);
       if (res.data.status === "Success") {
         SuccessToast("Transaction posted successfully");
         setTransactionList([]);

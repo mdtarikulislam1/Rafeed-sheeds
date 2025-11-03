@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import Swal from "sweetalert2";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Role = () => {
   const [Roles, setRoles] = useState([]);
@@ -17,9 +15,7 @@ const Role = () => {
   const fetchRoles = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/GetRole`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/GetRole`);
       setRoles(res.data || []);
     } catch (error) {
       ErrorToast("Failed to load Role");
@@ -43,9 +39,7 @@ const Role = () => {
 
     try {
       if (editId) {
-        const res = await axios.post(`${BaseURL}/UpdateRole/${editId}`, form, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/UpdateRole/${editId}`, form);
         if (res.data.status === "Success") {
           SuccessToast("Role updated successfully!");
           setForm({ name: "" });
@@ -55,9 +49,7 @@ const Role = () => {
           ErrorToast(res.data.message || "Failed to update Role");
         }
       } else {
-        const res = await axios.post(`${BaseURL}/CreateRole`, form, {
-          headers: { token: getToken() },
-        });
+        const res = await api.post(`/CreateRole`, form);
         if (res.data.status === "success") {
           SuccessToast("Role created successfully!");
           setForm({ name: "" });
@@ -113,9 +105,7 @@ const Role = () => {
       if (result.isConfirmed) {
         try {
           setGlobalLoader(true);
-          const response = await axios.get(`${BaseURL}/DeleteRole/${id}`, {
-            headers: { token: getToken() },
-          });
+          const response = await api.get(`/DeleteRole/${id}`);
           if (response.data.status === "Success") {
             SuccessToast(response.data.message);
             fetchRoles();

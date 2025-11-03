@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const SaleReport = () => {
   const { id } = useParams();
@@ -48,9 +46,8 @@ const SaleReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/SaleReport/${id}/0/${start}/${end}`,
-        { headers: { token: getToken() } }
+      const { data } = await api.get(
+        `/SaleReport/${id}/0/${start}/${end}`
       );
 
       if (data?.status === "Success") {
@@ -238,7 +235,7 @@ const SaleReport = () => {
       </div>
 
       {/* Matched Users Table */}
-      <div className="w-full overflow-auto">
+      {/* <div className="w-full overflow-auto">
         <h4 className="global_heading">Matched Users</h4>
         <table className="global_table">
           <thead className="global_thead">
@@ -268,10 +265,10 @@ const SaleReport = () => {
             )}
           </tbody>
         </table>
-      </div>
+      </div> */}
 
       {/* Matched Dealers Table */}
-      <div className="w-full overflow-auto">
+      {/* <div className="w-full overflow-auto">
         <h4 className="global_heading">Matched Dealers</h4>
         <table className="global_table">
           <thead className="global_thead">
@@ -307,7 +304,7 @@ const SaleReport = () => {
             )}
           </tbody>
         </table>
-      </div>
+      </div> */}
     </div>
   );
 };

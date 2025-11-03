@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
-import axios from "axios";
 import Select from "react-select";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import { useNavigate } from "react-router-dom";
 import openCloseStore from "../../Zustand/OpenCloseStore";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const CreatePurchase = () => {
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -35,9 +33,7 @@ const CreatePurchase = () => {
   const fetchSuppliers = async (keyword = 0) => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/SupplierList/1/20/${keyword}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/SupplierList/1/20/${keyword}`);
       if (res.data.status === "Success") {
         setSuppliers(
           res.data.data.map((s) => ({
@@ -60,9 +56,7 @@ const CreatePurchase = () => {
   const fetchProducts = async (keyword = 0) => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/ProductList/1/20/${keyword}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/ProductList/1/20/${keyword}`);
       if (res.data.status === "Success") {
         setProducts(
           res.data.data.map((p) => ({
@@ -193,9 +187,7 @@ const CreatePurchase = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.post(`${BaseURL}/CreatePurchases`, payload, {
-        headers: { token: getToken() },
-      });
+      const { data } = await api.post(`/CreatePurchases`, payload);
       if (data.status === "Success") {
         SuccessToast("Purchase created successfully");
         setSelectedProducts([]);

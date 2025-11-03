@@ -1,6 +1,6 @@
 # Node modules
 node_modules/
-
+dist.zip
 # Build output
 dist/
 build/

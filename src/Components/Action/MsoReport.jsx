@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const AsmReport = () => {
   const { id } = useParams();
@@ -46,11 +44,9 @@ const AsmReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/MSOReport/${id}/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
+      const { data } = await api.get(
+        `/MSOReport/${id}/${start}/${end}`
+        
       );
 
       if (data?.status === "success") {
@@ -180,9 +176,15 @@ const AsmReport = () => {
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.CategoryName || "N/A"}</td>
-                  <td className="global_td">{items?.totalSale || 0}</td>
-                  <td className="global_td">{items?.totalDiscount || 0}</td>
-                  <td className="global_td">{items?.totalGrand || 0}</td>
+                  <td className="global_td">
+                    {(items?.totalSale || 0).toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {(items?.totalDiscount || 0).toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {(items?.totalGrand || 0).toLocaleString("en-IN")}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -199,22 +201,23 @@ const AsmReport = () => {
                 <td className="global_td text-center">Total</td>
                 <td className="global_td text-center"></td>
                 <td className="global_td">
-                  {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalSale || 0),
-                    0
-                  )}
+                  {salesByCategory
+                    .reduce((sum, item) => sum + (item.totalSale || 0), 0)
+                    .toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
                   {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalDiscount || 0),
+                    (sum, item) =>
+                      sum + (item.totalDiscount || 0),
                     0
-                  )}
+                  ).toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
                   {salesByCategory.reduce(
-                    (sum, item) => sum + (item.totalGrand || 0),
+                    (sum, item) =>
+                      sum + (item.totalGrand || 0),
                     0
-                  )}
+                  ).toLocaleString("en-IN")}
                 </td>
               </tr>
             </tfoot>
@@ -241,7 +244,7 @@ const AsmReport = () => {
                 <tr key={index} className="global_tr">
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.productName || "N/A"}</td>
-                  <td className="global_td">{items?.totalAmount || 0}</td>
+                  <td className="global_td">{(items?.totalAmount || 0).toLocaleString("en-IN")}</td>
                   <td className="global_td">
                     {(() => {
                       const weight = items?.totalWeight || 0;
@@ -274,7 +277,7 @@ const AsmReport = () => {
                   {productWeightSummary.reduce(
                     (sum, item) => sum + (item.totalAmount || 0),
                     0
-                  )}
+                  ).toLocaleString("en-IN")}
                 </td>
                 <td className="global_td">
                   {(() => {

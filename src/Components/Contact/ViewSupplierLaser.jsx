@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { FaCalendarAlt } from "react-icons/fa";
 
 import { createPortal } from "react-dom";
@@ -13,38 +10,41 @@ import "react-datepicker/dist/react-datepicker.css";
 import { printElement } from "../../Helper/Printer";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ViewSupplierLaser = () => {
   const { id } = useParams(); // শুধু supplier ID আসবে
   const [laser, setLaser] = useState(null);
   const { setGlobalLoader } = loadingStore();
   // const []
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 30))
-      .toISOString()
-      .slice(0, 10)
-  ); // default: last 30 days
-  const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [dateInitialized, setDateInitialized] = useState(false);
+  const [selectedRange, setSelectedRange] = useState("This Year");
   const printRef = useRef(null);
+
+
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
-    if (endOfDay) {
-      d.setHours(23, 59, 59, 999);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
-    return d.toISOString(); // backend এ পাঠানোর জন্য ready
+    if (endOfDay) d.setHours(23, 59, 59, 999);
+    else d.setHours(0, 0, 0, 0);
+
+    const bdOffset = 6 * 60;
+    const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    const bdTime = new Date(utc + bdOffset * 60000);
+    return bdTime.toISOString();
   };
 
   const fetchSupplierLaser = async () => {
-    const start = formatDate(startDate, false); // 00:00:00
-    const end = formatDate(endDate, true); // 23:59:59
+    if (!startDate || !endDate) return;
+
+    const start = formatDate(startDate, false);
+    const end = formatDate(endDate, true);
 
     try {
       setGlobalLoader(true);
-      const res = await axios.get(
-        `${BaseURL}/SupplierLaser/${id}/${start}/${end}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/SupplierLaser/${id}/${start}/${end}`
       );
       if (res?.data) {
         setLaser(res.data);
@@ -58,7 +58,15 @@ const ViewSupplierLaser = () => {
   };
 
   useEffect(() => {
-    if (id && startDate && endDate) {
+    const { start, end } = getDateRange("This Year");
+    setStartDate(start);
+    setEndDate(end);
+    setSelectedRange("This Year");
+    setDateInitialized(true);
+  }, []);
+
+  useEffect(() => {
+      if (dateInitialized) {
       fetchSupplierLaser();
     }
   }, [id, startDate, endDate]);
@@ -69,8 +77,6 @@ const ViewSupplierLaser = () => {
   const totalReceived =
     laser?.data?.reduce((sum, t) => sum + (t.Debit || 0), 0) || 0;
   const closingBalance = laser?.contactDetails?.ClosingBalance || 0;
-
-
 
   return (
     <div className="p-6" ref={printRef}>
@@ -131,15 +137,18 @@ const ViewSupplierLaser = () => {
         <div className="flex items-end mb-4">
           {" "}
           <select
+            value={selectedRange} // 🔥 এখন React control করবে value
             onChange={(e) => {
-              const { start, end } = getDateRange(e.target.value);
+              const value = e.target.value;
+              setSelectedRange(value); // 🔥 selectedRange আপডেট
+              const { start, end } = getDateRange(value);
               setStartDate(start);
               setEndDate(end);
             }}
             className="global_dropdown"
           >
             {[
-               "Today",
+              "Today",
               "Last 30 Days",
               "This Year",
               "This Month",
@@ -234,9 +243,15 @@ const ViewSupplierLaser = () => {
                       ? "Sale"
                       : "Payable"}
                   </td>
-                  <td className="global_td">{t.Discount}</td>
-                  <td className="global_td">{t.Credit.toFixed(2)}</td>
-                  <td className="global_td">{t.Debit.toFixed(2)}</td>
+                  <td className="global_td">
+                    {t.Discount.toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {t.Credit.toFixed(2).toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {t.Debit.toFixed(2).toLocaleString("en-IN")}
+                  </td>
                   <td className="global_td">
                     {t.suppliersDetails?.ClosingBalance < 0 ? (
                       <span className="text-red-500">Receivable : </span>

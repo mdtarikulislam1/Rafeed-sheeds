@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
+
 import { printElement } from "../../Helper/Printer";
 import { Link } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
@@ -9,6 +7,7 @@ import TimeAgo from "../../Helper/UI/TimeAgo";
 import { MdDelete } from "react-icons/md";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import Swal from "sweetalert2";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const SaleList = () => {
   const [sales, setSales] = useState([]);
@@ -23,9 +22,8 @@ const SaleList = () => {
   const fetchSales = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/SalesList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/SalesList/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         let data = res.data.data;
@@ -70,9 +68,7 @@ const SaleList = () => {
     }
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/DeleteSales/${id}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/DeleteSales/${id}`);
 
       if (res.data.status === "Success") {
         SuccessToast(res.data?.message || "Deleted Sussesfully");

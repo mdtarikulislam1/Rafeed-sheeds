@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { FaCalendarAlt } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
@@ -13,6 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const MsoDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -50,11 +48,8 @@ const MsoDashBoardPage = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/MSOReport/0/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
+      const { data } = await api.get(
+        `/MSOReport/0/${start}/${end}`,
       );
       setSalesByCategory(data?.salesByCategory);
       setProductWeightSummary(data?.productWeightSummary);
@@ -178,19 +173,19 @@ const MsoDashBoardPage = () => {
                 <div className="flex justify-between border-t border-gray-200 pt-2">
                   <span className="text-xs ">Total Sales:</span>
                   <span className="text-lg font-bold text-green-600">
-                    {s?.totalSale || 0}
+                    {(s?.totalSale || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Discount</span>
                   <span className="text-sm font-medium text-red-500">
-                    {s.totalDiscount}
+                    {(s.totalDiscount).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-xs ">Grand Total</span>
                   <span className="text-sm font-medium text-green-700">
-                    {s.totalGrand}
+                    {(s.totalGrand).toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -266,7 +261,7 @@ const MsoDashBoardPage = () => {
                   <td className="global_td">{items?.productName || "N/A"}</td>
                   <td className="global_td">{items?.totalWeight || 0}</td>
                   <td className="global_td">{items?.totalQtySold || 0}</td>
-                  <td className="global_td">{items?.totalAmount || 0}</td>
+                  <td className="global_td">{(items?.totalAmount || 0).toLocaleString("en-IN")}</td>
                 </tr>
               ))
             ) : (
@@ -300,7 +295,7 @@ const MsoDashBoardPage = () => {
                   {productWeightSummary.reduce(
                     (sum, item) => sum + (item.totalAmount || 0),
                     0
-                  )}
+                  ).toLocaleString("en-IN")}
                 </td>
               </tr>
             </tfoot>

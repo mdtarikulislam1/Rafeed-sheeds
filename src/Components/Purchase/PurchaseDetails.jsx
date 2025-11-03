@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ErrorToast } from "../../Helper/FormHelper";
-import { BaseURL } from "../../Helper/Config";
-import { getBusinessDetails, getToken } from "../../Helper/SessionHelper";
-import axios from "axios";
+import { getBusinessDetails} from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { printElement } from "../../Helper/Printer";
 import rafidSeeds from "../../assets/Rafid-Seeds.png";
 import { numberToWords } from "../../Helper/UI/NumberToWord";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const PurchaseDetails = () => {
   const { id } = useParams();
@@ -19,9 +18,7 @@ const PurchaseDetails = () => {
   const getPurchaseDetailsByID = async (id) => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/PurchasesDetailsByID/${id}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/PurchasesDetailsByID/${id}`);
 
       if (res.data.status === "Success") {
         setDetails(res.data.data);

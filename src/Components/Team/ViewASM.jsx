@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
-import { getToken } from "../../Helper/SessionHelper";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const ViewASM = () => {
   const { id } = useParams();
@@ -15,11 +13,7 @@ const ViewASM = () => {
   const getasmByASMID = async (id) => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetASMbyRSM/${id}`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetASMbyRSM/${id}`);
 
       if (res.data.status === "Success") {
         setData({
@@ -66,7 +60,7 @@ const ViewASM = () => {
 
         {/* ASM List Header + Search */}
         <div className="flex flex-col mb-2 gap-2 lg:flex-row justify-between">
-          <h2 className="text-xl font-bold">Associated ASMs</h2>
+          <h2 className="text-xl font-bold">Associated ASM</h2>
           <input
             type="text"
             placeholder="Search ASM"

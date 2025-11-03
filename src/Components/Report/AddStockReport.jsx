@@ -1,11 +1,9 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { BaseURL } from "../../Helper/Config";
 import { getDateRange } from "../../Helper/dateRangeHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import DatePicker from "react-datepicker";
 import { FaCalendarAlt } from "react-icons/fa";
 import TimeAgo from "../../Helper/UI/TimeAgo";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function AddStockReport() {
   const [startDate, setStartDate] = useState(null);
@@ -33,11 +31,8 @@ export default function AddStockReport() {
     const start = formatDate(startDate, false);
     const end = formatDate(endDate, true);
 
-    const { data } = await axios.get(
-      `${BaseURL}/AddStockReport/${start}/${end}`,
-      {
-        headers: { token: getToken() },
-      }
+    const { data } = await api.get(
+      `/AddStockReport/${start}/${end}`
     );
     if (data?.status === "Success") {
       setStockReport(data?.data || []);

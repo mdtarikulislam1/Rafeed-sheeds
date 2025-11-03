@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, IsMobile, SuccessToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const RSM = () => {
   const [search, setSearch] = useState("");
@@ -29,11 +27,7 @@ const RSM = () => {
   const fetchRSM = async () => {
     try {
       setGlobalLoader(true);
-      const res = await axios.get(`${BaseURL}/GetRSM`, {
-        headers: {
-          token: getToken(),
-        },
-      });
+      const res = await api.get(`/GetRSM`);
 
       if (res.data.status === "Success") {
         setRSM(res.data.data);
@@ -119,19 +113,14 @@ const RSM = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/createUser`,
+      const res = await api.post(
+        `/createUser`,
         {
           name: form.name,
           mobile: form.mobile,
           password: form.password,
           role: "RSM",
         },
-        {
-          headers: {
-            token: getToken(),
-          },
-        }
       );
 
       if (res.data.status === "Success") {
@@ -161,17 +150,12 @@ const RSM = () => {
 
     try {
       setGlobalLoader(true);
-      const res = await axios.post(
-        `${BaseURL}/updateUser/${editID}`,
+      const res = await api.post(
+        `/updateUser/${editID}`,
         {
           name: updateForm.name,
           password: updateForm.password || undefined,
         },
-        {
-          headers: {
-            token: getToken(),
-          },
-        }
       );
 
       if (res.data.status === "Success") {

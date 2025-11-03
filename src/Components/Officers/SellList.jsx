@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast } from "../../Helper/FormHelper";
 import { printElement } from "../../Helper/Printer";
 import { Link } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const SellList = () => {
   const [sales, setSales] = useState([]);
@@ -20,9 +18,8 @@ const SellList = () => {
   const fetchSales = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/MySalesList/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/MySalesList/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         let data = res.data.data;
@@ -122,9 +119,9 @@ const SellList = () => {
                       {sale.Dealers?.[0]?.address || ""}
                     </td>
 
-                    <td className="global_td">{sale.total}</td>
-                    <td className="global_td">{sale.discount}</td>
-                    <td className="global_td">{sale.grandTotal}</td>
+                    <td className="global_td">{(sale.total).toLocaleString("en-IN")}</td>
+                    <td className="global_td">{(sale.discount).toLocaleString("en-IN")}</td>
+                    <td className="global_td">{(sale.grandTotal).toLocaleString("en-IN")}</td>
 
                     <td className="global_td min-w-[100px]">
                       {(() => {

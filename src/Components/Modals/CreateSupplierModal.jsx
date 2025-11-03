@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import openCloseStore from "../../Zustand/OpenCloseStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const CreateSupplierModal = () => {
   const { supplierModal, setSupplierModal } = openCloseStore(); // zustand store এ dealerModal এর মত supplierModal বানাতে হবে
@@ -58,9 +56,7 @@ const CreateSupplierModal = () => {
         address: form.address,
       };
 
-      const res = await axios.post(`${BaseURL}/CreateSupplier`, payload, {
-        headers: { token: getToken() },
-      });
+      const res = await api.post(`/CreateSupplier`, payload);
 
       if (res.data.status === "Success") {
         SuccessToast("Supplier created successfully");

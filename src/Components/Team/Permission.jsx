@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
 import { ErrorToast } from "../../Helper/FormHelper";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const Permission = () => {
   const { id } = useParams();
@@ -20,9 +18,7 @@ const Permission = () => {
   const fetchPermissions = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(`${BaseURL}/getPermissions/${id}`, {
-        headers: { token: getToken() },
-      });
+      const res = await api.get(`/getPermissions/${id}`);
 
       if (res.data?.status === "Success") {
         const existing = res.data.data.map((p) => p.name);
@@ -71,12 +67,10 @@ const Permission = () => {
       .map((p) => ({ name: p }));
 
     try {
-      await axios.post(
-        `${BaseURL}/CreatePermission/${id}`,
+      await api.post(
+        `/CreatePermission/${id}`,
         selectedPermissions,
-        {
-          headers: { token: getToken() },
-        }
+     
       );
       alert("Permissions updated successfully!");
     } catch (error) {

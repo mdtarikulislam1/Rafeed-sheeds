@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import { ErrorToast } from "../../Helper/FormHelper";
 import { Link } from "react-router-dom";
 import { printElement } from "../../Helper/Printer";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const PurchaseList = () => {
   const { setGlobalLoader } = loadingStore();
@@ -20,9 +18,8 @@ const PurchaseList = () => {
     setGlobalLoader(true);
     try {
       const keyword = searchKeyword.trim() === "" ? 0 : searchKeyword;
-      const res = await axios.get(
-        `${BaseURL}/PurchasesList/${page}/${limit}/${keyword}`, // include limit
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/PurchasesList/${page}/${limit}/${keyword}`
       );
       if (res.data.status === "Success") {
         setPurchases(res.data.data || []);

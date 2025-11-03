@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { FaCalendarAlt } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Link, useParams } from "react-router-dom";
 import loadingStore from "../../Zustand/LoadingStore";
-import { getToken } from "../../Helper/SessionHelper";
-import { BaseURL } from "../../Helper/Config";
 import { useDownloadStore } from "../../Helper/Download-xlsx";
 import { getDateRange } from "../../Helper/dateRangeHelper";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const DealerReport = () => {
   const { id } = useParams();
@@ -44,11 +42,8 @@ const DealerReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await axios.get(
-        `${BaseURL}/DealerReport/${id}/${start}/${end}`,
-        {
-          headers: { token: getToken() },
-        }
+      const { data } = await api.get(
+        `/DealerReport/${id}/${start}/${end}`
       );
 
       if (data?.status === "Success") {
@@ -189,7 +184,7 @@ const DealerReport = () => {
                   <td className="global_td">{index + 1}</td>
                   <td className="global_td">{items?.categoryName || "N/A"}</td>
                   <td className="global_td">{items?.name || "N/A"}</td>
-                  <td className="global_td">{items?.price || "N/A"}</td>
+                  <td className="global_td">{(items?.price || "N/A").toLocaleString("en-IN")}</td>
                   <td className="global_td">{items?.qtySold || 0}</td>
                   <td className="global_td">
                     {(() => {
@@ -215,7 +210,7 @@ const DealerReport = () => {
                       return `${gram} g`;
                     })()}
                   </td>
-                  <td className="global_td">{items?.total || 0}</td>
+                  <td className="global_td">{(items?.total || 0).toLocaleString("en-IN")}</td>
                 </tr>
               ))
             ) : (
@@ -268,7 +263,7 @@ const DealerReport = () => {
                   {reportData?.products?.reduce(
                     (sum, item) => sum + (item.total || 0),
                     0
-                  )}
+                  ).toLocaleString("en-IN")}
                 </td>
               </tr>
             </tfoot>

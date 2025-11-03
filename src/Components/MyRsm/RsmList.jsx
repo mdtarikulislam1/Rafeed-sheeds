@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import loadingStore from "../../Zustand/LoadingStore";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 export default function RsmList() {
   const { setGlobalLoader } = loadingStore();
@@ -13,9 +11,7 @@ export default function RsmList() {
     const fetchData = async () => {
      setGlobalLoader(true);
       try {
-        const response = await axios.get(`${BaseURL}/GetRSM`, {
-          headers: { token: getToken() },
-        });
+        const response = await api.get(`/GetRSM`);
         setData(response.data); // data data.data অনুযায়ী adjust করো
       } catch (error) {
         console.error(error);

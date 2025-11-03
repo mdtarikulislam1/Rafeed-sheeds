@@ -197,6 +197,12 @@ const MasterLayout = ({ children }) => {
                 path: "/AllTransictionList",
                 icon: <GrContactInfo />,
               },
+              {
+                id: "createtransiction",
+                title: "Create Transiction",
+                icon: <MdCreateNewFolder />,
+                path: "/createTransiction",
+              },
             ],
           },
 
@@ -617,7 +623,9 @@ const MasterLayout = ({ children }) => {
             </button>
           </div>
           <div className="flex gap-4">
-            <p className="text-green-600 font-semibold sm:text-lg">{getName()}</p>
+            <p className="text-green-600 font-semibold sm:text-lg">
+              {getName()}
+            </p>
 
             <button
               onClick={() => {

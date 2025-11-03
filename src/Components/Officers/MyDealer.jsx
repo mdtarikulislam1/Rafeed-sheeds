@@ -1,13 +1,11 @@
 import { FaWallet } from "react-icons/fa";
 
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import { BaseURL } from "../../Helper/Config";
-import { getToken } from "../../Helper/SessionHelper";
 import { ErrorToast, SuccessToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
 import { Link } from "react-router-dom";
+import api from "../../Helper/Axios_Response_Interceptor";
 
 const MyDealer = () => {
   const [Mydealers, setMyDealers] = useState([]);
@@ -28,9 +26,8 @@ const MyDealer = () => {
   const fetchMyDealers = async () => {
     setGlobalLoader(true);
     try {
-      const res = await axios.get(
-        `${BaseURL}/Dealer/${page}/${limit}/${search || 0}`,
-        { headers: { token: getToken() } }
+      const res = await api.get(
+        `/Dealer/${page}/${limit}/${search || 0}`
       );
       if (res.data.status === "Success") {
         setMyDealers(res.data.data);
@@ -133,7 +130,7 @@ const MyDealer = () => {
                           : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      {c.totalBalance}
+                      {(c.totalBalance).toLocaleString("en-IN")}
                     </td>
                     <td className="global_td">
                       <TimeAgo date={c.updatedAt} />
