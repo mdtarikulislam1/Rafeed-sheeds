@@ -398,12 +398,7 @@ const RSM = () => {
                       >
                         Dealer
                       </Link>
-                      <Link
-                        to={`/salereportPage/${RSM._id}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                    
                     </td>
                   </tr>
                 );

@@ -45,9 +45,7 @@ const RsmReport = () => {
 
     try {
       setGlobalLoader(true);
-      const { data } = await api.get(
-        `/RSMReport/${id}/${start}/${end}`
-      );
+      const { data } = await api.get(`/RSMReport/${id}/${start}/${end}`);
 
       if (data?.status === "success") {
         setAsmSummary(data.asmSummary || []);
@@ -235,6 +233,30 @@ const RsmReport = () => {
                 </tr>
               )}
             </tbody>
+            {filteredSales && filteredSales.length > 0 && (
+              <tfoot className="text-green-700">
+                <tr className="global_tr">
+                  <td className="global_td">Total</td>
+                  <td className="global_td"></td>
+             
+                  <td className="global_td">
+                    {filteredSales
+                      .reduce((sum, item) => sum + (item.totalSale || 0), 0)
+                      .toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {filteredSales
+                      .reduce((sum, item) => sum + (item.totalDiscount || 0), 0)
+                      .toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td">
+                    {filteredSales
+                      .reduce((sum, item) => sum + (item.totalGrand || 0), 0)
+                      .toLocaleString("en-IN")}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
       </div>
@@ -249,7 +271,7 @@ const RsmReport = () => {
                 <th className="global_th">No</th>
                 <th className="global_th">Product Name</th>
                 <th className="global_th">Total Weight</th>
-                <th className="global_th">Total Qty Sold</th>
+                <th className="global_th">Total Qty</th>
                 <th className="global_th">Total Amount</th>
               </tr>
             </thead>
@@ -287,10 +309,9 @@ const RsmReport = () => {
             {filteredWeight && filteredWeight.length > 0 && (
               <tfoot className="text-green-700">
                 <tr className="global_tr">
-                  <td className="global_td text-center">Total</td>
-                  <td className="global_td text-center"></td>
-
-                  <td className="global_td text-center">
+                  <td className="global_td">Total</td>
+                  <td className="global_td"></td>
+                  <td className="global_td">
                     {(() => {
                       const totalWeight = filteredWeight.reduce(
                         (sum, item) => sum + (item.totalWeight || 0),
@@ -306,7 +327,11 @@ const RsmReport = () => {
                       return `${gram} g`;
                     })()}
                   </td>
-                  <td className="global_td text-center"></td>
+                  <td className="global_td">
+                    {filteredWeight
+                      .reduce((sum, item) => sum + (item.totalQtySold || 0), 0)
+                      .toLocaleString("en-IN")}
+                  </td>
                   <td className="global_td">
                     {filteredWeight
                       .reduce((sum, item) => sum + (item.totalAmount || 0), 0)
@@ -381,12 +406,7 @@ const RsmReport = () => {
                       >
                         Dealer
                       </Link>
-                      <Link
-                        to={`/salereportPage/${items.ASMID}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                     
                     </td>
                   </tr>
                 ))
@@ -496,12 +516,7 @@ const RsmReport = () => {
                       >
                         Dealer
                       </Link>
-                      <Link
-                        to={`/salereportPage/${items.MSOID}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                    
                     </td>
                   </tr>
                 ))

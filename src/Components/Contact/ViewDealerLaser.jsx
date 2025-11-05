@@ -19,6 +19,9 @@ const ViewDealerLaser = () => {
   const [dateInitialized, setDateInitialized] = useState(false);
   const [selectedRange, setSelectedRange] = useState("This Year");
 
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const [startDate, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 30))
   ); // last 30 days default
@@ -27,11 +30,8 @@ const ViewDealerLaser = () => {
 
   const formatDate = (date, endOfDay = false) => {
     const d = new Date(date);
-    if (endOfDay) {
-      d.setHours(23, 59, 59, 999);
-    } else {
-      d.setHours(0, 0, 0, 0);
-    }
+    if (endOfDay) d.setHours(23, 59, 59, 999);
+    else d.setHours(0, 0, 0, 0);
 
     const bdOffset = 6 * 60; // minutes
     const utc = d.getTime() + d.getTimezoneOffset() * 60000;
@@ -40,15 +40,24 @@ const ViewDealerLaser = () => {
     return bdTime.toISOString();
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data } = await api.get("/GetCategory");
+      if (data?.status === "Success") {
+        setCategories(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const fetchDealerLaser = async () => {
     const start = formatDate(startDate, false); // 00:00:00
     const end = formatDate(endDate, true); // 23:59:59
 
     try {
       setGlobalLoader(true);
-      const { data } = await api.get(
-        `/DealerLaser/${id}/${start}/${end}`
-      );
+      const { data } = await api.get(`/DealerLaser/${id}/${start}/${end}`);
       if (data?.status === "Success") {
         setLaser(data);
       } else {
@@ -61,12 +70,14 @@ const ViewDealerLaser = () => {
       setGlobalLoader(false);
     }
   };
+
   useEffect(() => {
     const { start, end } = getDateRange("This Year");
     setStartDate(start);
     setEndDate(end);
     setSelectedRange("This Year");
     setDateInitialized(true);
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -84,6 +95,11 @@ const ViewDealerLaser = () => {
   const totalDiscount =
     laser?.data?.reduce((sum, t) => sum + (parseInt(t.discount) || 0), 0) || 0;
 
+  const filteredData =
+    selectedCategory === "All"
+      ? laser?.data || []
+      : laser?.data?.filter((t) => t.CategoryID === selectedCategory) || [];
+
   return (
     <div className="p-2" ref={printRef}>
       <h1 className="text-xl font-semibold mb-2">Dealer Transactions Report</h1>
@@ -91,99 +107,86 @@ const ViewDealerLaser = () => {
       {/* Dealer Info */}
       <div className="mb-2 space-y-1 global_sub_container flex justify-between">
         <div>
-          {laser?.data[0]?.dealerDetails?.name ? (
+          {laser?.data?.[0]?.dealerDetails?.name && (
             <h2 className="user-name">
-              Name: {laser?.data[0]?.dealerDetails?.name}
+              Name: {laser.data[0].dealerDetails.name}
             </h2>
-          ) : (
-            ""
           )}
-           {laser?.data[0]?.dealerDetails?.proprietor ? (
+          {laser?.data?.[0]?.dealerDetails?.proprietor && (
             <p className="user-mobile">
-              Proprietor: {laser?.data[0]?.dealerDetails?.proprietor}
+              Proprietor: {laser.data[0].dealerDetails.proprietor}
             </p>
-          ) : (
-            ""
           )}
-
-          {laser?.data[0]?.dealerDetails?.mobile ? (
+          {laser?.data?.[0]?.dealerDetails?.mobile && (
             <p className="user-mobile">
-              Mobile: {laser?.data[0]?.dealerDetails?.mobile}
+              Mobile: {laser.data[0].dealerDetails.mobile}
             </p>
-          ) : (
-            ""
           )}
-         
-          {laser?.data[0]?.dealerDetails?.address ? (
+          {laser?.data?.[0]?.dealerDetails?.address && (
             <address className="user-mobile">
-              Address: {laser?.data[0]?.dealerDetails?.address}
+              Address: {laser.data[0].dealerDetails.address}
             </address>
-          ) : (
-            ""
           )}
         </div>
 
         <p
-          className={`font-medium ${laser?.contactDetails?.ClosingBalance < 0
-              ? "text-red-600"
-              : "text-green-400"
-            } `}
+          className={`font-medium ${
+            closingBalance < 0 ? "text-red-600" : "text-green-400"
+          }`}
         >
-          {laser?.contactDetails?.ClosingBalance < 0
-            ? `Receivable Balance: ${Math.abs(
-              laser?.contactDetails?.ClosingBalance
-            ).toLocaleString()}`
-            : `Payable Balance: ${laser?.contactDetails?.ClosingBalance.toLocaleString()}`}
+          {closingBalance < 0
+            ? `Receivable Balance: ${Math.abs(closingBalance).toLocaleString()}`
+            : `Payable Balance: ${closingBalance.toLocaleString()}`}
         </p>
       </div>
 
-      {/* Date Filter */}
-      <div id="no-print" className="flex flex-col lg:flex-row justify-between">
-        {" "}
-        <div className="flex items-end mb-4">
-          <select
-            value={selectedRange} // 🔥 এখন React control করবে value
-            onChange={(e) => {
-              const value = e.target.value;
-              setSelectedRange(value); // 🔥 selectedRange আপডেট
-              const { start, end } = getDateRange(value);
-              setStartDate(start);
-              setEndDate(end);
-            }}
-            className="global_dropdown"
-          >
-            {[
-              "Custom",
-              "Today",
-              "Last 30 Days",
-              "This Year",
-              "This Month",
-              "This Week",
-              "Last Week",
-              "Last Month",
-              "Last Year",
-            ].map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex gap-4 mb-4 items-end">
+      {/* Date & Category Filter */}
+      <div
+        id="no-print"
+        className="flex flex-col lg:flex-row justify-between mb-4 gap-4"
+      >
+        {/* Date Filters */}
+        <div className="flex flex-wrap gap-4 items-center">
+          <div>
+            <label className="block text-sm">Date Range</label>
+            <select
+              value={selectedRange}
+              onChange={(e) => {
+                const value = e.target.value;
+                setSelectedRange(value);
+                const { start, end } = getDateRange(value);
+                setStartDate(start);
+                setEndDate(end);
+              }}
+              className="global_dropdown"
+            >
+              {[
+                "Custom",
+                "Today",
+                "Last 30 Days",
+                "This Year",
+                "This Month",
+                "This Week",
+                "Last Week",
+                "Last Month",
+                "Last Year",
+              ].map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm">Start Date</label>
             <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaCalendarAlt />
-              </div>
+              <FaCalendarAlt className="absolute left-3 top-3" />
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
                 dateFormat="dd-MM-yyyy"
                 className="global_input pl-10 w-full"
-                popperPlacement="bottom-start"
-                popperClassName="z-[9999]"
-                calendarClassName="react-datepicker-custom"
                 popperContainer={(props) =>
                   createPortal(<div {...props} />, document.body)
                 }
@@ -194,22 +197,39 @@ const ViewDealerLaser = () => {
           <div>
             <label className="block text-sm">End Date</label>
             <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaCalendarAlt />
-              </div>
+              <FaCalendarAlt className="absolute left-3 top-3" />
               <DatePicker
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
                 dateFormat="dd-MM-yyyy"
                 className="global_input pl-10 w-full"
-                popperPlacement="bottom-start"
-                popperClassName="z-[9999]"
-                calendarClassName="react-datepicker-custom"
                 popperContainer={(props) =>
                   createPortal(<div {...props} />, document.body)
                 }
               />
             </div>
+          </div>
+        </div>
+
+        {/* Category Filter - justify end */}
+        <div className="flex justify-end w-full lg:w-auto">
+          <div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="global_dropdown min-w-40"
+            >
+              <option value="All">All</option>
+              {categories
+                .filter((cat) =>
+                  laser?.data?.some((t) => t.CategoryID === cat._id)
+                )
+                .map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+            </select>
           </div>
         </div>
       </div>
@@ -234,8 +254,8 @@ const ViewDealerLaser = () => {
           </thead>
 
           <tbody className="global_tbody">
-            {laser?.data?.length > 0 ? (
-              laser.data.map((t, i) => (
+            {filteredData.length > 0 ? (
+              filteredData.map((t, i) => (
                 <tr key={t._id} className="global_tr">
                   <td className="global_td">{i + 1}</td>
                   <td className="global_td">
@@ -249,33 +269,38 @@ const ViewDealerLaser = () => {
                     <TimeAgo date={t.CreatedDate} />
                   </td>
                   <td className="global_td">
-                    {"saleID" in (t || {}) && t?.saleID != null
-                      ? "Sale"
-                      : "Payment"}
+                    {"saleID" in t && t?.saleID != null ? "Sale" : "Payment"}
+                    {t?.remark && (
+                      <span className="text-red-600 ml-1">({t.remark})</span>
+                    )}
                   </td>
-                  <td className="global_td">
+                  <td className="global_td text-right">
                     {(Number(t?.Credit) || 0) + (Number(t?.discount) || 0)}
                   </td>
                   <td className="global_td">{t.discount}</td>
-                  <td className="global_td">{(t.Credit.toFixed(2)).toLocaleString("en-IN")}</td>
-                  <td className="global_td">{(t.Debit.toFixed(2)).toLocaleString("en-IN")}</td>
+                  <td className="global_td text-right">
+                    {t.Credit.toFixed(2).toLocaleString("en-IN")}
+                  </td>
+                  <td className="global_td text-right">
+                    {t.Debit.toFixed(2).toLocaleString("en-IN")}
+                  </td>
                   <td
                     className={
                       "global_td " +
                       (t.TotalDebit - t.TotalCredit > 0
                         ? "text-red-400"
                         : t.TotalDebit - t.TotalCredit < 0
-                          ? "text-green-500"
-                          : "")
+                        ? "text-green-500"
+                        : "")
                     }
                   >
                     {t.TotalDebit - t.TotalCredit > 0
                       ? `Payable: ${(t.TotalDebit - t.TotalCredit).toFixed(2)}`
                       : t.TotalDebit - t.TotalCredit < 0
-                        ? `Receivable: ${Math.abs(
+                      ? `Receivable: ${Math.abs(
                           t.TotalDebit - t.TotalCredit
                         ).toFixed(2)}`
-                        : "0.00"}
+                      : "0.00"}
                   </td>
                   <td id="no-print" className="global_td">
                     {t.saleID && (
@@ -298,7 +323,7 @@ const ViewDealerLaser = () => {
             )}
           </tbody>
 
-          {laser?.data?.length > 0 && (
+          {filteredData.length > 0 && (
             <tfoot>
               <tr className="global_tr">
                 <td className="global_td" colSpan="3">

@@ -66,7 +66,7 @@ const MyDealer = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div>
             <h1 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-              MyDealer List
+              My Dealer List
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Showing {Mydealers.length} of {total} MyDealers
@@ -152,12 +152,7 @@ const MyDealer = () => {
                       >
                         Report
                       </Link>
-                      <Link
-                        to={`/salereportPage/${c._id}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                    
                     </td>
                   </tr>
                 ))
@@ -167,7 +162,7 @@ const MyDealer = () => {
                     colSpan="8"
                     className="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
-                    No MyDealers found
+                    No Dealers found
                   </td>
                 </tr>
               )}

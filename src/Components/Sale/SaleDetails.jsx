@@ -99,17 +99,23 @@ const SaleDetails = () => {
               <h1 className="text-[16px] lg:text-xl text-wrap lg:text-nowrap font-semibold rounded-tl-full bg-[#006D2B] text-white text-center pl-6 pr-1 lg:px-10 py-3">
                 Invoice
               </h1>
-              <p>Invoice No: {details?.SaleSummary?.Reference}</p>
+              <p>
+                Invoice No: {details?.SaleSummary?.Reference}{" "}
+                {details?.Products?.[0]?.category && (
+                  <span className="text-green-700">({details.Products[0].category})</span>
+                )}
+              </p>
+
               <p>
                 Date:{" "}
                 {details?.SaleSummary?.Date
                   ? (() => {
-                      const d = new Date(details.SaleSummary.Date);
-                      const day = String(d.getDate()).padStart(2, "0");
-                      const month = String(d.getMonth() + 1).padStart(2, "0");
-                      const year = d.getFullYear();
-                      return `${day}-${month}-${year}`;
-                    })()
+                    const d = new Date(details.SaleSummary.Date);
+                    const day = String(d.getDate()).padStart(2, "0");
+                    const month = String(d.getMonth() + 1).padStart(2, "0");
+                    const year = d.getFullYear();
+                    return `${day}-${month}-${year}`;
+                  })()
                   : ""}
               </p>
               <p>
@@ -125,7 +131,6 @@ const SaleDetails = () => {
                   <span className="text-green-800"> Cash</span>
                 )}
               </p>
-
               <p>{businessDetails.mobile}</p>
               <p>{businessDetails.email}</p>
               <p>{businessDetails.website}</p>
@@ -144,7 +149,7 @@ const SaleDetails = () => {
                     </th>
                     <th className="global_print_th w-20/100">Quantity</th>
                     <th className="global_print_th w-20/100">Weight</th>
-                   
+
                     <th className="global_print_th text-end w-10/100">Rate</th>
                     <th className="global_print_th text-end w-13/100">
                       Amount
@@ -156,7 +161,7 @@ const SaleDetails = () => {
                     <tr key={p.id}>
                       <td className="global_td text-center">{i + 1}</td>
                       <td className="global_td text-center">
-                        {p.name}{" "}
+                        {p.name}
                         {p.weight && (
                           <span className="text-green-400">
                             (
@@ -168,7 +173,7 @@ const SaleDetails = () => {
                         )}
                       </td>
                       <td className="global_td text-center">
-                        {p.quantity}{" "}
+                        {p.quantity}
                         {p.weight && (
                           <span className="px-1 text-blue-300">x</span>
                         )}
@@ -178,7 +183,7 @@ const SaleDetails = () => {
                             {p.weight >= 1000
                               ? p.weight / 1000 + " KG"
                               : p.weight + " Gram"}
-                            ) 
+                            )
                           </span>
                         )}
                       </td>
@@ -188,7 +193,7 @@ const SaleDetails = () => {
                             ? p.totalWeight / 1000 + " KG"
                             : p.totalWeight + " Gram"}
                         </td>
-                      ) :  <td className="global_td text-center">N/A</td>}
+                      ) : <td className="global_td text-center">N/A</td>}
                       <td className="global_td text-end">৳ {p.price}</td>
                       <td className="global_td text-end">৳ {p.total}</td>
                     </tr>
@@ -228,12 +233,12 @@ const SaleDetails = () => {
                           0
                         )}
                       </td>
-                        
+
                       <td className="global_td  text-center bg-green-300 w-20/100">
                         {formattedWeight}
                       </td>
                       <td className="global_td text-center bg-green-300 w-10/100">
-                      
+
                       </td>
                       <td className="global_td  bg-green-300 text-end w-13/100">
                         ৳{" "}

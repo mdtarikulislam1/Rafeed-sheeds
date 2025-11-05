@@ -445,12 +445,7 @@ const ASM = () => {
                       >
                         Dealer
                       </Link>
-                       <Link
-                        to={`/salereportPage/${asm._id}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                    
                     </td>
                   </tr>
                 );

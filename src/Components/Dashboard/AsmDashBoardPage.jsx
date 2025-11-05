@@ -295,12 +295,7 @@ const AsmDashBoardPage = () => {
                       >
                         Dealer
                       </Link>
-                      <Link
-                        to={`/salereportPage/${items._id}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                     
                     </td>
                   </tr>
                 ))

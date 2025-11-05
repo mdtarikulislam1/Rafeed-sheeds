@@ -361,12 +361,7 @@ const MSO = () => {
                       >
                         Dealer
                       </Link>
-                      <Link
-                        to={`/salereportPage/${mso._id}`}
-                        className="global_button"
-                      >
-                        Sale Report
-                      </Link>
+                    
                     </td>
                   </tr>
                 ))

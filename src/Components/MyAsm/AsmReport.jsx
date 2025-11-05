@@ -398,12 +398,7 @@ const AsmReport = () => {
                     >
                       Dealer
                     </Link>
-                    <Link
-                      to={`/salereportPage/${items.MSOID}`}
-                      className="global_button"
-                    >
-                      Sale Report
-                    </Link>
+                   
                   </td>
                 </tr>
               ))
@@ -453,6 +448,8 @@ const AsmReport = () => {
           )}
         </table>
       </div>
+
+      
       <button
         className="global_button cursor-pointer no-print mt-6"
         onClick={() => window.print()}

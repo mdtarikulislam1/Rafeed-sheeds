@@ -144,7 +144,7 @@ const Dashboard = () => {
       </div>
       <div className="flex flex-col lg:flex-row gap-2 mt-4">
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-2 flex-1">
           {summary.map((s, i) => (
             <div
               key={i}
@@ -167,7 +167,7 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-gray-300 pt-2">
-                  <span className="text-xs ">Total due</span>
+                  <span className="text-xs ">Total Due</span>
                   <span className="font-bold text-red-600">
                     ৳{(s?.TotalSale -  s?.TotalDebit).toLocaleString("en-IN")}
                   </span>
@@ -210,7 +210,7 @@ const Dashboard = () => {
         </div>
 
         {/* rsm Distribution Pie Chart */}
-        <div className=" rounded-xl shadow-md border outline-0 border-gray-200 w-full lg:w-80 flex-shrink-0">
+        <div className=" rounded-xl shadow-md border outline-0 border-gray-200 max-h-60 w-full lg:w-80 flex-shrink-0">
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie

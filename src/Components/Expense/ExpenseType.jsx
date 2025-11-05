@@ -177,7 +177,7 @@ const ExpenseType = () => {
 
       {/* Brand List */}
       <div className="space-y-2">
-        {expenseTypes.map((expense) => (
+        {filteredBrands.map((expense) => (
           <div
             key={expense._id}
             className="border border-white/30 dark:border-gray-700/50

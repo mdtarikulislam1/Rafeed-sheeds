@@ -121,12 +121,7 @@ const DealerList = () => {
                     >
                       Laser
                     </Link>
-                    <Link
-                      to={`/salereportPage/${c._id}`}
-                      className="global_button"
-                    >
-                      Sale Report
-                    </Link>
+                    
                   </td>
                 </tr>
               ))

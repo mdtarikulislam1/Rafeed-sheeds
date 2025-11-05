@@ -32,23 +32,23 @@ const NewSale = () => {
     new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)
   );
   const [searchDealerKeyword, setSearchDealerKeyword] = useState("");
+
   const [isCash, setIsCash] = useState(false);
   // extra state
   const [lastEdited, setLastEdited] = useState(null); // "discount" | "percent"
   const navigate = useNavigate();
 
-  // Fetch dealers - এখানে full object রাখছি
-  const fetchDealers = async () => {
+  const fetchDealers = async (keyword = "") => {
     setGlobalLoader(true);
     try {
-      const res = await api.get(
-        `/DealerList/1/20/${searchDealerKeyword || 0}`
-      );
+      const searchKey = keyword.trim() || "0"; // empty হলে "0" path param
+
+      const res = await api.get(`/DealerList/1/20/${searchKey}`);
       if (res.data.status === "Success") {
         setDealers(
           res.data.data.map((d) => ({
             value: d._id,
-            label: `${d.name} | ${d.proprietor} | ${d.ID}`, // ✅ combine all
+            label: `${d.name} | ${d.proprietor} | ${d.ID} | ${d.mobile} | ${d.address}`,
             ...d,
             RSMID: d.RSMID || "",
             ASMID: d.ASMID || "",
@@ -93,9 +93,7 @@ const NewSale = () => {
     if (!categoryID) return;
     setGlobalLoader(true);
     try {
-      const res = await api.get(
-        `/GetProductByCategoryID/${categoryID}`
-      );
+      const res = await api.get(`/GetProductByCategoryID/${categoryID}`);
       if (res.data.status === "Success") {
         setProducts(
           res.data.data.map((p) => ({
@@ -163,10 +161,19 @@ const NewSale = () => {
 
   // Totals
   const totalAmount = selectedProducts.reduce((acc, p) => acc + p.total, 0);
+  // Dealer fetching with debounce
   useEffect(() => {
-    const keyword = searchDealerKeyword.trim() === "" ? 0 : searchDealerKeyword;
-    fetchDealers(keyword);
+    const delay = setTimeout(() => {
+      if (searchDealerKeyword !== "") {
+        fetchDealers(searchDealerKeyword);
+      } else {
+        fetchDealers(); // empty search
+      }
+    }, 400);
+
+    return () => clearTimeout(delay);
   }, [searchDealerKeyword]);
+
   // Auto calculate based on percentage
   useEffect(() => {
     if (lastEdited === "percent") {
@@ -255,6 +262,7 @@ const NewSale = () => {
     try {
       setGlobalLoader(true);
       const res = await api.post(`/CreateSales`, payload);
+      console.log(res)
       if (res.data.status === "Success") {
         setSelectedProducts([]);
         setSelectedDealer(null);
@@ -313,25 +321,30 @@ const NewSale = () => {
         <div className="">
           <label className="block text-sm font-medium mb-1">Dealer *</label>
           <div className="flex gap-2">
-            {" "}
             <Select
               options={dealers}
               value={selectedDealer}
               onChange={setSelectedDealer}
-              onInputChange={(val) => setSearchDealerKeyword(val)}
+              onInputChange={(inputValue, { action }) => {
+                // শুধু user typing action এর জন্য update করবো
+                if (action === "input-change") {
+                  setSearchDealerKeyword(inputValue); // debounce useEffect থেকে fetch হবে
+                }
+              }}
               placeholder="Select Dealer"
               formatOptionLabel={(option) => (
                 <div className="flex flex-col">
                   <span className="font-medium">{option.name}</span>
                   <span className="text-sm">
-                    {option.proprietor} ID:{option.ID}
+                    {option.proprietor} | ID:{option.ID} | {option.address} |{" "}
+                    {option.mobile}
                   </span>
                 </div>
               )}
               classNamePrefix="react-select"
               className="w-3/4"
-              isClearable={selectedProducts.length === 0} // ✅ table এ product থাকলে clear করা যাবে না
-              isDisabled={selectedProducts.length > 0} // ✅ table এ product থাকলে change করা যাবে না
+              isClearable={selectedProducts.length === 0}
+              isDisabled={selectedProducts.length > 0}
               menuPortalTarget={document.body}
               styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
             />

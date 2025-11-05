@@ -158,7 +158,10 @@ const SaleList = () => {
                   <tr className="global_tr" key={sale._id}>
                     <td className="global_td">{sale.referenceNo}</td>
                     <td className="global_td">
-                      {sale.Dealers?.[0]?.name || ""}
+                      <span>{sale?.Dealers?.[0]?.name || ""}</span>
+                      {sale?.remark && (
+                        <span className="text-green-600 text-sm ms-2">({sale.remark})</span>
+                      )}
                     </td>
                     <td className="global_td">{sale.Users?.[0]?.name || ""}</td>
                     <td className="global_td">{sale.total}</td>
@@ -209,11 +212,10 @@ const SaleList = () => {
               <button
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}
-                className={`px-4 py-2 rounded-r-md rounded-l-full ${
-                  page === 1
-                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    : "global_button"
-                }`}
+                className={`px-4 py-2 rounded-r-md rounded-l-full ${page === 1
+                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                  : "global_button"
+                  }`}
               >
                 Previous
               </button>
@@ -225,11 +227,10 @@ const SaleList = () => {
               <button
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= Math.ceil(total / limit)}
-                className={`px-4 py-2 rounded-l-md rounded-r-full ${
-                  page >= Math.ceil(total / limit)
-                    ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                    : "global_button"
-                }`}
+                className={`px-4 py-2 rounded-l-md rounded-r-full ${page >= Math.ceil(total / limit)
+                  ? "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                  : "global_button"
+                  }`}
               >
                 Next
               </button>

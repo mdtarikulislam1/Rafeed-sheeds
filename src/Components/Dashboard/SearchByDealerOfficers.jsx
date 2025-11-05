@@ -72,7 +72,7 @@ export default function SearchByDealerOfficers() {
 
       if (res.data.status === "Success") {
         const formatted = res.data.data.map((d) => ({
-          label: `${d.name} (${d.mobile}) - ${d.address}`,
+          label: `${d?.name} (${d?.mobile}) - ${d?.address} ${d?.ID}`,
           value: d._id,
           ...d,
         }));
