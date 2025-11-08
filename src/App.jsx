@@ -53,6 +53,7 @@ import AddStockReportPage from "./Pages/ReportPage/AddStockReportPage";
 import SaleReportPage from "./Pages/ReportPage/SaleReportPage";
 import CreateTransictionPage from "./Pages/Transiction/CreateTransictionPage";
 import CreateBudzetPage from "./Pages/BudzetPage/CreateBudzet";
+import SubCategoryPage from "./Pages/Product/SubCategoryPage";
 
 function App() {
   const isLoggedIn = getToken();
@@ -128,6 +129,9 @@ function App() {
             <Route path="/ASMReport/:id" element={<AsmReportPage />} />
 
             <Route path="/myMso/Page" element={<MyMsoPage />} />
+
+            {/* product */}
+            <Route path="/subcategory" element={<SubCategoryPage />} />
 
             {/* report */}
             <Route

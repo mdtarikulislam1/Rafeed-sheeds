@@ -154,6 +154,12 @@ const MasterLayout = ({ children }) => {
                 path: "/Category",
               },
               {
+                id: "subcategory",
+                title: "Sub Category",
+                icon: <BiCategoryAlt />,
+                path: "/subcategory",
+              },
+              {
                 id: "adstock",
                 title: "Add Stock",
                 icon: <TbBrandStocktwits />,
