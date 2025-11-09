@@ -11,7 +11,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 import { getDateRange } from "../../Helper/dateRangeHelper";
 import api from "../../Helper/Axios_Response_Interceptor";
-import SearchAsmMsoByRsm from "./SearchAsmMsoByRsm";
+// import SearchAsmMsoByRsm from "./SearchAsmMsoByRsm";
 
 const RsmDashBoardPage = () => {
   const { setGlobalLoader } = loadingStore();
@@ -281,7 +281,7 @@ const RsmDashBoardPage = () => {
         </select>
       </div>
 
-      <SearchAsmMsoByRsm/>
+      {/* <SearchAsmMsoByRsm/> */}
 
       {/* product Weight summary */}
       <div className="w-full overflow-auto">

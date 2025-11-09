@@ -1,6 +1,5 @@
 import { FaWallet } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
-
 import { ErrorToast } from "../../Helper/FormHelper";
 import loadingStore from "../../Zustand/LoadingStore";
 import TimeAgo from "../../Helper/UI/TimeAgo";
@@ -25,8 +24,10 @@ const AllTransictionList = () => {
       );
 
       if (res.data.status === "Success") {
-        setTransictionLists(res.data.data);
-        setTotal(res.data.total);
+        setTransictionLists(res.data.data || []);
+        setTotal(res.data.pagination?.total || 0);
+        setPage(res.data.pagination?.page || 1);
+        setLimit(res.data.pagination?.limit || limit);
       } else {
         ErrorToast("Failed to fetch transactions");
       }
@@ -65,13 +66,16 @@ const AllTransictionList = () => {
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
-                setPage(1);
+                setPage(1); // search করলে page 1 reset
               }}
               className="global_input"
             />
             <select
               value={limit}
-              onChange={(e) => setLimit(parseInt(e.target.value))}
+              onChange={(e) => {
+                setLimit(parseInt(e.target.value));
+                setPage(1); // limit change হলে page 1 reset
+              }}
               className="global_dropdown"
             >
               {[20, 50, 100, 500].map((opt) => (
@@ -84,16 +88,18 @@ const AllTransictionList = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto rounded-2xl">
+        <div className="overflow-x-auto">
           <table className="global_table">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <th className="global_th">Transaction ID</th>
-              <th className="global_th">Bank</th>
-              <th className="global_th">Note</th>
-              <th className="global_th">Total</th>
-              <th className="global_th">Status</th>
-              <th className="global_th">Posted Date</th>
-              <th className="global_th">Details</th>
+            <thead className="global_thead">
+              <tr>
+                <th className="global_th">Transaction ID</th>
+                <th className="global_th">Bank</th>
+                <th className="global_th">Note</th>
+                <th className="global_th">Total</th>
+                <th className="global_th">Status</th>
+                <th className="global_th">Posted Date</th>
+                <th className="global_th">Details</th>
+              </tr>
             </thead>
             <tbody className="global_tbody">
               {TransictionLists.length > 0 ? (
@@ -127,16 +133,12 @@ const AllTransictionList = () => {
                       )}
                     </td>
 
-                    <td className="global_td">
+                    <td className="global_td text-no">
                       <span className="px-2">
-                        {" "}
                         {(() => {
                           const d = new Date(c.createdAt);
                           const day = String(d.getDate()).padStart(2, "0");
-                          const month = String(d.getMonth() + 1).padStart(
-                            2,
-                            "0"
-                          );
+                          const month = String(d.getMonth() + 1).padStart(2, "0");
                           const year = d.getFullYear();
                           return `${day}-${month}-${year}`;
                         })()}
@@ -185,7 +187,7 @@ const AllTransictionList = () => {
               Page {page} of {Math.ceil(total / limit)}
             </span>
             <button
-              onClick={() => setPage((p) => p + 1)}
+              onClick={() => setPage((p) => Math.min(p + 1, Math.ceil(total / limit)))}
               disabled={page >= Math.ceil(total / limit)}
               className={`px-4 py-2 rounded-l-md rounded-r-full ${
                 page >= Math.ceil(total / limit)

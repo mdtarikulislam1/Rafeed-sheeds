@@ -187,22 +187,24 @@ const ProductList = () => {
 
     const payload = {
       name: formData.name.trim(),
-      SubCategoryID:formData.SubCategoryID || null,
+      SubCategoryID: formData.SubCategoryID || null,
       categoryID: formData.categoryID,
-      unitID: formData.unitID || editingProduct.unitID || null, // যদি formData তে unit থাকে
       stock: formData.stock ? parseInt(formData.stock) : 0,
-      unitCost: formData.unitCost ? parseFloat(formData.unitCost) : 0,
       price: formData.dp ? parseFloat(formData.dp) : 0,
       sp: formData.sp ? parseFloat(formData.sp) : 0,
+      // barcode: formData.barcode.trim(),
+      weight: formData.weight
+        ? selectedPackSize === "KG"
+          ? parseFloat(formData.weight) * 1000
+          : parseFloat(formData.weight)
+        : 0,
+        barcode : formData.barcode
     };
-
-    console.log("Update URL:", `/UpdateProduct/${editingProduct._id}`);
-    console.log("Payload Sent:", payload);
 
     try {
       setGlobalLoader(true);
-      const res = await api.put(
-        `/UpdateProduct2/${editingProduct._id}`,
+      const res = await api.post(
+        `/UpdateProduct/${editingProduct._id}`,
         payload
       );
 
@@ -221,33 +223,49 @@ const ProductList = () => {
     }
   };
 
-  // // ============================
-  // // Edit Product
-  // // ============================
+  // Edit Product (Fixed Version)
+  // ============================
   const startEditProduct = async (product) => {
+    console.log(product);
+
+    // ===== Category match =====
+    const matchedCategory = categories.find(
+      (cat) => cat.name === product.Categorys?.name
+    );
+    const categoryID = matchedCategory?._id || product.categoryID || "";
+
+    // ===== SubCategory match =====
+    let subCategoryID = "";
+    if (categoryID) {
+      await handleCategoryChange(categoryID); // subCategories load হবে এই কল দিয়ে
+
+      // এখন loaded subCategories থেকে match করো
+      const matchedSubCategory = subCategories.find(
+        (sub) => sub.name === product.SubCategorys?.name
+      );
+      subCategoryID = matchedSubCategory?._id || "";
+    }
+
     setFormData({
       name: product.name || "",
-      categoryID: product.Categorys?._id || product.categoryID || "",
-      SubCategoryID: product.SubCategorys?._id || product.SubCategoryID || "",
+      categoryID: categoryID,
+      SubCategoryID: subCategoryID,
       stock: product.stock?.toString() || "",
       dp: product.price?.toString() || "",
       sp: product.sp?.toString() || "",
-      barcode: product.barcode || "", 
+      barcode: product.barcode || "",
       weight:
         product.weight >= 1000 ? product.weight / 1000 : product.weight || "",
-      unitID: product.unitID || "",
-      unitCost: product.unitCost?.toString() || "",
     });
-
-    // Auto-load subcategories
-    if (product.Categorys?._id || product.categoryID) {
-      await handleCategoryChange(product.Categorys?._id || product.categoryID);
-    }
 
     setSelectedPackSize(product.weight >= 1000 ? "KG" : "Gram");
     setEditingProduct(product);
     setIsCreateMode(true);
   };
+
+  {
+    startEditProduct ? console.log(true) : "";
+  }
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -410,14 +428,25 @@ const ProductList = () => {
                 type="text"
                 value={formData.barcode}
                 onChange={(e) => handleInputChange("barcode", e.target.value)}
-                className="global_input w-full"
+                className={`global_input w-full ${
+                  editingProduct ? "disabled" : ""
+                }`}
                 placeholder="Enter barcode"
               />
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-6 gap-3">
+            {editingProduct && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="global_button_red"
+              >
+                Cancel
+              </button>
+            )}
             <button type="submit" className="global_button">
               {editingProduct ? "Update Product" : "Create Product"}
             </button>
@@ -495,7 +524,9 @@ const ProductList = () => {
                         )}
                       </td>
                       <td className="global_td">
-                        {product.Categorys?.name || "N/A"}
+                        {product.SubCategorys?.name
+                          ? product.SubCategorys?.name
+                          : product.Categorys?.name || "N/A"}
                       </td>
                       <td className="global_td">
                         {parseInt(product.stock || 0)}{" "}
@@ -531,7 +562,6 @@ const ProductList = () => {
                 </tbody>
               </table>
             </div>
-
 
             {/* Pagination */}
             {total > 0 && (
