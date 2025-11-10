@@ -262,7 +262,6 @@ const NewSale = () => {
     try {
       setGlobalLoader(true);
       const res = await api.post(`/CreateSales`, payload);
-      console.log(res)
       if (res.data.status === "Success") {
         setSelectedProducts([]);
         setSelectedDealer(null);

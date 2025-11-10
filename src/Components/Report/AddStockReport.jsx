@@ -54,7 +54,6 @@ export default function AddStockReport() {
     }
   }, [startDate, endDate, dateInitialized]);
 
-  console.log(stockReport);
 
   return (
     <div>

@@ -38,7 +38,6 @@ const Dashboard = () => {
 
     try {
       const { data } = await api.get(`/Dashboard/${start}/${end}`);
-      console.log(data);
       if (data?.status === "Success") {
         setSummary(data?.data);
       }

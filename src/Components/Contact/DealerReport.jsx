@@ -48,7 +48,6 @@ const DealerReport = () => {
 
       if (data?.status === "Success") {
         setReportData(data?.data);
-        console.log(data?.data);
       }
     } catch (error) {
       console.error(error);

@@ -226,7 +226,6 @@ const ProductList = () => {
   // Edit Product (Fixed Version)
   // ============================
   const startEditProduct = async (product) => {
-    console.log(product);
 
     // ===== Category match =====
     const matchedCategory = categories.find(
@@ -279,7 +278,6 @@ const ProductList = () => {
     fetchAllData();
   }, [page, search, limit]);
 
-  // console.log(products);
 
   // Render
   return (

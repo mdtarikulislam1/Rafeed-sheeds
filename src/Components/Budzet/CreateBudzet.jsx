@@ -75,7 +75,7 @@ export default function CreateBudzet() {
         setStartDate(null);
         setEndDate(null);
         setAmount("");
-        console.log(res)
+        // console.log(res)
       } else {
         showToast("error", res.data.message || "Something went wrong!");
       }

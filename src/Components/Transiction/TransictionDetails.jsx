@@ -165,9 +165,7 @@ const TransictionDetails = () => {
                       <td className="global_td">{item.categoryName}</td>
                       <td className="global_td">
                         {item.Debit}
-                        {
-                          console.log(item)
-                        }
+                        
                       </td>
                       {/* <td className="global_td">{item.note}</td> */}
                     </tr>
